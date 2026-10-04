@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCHQ Hub | Live Servers & All-Track Leaderboards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #0a0c10;
+            --bg-card: #12161f;
+            --bg-card-hover: #1a202c;
+            --accent-cyan: #00f0ff;
+            --accent-gold: #ffb703;
+            --accent-red: #ff2a5f;
+            --accent-green: #00ff66;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --font-heading: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            font-size: 18px;
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(0, 240, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(255, 42, 95, 0.05) 0%, transparent 40%);
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 0 30px 0; border-bottom: 1px solid var(--border-color); margin-bottom: 30px;
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 15px; }
+        .logo-area i { font-size: 2.5rem; color: var(--accent-cyan); text-shadow: 0 0 15px rgba(0, 240, 255, 0.5); }
+        .logo-text h1 {
+            font-family: var(--font-heading); font-size: 1.8rem; text-transform: uppercase;
+            letter-spacing: 2px; background: linear-gradient(90deg, #fff, var(--text-muted));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .logo-text p { color: var(--accent-cyan); font-size: 0.95rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; }
+
+        .live-badge {
+            background: rgba(0, 255, 102, 0.1); border: 1px solid var(--accent-green); color: var(--accent-green);
+            padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 8px; letter-spacing: 1px;
+        }
+
+        .pulse-dot {
+            width: 8px; height: 8px; background-color: var(--accent-green); border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-green); animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(0, 255, 102, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 102, 0); }
+        }
+
+        .section-title {
+            font-family: var(--font-heading); font-size: 1.3rem; text-transform: uppercase;
+            letter-spacing: 1.5px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: var(--text-main);
+        }
+        .section-title i { color: var(--accent-cyan); }
+
+        /* LIVE ACCWEB SERVERS GRID */
+        .servers-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; margin-bottom: 40px;
+        }
+
+        .server-card {
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px;
+            padding: 20px; position: relative; overflow: hidden; transition: all 0.3s ease;
+        }
+        .server-card:hover { border-color: rgba(0, 240, 255, 0.4); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); }
+        .server-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent-cyan); }
+        .server-card.offline::before { background: var(--accent-red); }
+
+        .server-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .server-title { font-family: var(--font-heading); font-size: 1.1rem; color: #fff; }
+        .server-track { color: var(--text-muted); font-size: 0.95rem; margin-top: 2px; }
+
+        .copy-btn {
+            background: rgba(0, 240, 255, 0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan);
+            padding: 8px 12px; border-radius: 6px; cursor: pointer; font-family: var(--font-body);
+            font-weight: 700; font-size: 0.85rem; transition: all 0.2s ease; display: flex; align-items: center; gap: 6px;
+        }
+        .copy-btn:hover { background: var(--accent-cyan); color: var(--bg-dark); box-shadow: 0 0 15px rgba(0, 240, 255, 0.4); }
+
+        .track-map-container {
+            width: 100%; height: 80px; display: flex; justify-content: center; align-items: center; margin: 10px 0;
+        }
+        .track-map-svg { width: 100%; height: 100%; stroke: var(--accent-cyan); stroke-width: 3; fill: none; filter: drop-shadow(0 0 6px var(--accent-cyan)); }
+
+        .server-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color); }
+        .meta-item { display: flex; flex-direction: column; }
+        .meta-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .meta-value { font-size: 1.1rem; font-weight: 700; color: #fff; }
+
+        /* ALL ACC TRACKS SELECTOR */
+        .controls-bar {
+            display: flex; flex-direction: column; gap: 15px; background: var(--bg-card);
+            padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 20px;
+        }
+
+        .track-select-dropdown {
+            background: rgba(0, 0, 0, 0.5); border: 1px solid var(--accent-cyan); color: #fff;
+            padding: 12px 16px; border-radius: 8px; font-family: var(--font-heading); font-size: 1rem;
+            outline: none; cursor: pointer; width: 100%; max-width: 400px;
+        }
+        .track-select-dropdown option { background: var(--bg-card); color: #fff; }
+
+        /* LEADERBOARD TABLE */
+        .table-container {
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px;
+            overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th {
+            background: rgba(0, 0, 0, 0.4); padding: 16px 20px; font-family: var(--font-heading);
+            font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); border-bottom: 1px solid var(--border-color);
+        }
+        td { padding: 16px 20px; border-bottom: 1px solid var(--border-color); font-size: 1.05rem; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--bg-card-hover); }
+
+        .rank-column { font-family: var(--font-heading); font-weight: 800; color: var(--accent-cyan); width: 70px; }
+        .rank-1 { color: var(--accent-gold); }
+        .rank-2 { color: #e2e8f0; }
+        .rank-3 { color: #cd7f32; }
+
+        .driver-name { font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+        .car-badge {
+            display: inline-block; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 2px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted);
+        }
+        .lap-time { font-family: var(--font-heading); font-weight: 700; color: var(--accent-green); font-size: 1.15rem; }
+        .gap-cell { color: var(--text-muted); font-size: 0.95rem; }
+
+        .toast {
+            position: fixed; bottom: 30px; right: 30px; background: var(--accent-cyan); color: var(--bg-dark);
+            padding: 12px 24px; border-radius: 8px; font-weight: 800; font-family: var(--font-body);
+            box-shadow: 0 10px 25px rgba(0, 240, 255, 0.4); transform: translateY(100px); opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 1000;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="logo-area">
+                <i class="fa-solid fa-gauge-high"></i>
+                <div class="logo-text">
+                    <h1>BCHQ Hub</h1>
+                    <p>Live ACCWeb Telemetry & All-Track Leaderboards</p>
+                </div>
+            </div>
+            <div class="live-badge">
+                <div class="pulse-dot"></div>
+                LIVE ACCWEB CONNECTED
+            </div>
+        </header>
+
+        <!-- LIVE ACCWEB SERVERS -->
+        <div class="section-title">
+            <i class="fa-solid fa-server"></i> Live ACCWeb Server Instances
+        </div>
+        <div id="servers-container" class="servers-grid">
+            <div style="color: var(--text-muted); padding: 20px;">Fetching live server instances from ACCWeb...</div>
+        </div>
+
+        <!-- ALL ACC TRACK LEADERBOARDS -->
+        <div class="section-title">
+            <i class="fa-solid fa-trophy"></i> Persistent Track Records
+        </div>
+
+        <div class="controls-bar">
+            <label for="track-select" style="font-family: var(--font-heading); font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase;">Select Track (25 Circuits):</label>
+            <select id="track-select" class="track-select-dropdown" onchange="onTrackChange(this.value)">
+                <!-- ALL 25 ACC TRACKS -->
+                <option value="nurburgring">Nürburgring GP</option>
+                <option value="nurburgring_24h">Nürburgring 24h (Nordschleife)</option>
+                <option value="spa">Circuit de Spa-Francorchamps</option>
+                <option value="monza">Autodromo Nazionale Monza</option>
+                <option value="silverstone">Silverstone Circuit</option>
+                <option value="brands_hatch">Brands Hatch</option>
+                <option value="hungaroring">Hungaroring</option>
+                <option value="misano">Misano World Circuit</option>
+                <option value="paul_ricard">Circuit Paul Ricard</option>
+                <option value="zolder">Circuit Zolder</option>
+                <option value="barcelona">Circuit de Barcelona-Catalunya</option>
+                <option value="kyalami">Kyalami Grand Prix Circuit</option>
+                <option value="suzuka">Suzuka Circuit</option>
+                <option value="laguna_seca">WeatherTech Raceway Laguna Seca</option>
+                <option value="mount_panorama">Mount Panorama Circuit (Bathurst)</option>
+                <option value="imola">Autodromo Imola</option>
+                <option value="donington">Donington Park</option>
+                <option value="oulton_park">Oulton Park</option>
+                <option value="snetterton">Snetterton Circuit</option>
+                <option value="cota">Circuit of the Americas (COTA)</option>
+                <option value="indianapolis">Indianapolis Motor Speedway</option>
+                <option value="watkins_glen">Watkins Glen International</option>
+                <option value="valencia">Circuit Ricardo Tormo (Valencia)</option>
+                <option value="red_bull_ring">Red Bull Ring</option>
+            </select>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="rank-column">Pos</th>
+                        <th>Driver</th>
+                        <th>Car Model</th>
+                        <th>Best Lap</th>
+                        <th>Gap</th>
+                        <th>Date Recorded</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    <tr><td colspan="6" style="text-align:center; padding: 30px; color: var(--text-muted);">Select a track to load live records...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"><i class="fa-solid fa-check"></i> Server name copied to clipboard!</div>
+
+    <script>
+        // Set your Azure Function Endpoint URL
+        const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1?code=dygP7L_WKrHHvJQOxFSAScfaR-fRsxQ2ER6m-GO6yJ4yAzFutiTwyg==";
+
+        // SVG Track Map Layout Database
+        const TRACK_MAPS = {
+            "nurburgring": "M 20 40 Q 50 10 90 30 Q 130 50 170 30 Q 210 10 250 40 Q 280 70 240 80 Q 180 70 120 80 Q 60 70 20 40 Z",
+            "nurburgring_24h": "M 10 40 Q 30 10 70 15 Q 110 10 150 20 Q 200 10 260 25 Q 290 50 270 75 Q 220 80 160 70 Q 100 85 40 70 Z",
+            "spa": "M 20 30 L 100 20 L 220 30 L 280 60 L 200 80 L 120 70 L 40 80 Z",
+            "monza": "M 20 50 L 250 20 L 280 50 L 180 75 L 40 70 Z",
+            "silverstone": "M 30 30 L 120 20 L 200 40 L 270 30 L 250 70 L 150 80 L 50 70 Z"
+        };
+
+        const DEFAULT_MAP = "M 30 40 Q 80 10 150 30 Q 220 50 260 30 Q 280 70 200 80 Q 100 70 30 40 Z";
+
+        function formatLapTime(ms) {
+            if (!ms || ms === 999999999 || ms <= 0) return "--:--.---";
+            const min = Math.floor(ms / 60000);
+            const sec = Math.floor((ms % 60000) / 1000);
+            const millis = ms % 1000;
+            return `${min}:${sec.toString().padStart(2, '0')}.${millis.toString().padStart(3, '0')}`;
+        }
+
+        // Fetch Live Server Instances from ACCWeb
+        async function loadLiveServers() {
+            const container = document.getElementById("servers-container");
+
+            try {
+                const response = await fetch(`${AZURE_API_URL}&type=servers`);
+                const instances = await response.json();
+
+                if (!instances || instances.length === 0) {
+                    container.innerHTML = `<div style="color: var(--text-muted); padding: 20px;">No active ACCWeb servers running.</div>`;
+                    return;
+                }
+
+                let html = "";
+                instances.forEach(inst => {
+                    const serverName = inst.settings?.basic?.serverName || inst.name || "ACC Server";
+                    const track = inst.settings?.event?.track || "nurburgring";
+                    const isOnline = inst.status === "running";
+                    const path = TRACK_MAPS[track] || DEFAULT_MAP;
+
+                    html += `
+                        <div class="server-card ${isOnline ? '' : 'offline'}">
+                            <div class="server-header">
+                                <div>
+                                    <div class="server-title">${serverName}</div>
+                                    <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${track.toUpperCase()}</div>
+                                </div>
+                                <button class="copy-btn" onclick="copyServerName('${serverName}')">
+                                    <i class="fa-regular fa-copy"></i> Copy Name
+                                </button>
+                            </div>
+                            <div class="track-map-container">
+                                <svg class="track-map-svg" viewBox="0 0 300 100">
+                                    <path d="${path}" />
+                                </svg>
+                            </div>
+                            <div class="server-meta">
+                                <div class="meta-item">
+                                    <span class="meta-label">Status</span>
+                                    <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                        ${isOnline ? 'RUNNING' : 'OFFLINE'}
+                                    </span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Max Slots</span>
+                                    <span class="meta-value">${inst.settings?.basic?.maxCarSlots || 24} Cars</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            } catch (err) {
+                console.error("Failed to fetch live ACCWeb servers:", err);
+                container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;">Could not connect to ACCWeb instance API.</div>`;
+            }
+        }
+
+        // Fetch Persistent Cosmos DB Leaderboards
+        async function fetchLeaderboard(trackName) {
+            const tbody = document.getElementById("leaderboard-body");
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 30px; color: var(--text-muted);"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading records...</td></tr>`;
+
+            try {
+                const response = await fetch(`${AZURE_API_URL}&track=${encodeURIComponent(trackName)}`);
+                const drivers = await response.json();
+
+                if (!drivers || drivers.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 30px; color: var(--text-muted);">No recorded lap times for ${trackName} yet.</td></tr>`;
+                    return;
+                }
+
+                let html = "";
+                const leaderLapMs = drivers[0].bestLapMs;
+
+                drivers.forEach((driver, index) => {
+                    const rank = index + 1;
+                    const rankClass = rank === 1 ? 'rank-1' : (rank === 2 ? 'rank-2' : (rank === 3 ? 'rank-3' : ''));
+                    const gap = index === 0 ? "—" : `+${((driver.bestLapMs - leaderLapMs) / 1000).toFixed(3)}s`;
+
+                    html += `
+                        <tr>
+                            <td class="rank-column ${rankClass}">#${rank}</td>
+                            <td class="driver-name">${driver.driverName || 'Unknown'}</td>
+                            <td><span class="car-badge">Car ID: ${driver.carModel ?? 'GT3'}</span></td>
+                            <td class="lap-time">${formatLapTime(driver.bestLapMs)}</td>
+                            <td class="gap-cell">${gap}</td>
+                            <td>${driver.lastUpdated ? new Date(driver.lastUpdated).toLocaleDateString() : '—'}</td>
+                        </tr>
+                    `;
+                });
+
+                tbody.innerHTML = html;
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 30px; color: var(--accent-red);">Failed to query Azure DB records.</td></tr>`;
+            }
+        }
+
+        function onTrackChange(trackName) { fetchLeaderboard(trackName); }
+
+        function copyServerName(name) {
+            navigator.clipboard.writeText(name).then(() => {
+                const toast = document.getElementById("toast");
+                toast.classList.add("show");
+                setTimeout(() => toast.classList.remove("show"), 2500);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadLiveServers();
+            fetchLeaderboard("nurburgring");
+        });
+    </script>
+</body>
+</html>
