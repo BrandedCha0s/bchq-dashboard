@@ -513,7 +513,6 @@
             "red_bull_ring": "Red Bull Ring"
         };
 
-        // Safely escapes HTML special characters to prevent parser breaks
         function escapeHtml(str) {
             if (!str) return "";
             return String(str)
@@ -524,7 +523,6 @@
                 .replace(/'/g, "&#39;");
         }
 
-        // Formats "BCHQ" inside text with brand colors safely
         function formatBCHQText(text) {
             if (!text) return "";
             const safeText = escapeHtml(text);
@@ -553,7 +551,7 @@
             return `${min}:${sec.toString().padStart(2, '0')}.${millis.toString().padStart(3, '0')}`;
         }
 
-        // Fetch Live Server Instances with background update & sorting support
+        // Fetch Live Server Instances
         async function loadLiveServers(isBackground = false) {
             const container = document.getElementById("servers-container");
             if (!container) return;
@@ -591,7 +589,6 @@
                     return;
                 }
 
-                // SORTING LOGIC: Orders servers #1 (or unnumbered main), #2, #3...
                 function getServerOrderNumber(name) {
                     if (!name) return 999;
                     const match = name.match(/#(\d+)/);
@@ -659,4 +656,83 @@
                     const errMsg = err.name === "AbortError" 
                         ? "Connection timed out requesting ACCWeb data." 
                         : "Could not connect to ACCWeb instance API.";
-                    container.innerHTML = `<div style="color: var(--accent-red);
+                    container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;"><i class="fa-solid fa-triangle-exclamation"></i> ${errMsg}</div>`;
+                }
+            }
+        }
+
+        // Fetch Persistent Cosmos DB Leaderboards
+        async function fetchLeaderboard(trackName) {
+            const tbody = document.getElementById("leaderboard-body");
+            if (!tbody) return;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 30px; color: var(--text-muted);"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading records...</td></tr>`;
+
+            try {
+                const response = await fetch(`${AZURE_API_URL}&track=${encodeURIComponent(trackName)}`);
+                const drivers = await response.json();
+
+                if (!drivers || drivers.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 30px; color: var(--text-muted);">No recorded lap times for ${trackName} yet.</td></tr>`;
+                    return;
+                }
+
+                let html = "";
+                const leaderLapMs = drivers[0].bestLapMs;
+
+                drivers.forEach((driver, index) => {
+                    const rank = index + 1;
+                    const rankClass = rank === 1 ? 'rank-1' : (rank === 2 ? 'rank-2' : (rank === 3 ? 'rank-3' : ''));
+                    const gap = index === 0 ? "—" : `+${((driver.bestLapMs - leaderLapMs) / 1000).toFixed(3)}s`;
+
+                    html += `
+                        <tr>
+                            <td class="rank-column ${rankClass}">#${rank}</td>
+                            <td class="driver-name">${escapeHtml(driver.driverName) || 'Unknown'}</td>
+                            <td><span class="car-badge">Car ID: ${driver.carModel ?? 'GT3'}</span></td>
+                            <td class="lap-time">${formatLapTime(driver.bestLapMs)}</td>
+                            <td class="gap-cell">${gap}</td>
+                            <td>${driver.lastUpdated ? new Date(driver.lastUpdated).toLocaleDateString() : '—'}</td>
+                        </tr>
+                    `;
+                });
+
+                tbody.innerHTML = html;
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 30px; color: var(--accent-red);">Failed to query Azure DB records.</td></tr>`;
+            }
+        }
+
+        function onTrackChange(trackName) { 
+            fetchLeaderboard(trackName); 
+        }
+
+        function copyServerName(btn) {
+            const name = btn.getAttribute("data-name");
+            if (!name) return;
+            navigator.clipboard.writeText(name).then(() => {
+                const toast = document.getElementById("toast");
+                if (toast) {
+                    toast.classList.add("show");
+                    setTimeout(() => toast.classList.remove("show"), 2500);
+                }
+            });
+        }
+
+        // Bootstrapper that runs immediately regardless of DOM loading stage
+        function initDashboard() {
+            loadLiveServers();
+            fetchLeaderboard("nurburgring");
+
+            setInterval(() => {
+                loadLiveServers(true);
+            }, 15000);
+        }
+
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initDashboard);
+        } else {
+            initDashboard();
+        }
+    </script>
+</body>
+</html>
