@@ -351,7 +351,7 @@
 
                 const serverName = settings.serverName || basic.serverName || inst.name || "ACC Server";
                 const rawTrack = event.track || inst.track || "nurburgring";
-                const maxSlots = basic.maxCarSlots || basic.maxClients || inst.maxSlots || 24;
+                const maxSlots = inst.maxSlots || basic.maxCarSlots || basic.maxClients || inst.maxCarSlots || 24;
                 const isOnline = inst.isOnline ?? (inst.is_running || inst.status === "running" || inst.status === "ONLINE");
 
                 const fileName = getTrackFileName(rawTrack);
