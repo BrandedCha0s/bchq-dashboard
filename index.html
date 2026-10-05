@@ -268,73 +268,79 @@
         }
 
         // Fetch Live Server Instances from ACCWeb
-        async function loadLiveServers() {
-            const container = document.getElementById("servers-container");
+        // Fetch Live Server Instances from ACCWeb
+async function loadLiveServers() {
+    const container = document.getElementById("servers-container");
 
-            try {
-                const response = await fetch(`${AZURE_API_URL}&type=servers`);
-                const data = await response.json();
+    try {
+        const response = await fetch(`${AZURE_API_URL}&type=servers`);
+        const data = await response.json();
 
-// Check if API returned an error payload
-if (!response.ok || data.error) {
-    container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;">
-        ${data.error || 'Could not connect to ACCWeb instance API.'}
-    </div>`;
-    return;
-}
-
-const instances = Array.isArray(data) ? data : (data.instances || []);
-
-if (instances.length === 0) {
-    container.innerHTML = `<div style="color: var(--text-muted); padding: 20px;">No active ACCWeb servers running.</div>`;
-    return;
-}
-
-let html = "";
-instances.forEach(inst => {
-                    const serverName = inst.settings?.basic?.serverName || inst.name || "ACC Server";
-                    const track = inst.settings?.event?.track || "nurburgring";
-                    const isOnline = inst.status === "running";
-                    const path = TRACK_MAPS[track] || DEFAULT_MAP;
-
-                    html += `
-                        <div class="server-card ${isOnline ? '' : 'offline'}">
-                            <div class="server-header">
-                                <div>
-                                    <div class="server-title">${serverName}</div>
-                                    <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${track.toUpperCase()}</div>
-                                </div>
-                                <button class="copy-btn" onclick="copyServerName('${serverName}')">
-                                    <i class="fa-regular fa-copy"></i> Copy Name
-                                </button>
-                            </div>
-                            <div class="track-map-container">
-                                <svg class="track-map-svg" viewBox="0 0 300 100">
-                                    <path d="${path}" />
-                                </svg>
-                            </div>
-                            <div class="server-meta">
-                                <div class="meta-item">
-                                    <span class="meta-label">Status</span>
-                                    <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
-                                        ${isOnline ? 'RUNNING' : 'OFFLINE'}
-                                    </span>
-                                </div>
-                                <div class="meta-item">
-                                    <span class="meta-label">Max Slots</span>
-                                    <span class="meta-value">${inst.settings?.basic?.maxCarSlots || 24} Cars</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                container.innerHTML = html;
-            } catch (err) {
-                console.error("Failed to fetch live ACCWeb servers:", err);
-                container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;">Could not connect to ACCWeb instance API.</div>`;
-            }
+        // Check if API returned an error payload
+        if (!response.ok || data.error) {
+            container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;">
+                ${data.error || 'Could not connect to ACCWeb instance API.'}
+            </div>`;
+            return;
         }
+
+        const instances = Array.isArray(data) ? data : (data.instances || []);
+
+        if (instances.length === 0) {
+            container.innerHTML = `<div style="color: var(--text-muted); padding: 20px;">No active ACCWeb servers running.</div>`;
+            return;
+        }
+
+        let html = "";
+        instances.forEach(inst => {
+            // Read normalized properties from Azure Function or fall back to raw ACCWeb schema
+            const serverName = inst.name || inst.settings?.basic?.serverName || "ACC Server";
+            const track = (inst.track || inst.settings?.event?.track || "nurburgring").toLowerCase();
+            const isOnline = inst.isOnline ?? (inst.status === "ONLINE" || inst.status === "running" || inst.is_running);
+            const maxSlots = inst.maxSlots || inst.settings?.basic?.maxCarSlots || 24;
+            
+            // Format track string for display (e.g., "nurburgring_24h" -> "NURBURGRING 24H")
+            const trackDisplayName = track.replace(/_/g, ' ').toUpperCase();
+            const path = TRACK_MAPS[track] || DEFAULT_MAP;
+
+            html += `
+                <div class="server-card ${isOnline ? '' : 'offline'}">
+                    <div class="server-header">
+                        <div>
+                            <div class="server-title">${serverName}</div>
+                            <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${trackDisplayName}</div>
+                        </div>
+                        <button class="copy-btn" onclick="copyServerName('${serverName}')">
+                            <i class="fa-regular fa-copy"></i> Copy Name
+                        </button>
+                    </div>
+                    <div class="track-map-container">
+                        <svg class="track-map-svg" viewBox="0 0 300 100">
+                            <path d="${path}" />
+                        </svg>
+                    </div>
+                    <div class="server-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Status</span>
+                            <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                ${isOnline ? 'RUNNING' : 'OFFLINE'}
+                            </span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Max Slots</span>
+                            <span class="meta-value">${maxSlots} Cars</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    } catch (err) {
+        console.error("Failed to fetch live ACCWeb servers:", err);
+        container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;">Could not connect to ACCWeb instance API.</div>`;
+    }
+}
 
         // Fetch Persistent Cosmos DB Leaderboards
         async function fetchLeaderboard(trackName) {
