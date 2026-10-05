@@ -661,6 +661,45 @@
             }
         }
 
+        // ACC Car Model ID to Name Dictionary
+const ACC_CAR_MODELS = {
+    0: "Porsche 991 GT3 R",
+    1: "Audi R8 LMS GT3",
+    2: "Ferrari 488 GT3",
+    3: "Mercedes-AMG GT3",
+    4: "BMW M6 GT3",
+    5: "Bentley Continental GT3 '18",
+    6: "Porsche 991 II GT3 Cup",
+    7: "Nissan GT-R GT3 '18",
+    8: "Bentley Continental GT3 '15",
+    9: "Aston Martin V12 Vantage",
+    10: "Lexus RC F GT3",
+    11: "Honda NSX GT3",
+    12: "Lamborghini Huracán GT3",
+    13: "McLaren 650S GT3",
+    14: "Emil Frey Jaguar GT3",
+    15: "Honda NSX GT3 Evo",
+    16: "Lamborghini Huracán GT3 Evo",
+    17: "Aston Martin V8 Vantage GT3",
+    18: "Audi R8 LMS Evo",
+    19: "Porsche 991.2 GT3 R",
+    20: "McLaren 720S GT3",
+    21: "Porsche 911 II GT3 R",
+    22: "Ferrari 488 GT3 Evo",
+    23: "BMW M4 GT3",
+    24: "Audi R8 LMS Evo II",
+    25: "Ferrari 296 GT3",
+    26: "Lamborghini Huracán EVO2",
+    27: "Porsche 992 GT3 R",
+    28: "McLaren 720S GT3 Evo",
+    29: "Ford Mustang GT3",
+    30: "Aston Martin Vantage Evo"
+};
+
+function getCarName(modelId) {
+    if (modelId === undefined || modelId === null) return "GT3";
+    return ACC_CAR_MODELS[modelId] || `Car ID: ${modelId}`;
+}
         // Fetch Persistent Cosmos DB Leaderboards
         async function fetchLeaderboard(trackName) {
             const tbody = document.getElementById("leaderboard-body");
@@ -688,7 +727,7 @@
                         <tr>
                             <td class="rank-column ${rankClass}">#${rank}</td>
                             <td class="driver-name">${escapeHtml(driver.driverName) || 'Unknown'}</td>
-                            <td><span class="car-badge">Car ID: ${driver.carModel ?? 'GT3'}</span></td>
+                            <td><span class="car-badge">${escapeHtml(getCarName(driver.carModel))}</span></td>
                             <td class="lap-time">${formatLapTime(driver.bestLapMs)}</td>
                             <td class="gap-cell">${gap}</td>
                             <td>${driver.lastUpdated ? new Date(driver.lastUpdated).toLocaleDateString() : '—'}</td>
