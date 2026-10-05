@@ -513,10 +513,22 @@
             "red_bull_ring": "Red Bull Ring"
         };
 
-        // Formats "BCHQ" inside text with brand colors
+        // Safely escapes HTML special characters to prevent parser breaks
+        function escapeHtml(str) {
+            if (!str) return "";
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
+        // Formats "BCHQ" inside text with brand colors safely
         function formatBCHQText(text) {
             if (!text) return "";
-            return text.replace(/BCHQ/g, '<span class="brand-bc">BC</span><span class="brand-hq">HQ</span>');
+            const safeText = escapeHtml(text);
+            return safeText.replace(/BCHQ/g, '<span class="brand-bc">BC</span><span class="brand-hq">HQ</span>');
         }
 
         function getTrackFileName(rawTrackKey) {
@@ -612,14 +624,39 @@
                             <div class="server-header">
                                 <div>
                                     <div class="server-title">${formattedTitle}</div>
-                                    <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${displayName.toUpperCase()}</div>
+                                    <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(displayName).toUpperCase()}</div>
                                 </div>
-                                <button class="copy-btn" onclick="copyServerName('${serverName}')">
+                                <button class="copy-btn" data-name="${escapeHtml(serverName)}" onclick="copyServerName(this)">
                                     <i class="fa-regular fa-copy"></i> Copy Name
                                 </button>
                             </div>
                             <div class="track-map-container">
                                 <img class="track-map-img" 
                                      src="${trackImgUrl}" 
-                                     alt="${displayName}" 
-                                     onerror="this
+                                     alt="${escapeHtml(displayName)}" 
+                                     onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png?v=1.1';" />
+                            </div>
+                            <div class="server-meta">
+                                <div class="meta-item">
+                                    <span class="meta-label">Status</span>
+                                    <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                        ${isOnline ? 'RUNNING' : 'OFFLINE'}
+                                    </span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Max Slots</span>
+                                    <span class="meta-value">${maxSlots} Cars</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            } catch (err) {
+                console.error("Failed to fetch live ACCWeb servers:", err);
+                if (!isBackground) {
+                    const errMsg = err.name === "AbortError" 
+                        ? "Connection timed out requesting ACCWeb data." 
+                        : "Could not connect to ACCWeb instance API.";
+                    container.innerHTML = `<div style="color: var(--accent-red);
