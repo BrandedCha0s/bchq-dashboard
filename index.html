@@ -263,7 +263,7 @@
     // Target your repository tracks folder via jsDelivr CDN
     const ASSET_PATH = "https://cdn.jsdelivr.net/gh/BrandedCha0s/bchq-dashboard@main/tracks/";
 
-    // 25 ACC Track Master Mapping
+    // Master 25-Track Mapping Dictionary
     const ACC_TRACK_NAMES = {
         "monza": "Autodromo Nazionale Monza",
         "zolder": "Circuit Zolder",
@@ -294,11 +294,12 @@
         "red_bull_ring": "Red Bull Ring"
     };
 
+    // Appends .png extension to match hosted repository files
     function getTrackFileName(rawTrackKey) {
-        if (!rawTrackKey) return "nurburgring.svg";
+        if (!rawTrackKey) return "nurburgring.png";
         const cleanKey = rawTrackKey.toLowerCase().replace(/_\d{4}$/, '').trim();
         const matchedKey = Object.keys(ACC_TRACK_NAMES).find(k => cleanKey.includes(k));
-        return matchedKey ? `${matchedKey}.svg` : `${cleanKey}.svg`;
+        return matchedKey ? `${matchedKey}.png` : `${cleanKey}.png`;
     }
 
     function getTrackDisplayName(rawTrackKey) {
@@ -316,6 +317,7 @@
         return `${min}:${sec.toString().padStart(2, '0')}.${millis.toString().padStart(3, '0')}`;
     }
 
+    // Fetch Live Server Instances from ACCWeb
     async function loadLiveServers() {
         const container = document.getElementById("servers-container");
 
@@ -368,7 +370,7 @@
                             <img class="track-map-img" 
                                  src="${trackImgUrl}" 
                                  alt="${displayName}" 
-                                 onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.svg';" />
+                                 onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png';" />
                         </div>
                         <div class="server-meta">
                             <div class="meta-item">
@@ -393,6 +395,7 @@
         }
     }
 
+    // Fetch Persistent Cosmos DB Leaderboards
     async function fetchLeaderboard(trackName) {
         const tbody = document.getElementById("leaderboard-body");
         tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 30px; color: var(--text-muted);"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading records...</td></tr>`;
