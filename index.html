@@ -263,7 +263,7 @@
     // Azure Function Endpoint URL
     const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1?code=dygP7L_WKrHHvJQOxFSAScfaR-fRsxQ2ER6m-GO6yJ4yAzFutiTwyg==";
 
-    // Target your repository tracks folder via jsDelivr CDN (.png format)
+    // Target repository tracks folder via jsDelivr CDN (.png format)
     const ASSET_PATH = "https://cdn.jsdelivr.net/gh/BrandedCha0s/bchq-dashboard@main/tracks/";
 
     // Master 25-Track Mapping Dictionary
@@ -320,123 +320,103 @@
     }
 
     // Fetch Live Server Instances with background update support
-async function loadLiveServers(isBackground = false) {
-    const container = document.getElementById("servers-container");
+    async function loadLiveServers(isBackground = false) {
+        const container = document.getElementById("servers-container");
+        if (!container) return;
 
-    // Only show spinner on initial load, skip on silent background auto-refreshes
-    if (!isBackground && (!container.children.length || container.innerHTML.includes("Fetching"))) {
-        container.innerHTML = `<div style="color: var(--text-muted); padding: 20px;">
-            <i class="fa-solid fa-circle-notch fa-spin"></i> Fetching live server instances...
-        </div>`;
-    }
+        if (!isBackground && (!container.children.length || container.innerHTML.includes("Fetching"))) {
+            container.innerHTML = `<div style="color: var(--text-muted); padding: 20px;">
+                <i class="fa-solid fa-circle-notch fa-spin"></i> Fetching live server instances...
+            </div>`;
+        }
 
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 12000);
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 12000);
 
-        const response = await fetch(`${AZURE_API_URL}&type=servers`, {
-            signal: controller.signal
-        });
-        clearTimeout(timeoutId);
+            const response = await fetch(`${AZURE_API_URL}&type=servers`, {
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
 
-        const data = await response.json();
+            const data = await response.json();
 
-        if (!response.ok || data.error) {
-            if (!isBackground) {
-                container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;">
-                    <i class="fa-solid fa-triangle-exclamation"></i> ${data.error || 'Could not connect to ACCWeb instance API.'}
-                </div>`;
+            if (!response.ok || data.error) {
+                if (!isBackground) {
+                    container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> ${data.error || 'Could not connect to ACCWeb instance API.'}
+                    </div>`;
+                }
+                return;
             }
-            return;
-        }
 
-        const instances = Array.isArray(data) ? data : (data.instances || []);
+            const instances = Array.isArray(data) ? data : (data.instances || []);
 
-        if (instances.length === 0) {
-            container.innerHTML = `<div style="color: var(--text-muted); padding: 20px;">No active ACCWeb servers running.</div>`;
-            return;
-        }
+            if (instances.length === 0) {
+                container.innerHTML = `<div style="color: var(--text-muted); padding: 20px;">No active ACCWeb servers running.</div>`;
+                return;
+            }
 
-        let html = "";
-        instances.forEach(inst => {
-            const serverName = inst.name || "ACC Server";
-            const rawTrack = inst.track || "nurburgring";
-            const maxSlots = inst.maxSlots || 20;
-            const isOnline = Boolean(inst.isOnline);
+            let html = "";
+            instances.forEach(inst => {
+                const serverName = inst.name || "ACC Server";
+                const rawTrack = inst.track || "nurburgring";
+                const maxSlots = inst.maxSlots || 20;
+                const isOnline = Boolean(inst.isOnline);
 
-            const fileName = getTrackFileName(rawTrack);
-            const displayName = getTrackDisplayName(rawTrack);
-            const trackImgUrl = `${ASSET_PATH}${fileName}?v=1.1`;
+                const fileName = getTrackFileName(rawTrack);
+                const displayName = getTrackDisplayName(rawTrack);
+                const trackImgUrl = `${ASSET_PATH}${fileName}?v=1.1`;
 
-            html += `
-                <div class="server-card ${isOnline ? '' : 'offline'}">
-                    <div class="server-header">
-                        <div>
-                            <div class="server-title">${serverName}</div>
-                            <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${displayName.toUpperCase()}</div>
+                html += `
+                    <div class="server-card ${isOnline ? '' : 'offline'}">
+                        <div class="server-header">
+                            <div>
+                                <div class="server-title">${serverName}</div>
+                                <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${displayName.toUpperCase()}</div>
+                            </div>
+                            <button class="copy-btn" onclick="copyServerName('${serverName}')">
+                                <i class="fa-regular fa-copy"></i> Copy Name
+                            </button>
                         </div>
-                        <button class="copy-btn" onclick="copyServerName('${serverName}')">
-                            <i class="fa-regular fa-copy"></i> Copy Name
-                        </button>
-                    </div>
-                    <div class="track-map-container">
-                        <img class="track-map-img" 
-                             src="${trackImgUrl}" 
-                             alt="${displayName}" 
-                             onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png?v=1.1';" />
-                    </div>
-                    <div class="server-meta">
-                        <div class="meta-item">
-                            <span class="meta-label">Status</span>
-                            <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
-                                ${isOnline ? 'RUNNING' : 'OFFLINE'}
-                            </span>
+                        <div class="track-map-container">
+                            <img class="track-map-img" 
+                                 src="${trackImgUrl}" 
+                                 alt="${displayName}" 
+                                 onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png?v=1.1';" />
                         </div>
-                        <div class="meta-item">
-                            <span class="meta-label">Max Slots</span>
-                            <span class="meta-value">${maxSlots} Cars</span>
+                        <div class="server-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">Status</span>
+                                <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                    ${isOnline ? 'RUNNING' : 'OFFLINE'}
+                                </span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Max Slots</span>
+                                <span class="meta-value">${maxSlots} Cars</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
-        });
-
-        container.innerHTML = html;
-    } catch (err) {
-        console.error("Failed to fetch live ACCWeb servers:", err);
-        if (!isBackground) {
-            const errMsg = err.name === "AbortError" 
-                ? "Connection timed out requesting ACCWeb data." 
-                : "Could not connect to ACCWeb instance API.";
-            container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;"><i class="fa-solid fa-triangle-exclamation"></i> ${errMsg}</div>`;
-        }
-    }
-}
-
-// Initialize initial load & recurring 15-second interval
-document.addEventListener("DOMContentLoaded", () => {
-    loadLiveServers();
-    fetchLeaderboard("nurburgring");
-
-    // Trigger silent background refresh every 15,000ms (15s)
-    setInterval(() => {
-        loadLiveServers(true);
-    }, 15000);
-});
+                `;
+            });
 
             container.innerHTML = html;
         } catch (err) {
             console.error("Failed to fetch live ACCWeb servers:", err);
-            const errMsg = err.name === "AbortError" 
-                ? "Connection timed out requesting ACCWeb data." 
-                : "Could not connect to ACCWeb instance API.";
-            container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;"><i class="fa-solid fa-triangle-exclamation"></i> ${errMsg}</div>`;
+            if (!isBackground) {
+                const errMsg = err.name === "AbortError" 
+                    ? "Connection timed out requesting ACCWeb data." 
+                    : "Could not connect to ACCWeb instance API.";
+                container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;"><i class="fa-solid fa-triangle-exclamation"></i> ${errMsg}</div>`;
+            }
         }
     }
 
     // Fetch Persistent Cosmos DB Leaderboards
     async function fetchLeaderboard(trackName) {
         const tbody = document.getElementById("leaderboard-body");
+        if (!tbody) return;
         tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 30px; color: var(--text-muted);"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading records...</td></tr>`;
 
         try {
@@ -479,14 +459,20 @@ document.addEventListener("DOMContentLoaded", () => {
     function copyServerName(name) {
         navigator.clipboard.writeText(name).then(() => {
             const toast = document.getElementById("toast");
-            toast.classList.add("show");
-            setTimeout(() => toast.classList.remove("show"), 2500);
+            if (toast) {
+                toast.classList.add("show");
+                setTimeout(() => toast.classList.remove("show"), 2500);
+            }
         });
     }
 
     document.addEventListener("DOMContentLoaded", () => {
         loadLiveServers();
         fetchLeaderboard("nurburgring");
+
+        setInterval(() => {
+            loadLiveServers(true);
+        }, 15000);
     });
 </script>
 </body>
