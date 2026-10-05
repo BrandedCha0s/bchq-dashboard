@@ -263,7 +263,7 @@
     // Azure Function Endpoint URL
     const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1?code=dygP7L_WKrHHvJQOxFSAScfaR-fRsxQ2ER6m-GO6yJ4yAzFutiTwyg==";
 
-    // Target your repository tracks folder via jsDelivr CDN
+    // Target your repository tracks folder via jsDelivr CDN (.png format)
     const ASSET_PATH = "https://cdn.jsdelivr.net/gh/BrandedCha0s/bchq-dashboard@main/tracks/";
 
     // Master 25-Track Mapping Dictionary
@@ -297,7 +297,6 @@
         "red_bull_ring": "Red Bull Ring"
     };
 
-    // Appends .png extension to match hosted repository files
     function getTrackFileName(rawTrackKey) {
         if (!rawTrackKey) return "nurburgring.png";
         const cleanKey = rawTrackKey.toLowerCase().replace(/_\d{4}$/, '').trim();
@@ -325,12 +324,19 @@
         const container = document.getElementById("servers-container");
 
         try {
-            const response = await fetch(`${AZURE_API_URL}&type=servers`);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+            const response = await fetch(`${AZURE_API_URL}&type=servers`, {
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+
             const data = await response.json();
 
             if (!response.ok || data.error) {
                 container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;">
-                    ${data.error || 'Could not connect to ACCWeb instance API.'}
+                    <i class="fa-solid fa-triangle-exclamation"></i> ${data.error || 'Could not connect to ACCWeb instance API.'}
                 </div>`;
                 return;
             }
@@ -344,53 +350,63 @@
 
             let html = "";
             instances.forEach(inst => {
-    const config = inst.configuration || inst.config || inst.settings || {};
-    const basic = config.basic || inst.basic || {};
-    const settings = config.settings || inst.settings || {};
+                const config = inst.configuration || inst.config || {};
+                const basic = config.basic || inst.basic || {};
+                const settings = config.settings || inst.settings || {};
 
-    const serverName = inst.name || settings.serverName || "ACC Server";
-    const rawTrack = inst.track || config.event?.track || "nurburgring";
-    
-    // Read directly from normalized maxSlots or nested settings.maxCarSlots
-    const maxSlots = inst.maxSlots || settings.maxCarSlots || basic.maxConnections || 24;
-    const isOnline = Boolean(inst.isOnline);
+                const serverName = inst.name || settings.serverName || "ACC Server";
+                const rawTrack = inst.track || config.event?.track || "nurburgring";
+                
+                // Max slots reading directly from settings.maxCarSlots or basic.maxConnections
+                const maxSlots = inst.maxSlots || settings.maxCarSlots || basic.maxConnections || 20;
+                const isOnline = Boolean(inst.isOnline ?? (inst.is_running || inst.status === "ONLINE" || inst.status === "running"));
 
-    const fileName = getTrackFileName(rawTrack);
-    const displayName = getTrackDisplayName(rawTrack);
-    const trackImgUrl = `${ASSET_PATH}${fileName}`;
+                const fileName = getTrackFileName(rawTrack);
+                const displayName = getTrackDisplayName(rawTrack);
+                const trackImgUrl = `${ASSET_PATH}${fileName}`;
 
-    html += `
-        <div class="server-card ${isOnline ? '' : 'offline'}">
-            <div class="server-header">
-                <div>
-                    <div class="server-title">${serverName}</div>
-                    <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${displayName.toUpperCase()}</div>
-                </div>
-                <button class="copy-btn" onclick="copyServerName('${serverName}')">
-                    <i class="fa-regular fa-copy"></i> Copy Name
-                </button>
-            </div>
-            <div class="track-map-container">
-                <img class="track-map-img" 
-                     src="${trackImgUrl}" 
-                     alt="${displayName}" 
-                     onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png';" />
-            </div>
-            <div class="server-meta">
-                <div class="meta-item">
-                    <span class="meta-label">Status</span>
-                    <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
-                        ${isOnline ? 'RUNNING' : 'OFFLINE'}
-                    </span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Max Slots</span>
-                    <span class="meta-value">${maxSlots} Cars</span>
-                </div>
-            </div>
-        </div>
-    `;
-});
+                html += `
+                    <div class="server-card ${isOnline ? '' : 'offline'}">
+                        <div class="server-header">
+                            <div>
+                                <div class="server-title">${serverName}</div>
+                                <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${displayName.toUpperCase()}</div>
+                            </div>
+                            <button class="copy-btn" onclick="copyServerName('${serverName}')">
+                                <i class="fa-regular fa-copy"></i> Copy Name
+                            </button>
+                        </div>
+                        <div class="track-map-container">
+                            <img class="track-map-img" 
+                                 src="${trackImgUrl}" 
+                                 alt="${displayName}" 
+                                 onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png';" />
+                        </div>
+                        <div class="server-meta">
+                            <div class="meta-item">
+                                <span class="meta-label">Status</span>
+                                <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                    ${isOnline ? 'RUNNING' : 'OFFLINE'}
+                                </span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-label">Max Slots</span>
+                                <span class="meta-value">${maxSlots} Cars</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        } catch (err) {
+            console.error("Failed to fetch live ACCWeb servers:", err);
+            const errMsg = err.name === "AbortError" 
+                ? "Connection timed out requesting ACCWeb data." 
+                : "Could not connect to ACCWeb instance API.";
+            container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;"><i class="fa-solid fa-triangle-exclamation"></i> ${errMsg}</div>`;
+        }
+    }
 
     // Fetch Persistent Cosmos DB Leaderboards
     async function fetchLeaderboard(trackName) {
