@@ -455,6 +455,7 @@
                     <th class="rank-column">POS</th>
                     <th>DRIVER</th>
                     <th>CAR MODEL</th>
+                    <th>SESSION</th>
                     <th>BEST LAP</th>
                     <th>GAP</th>
                     <th>DATE RECORDED</th>
@@ -727,6 +728,7 @@ function getCarName(modelId) {
                             <td class="rank-column ${rankClass}">#${rank}</td>
                             <td class="driver-name">${escapeHtml(driver.driverName) || 'Unknown'}</td>
                             <td><span class="car-badge">${escapeHtml(getCarName(driver.carModel))}</span></td>
+                            <td class="session">${item.sessionType || 'Race'}</td>
                             <td class="lap-time">${formatLapTime(driver.bestLapMs)}</td>
                             <td class="gap-cell">${gap}</td>
                             <td>${driver.lastUpdated ? new Date(driver.lastUpdated).toLocaleDateString() : '—'}</td>
