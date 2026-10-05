@@ -344,52 +344,47 @@
 
             let html = "";
             instances.forEach(inst => {
-                const config = inst.configuration || inst.config || inst.settings || {};
-                const basic = config.basic || inst.basic || {};
-                const event = config.event || inst.event || {};
-                const settings = config.settings || inst.settings || {};
+    const serverName = inst.name || "ACC Server";
+    const rawTrack = inst.track || "nurburgring";
+    const maxSlots = inst.maxSlots || 24;
+    const isOnline = Boolean(inst.isOnline);
 
-                const serverName = settings.serverName || basic.serverName || inst.name || "ACC Server";
-                const rawTrack = event.track || inst.track || "nurburgring";
-                const maxSlots = inst.maxSlots || basic.maxCarSlots || basic.maxClients || inst.maxCarSlots || 24;
-                const isOnline = inst.isOnline ?? (inst.is_running || inst.status === "running" || inst.status === "ONLINE");
+    const fileName = getTrackFileName(rawTrack);
+    const displayName = getTrackDisplayName(rawTrack);
+    const trackImgUrl = `${ASSET_PATH}${fileName}`;
 
-                const fileName = getTrackFileName(rawTrack);
-                const displayName = getTrackDisplayName(rawTrack);
-                const trackImgUrl = `${ASSET_PATH}${fileName}`;
-
-                html += `
-                    <div class="server-card ${isOnline ? '' : 'offline'}">
-                        <div class="server-header">
-                            <div>
-                                <div class="server-title">${serverName}</div>
-                                <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${displayName.toUpperCase()}</div>
-                            </div>
-                            <button class="copy-btn" onclick="copyServerName('${serverName}')">
-                                <i class="fa-regular fa-copy"></i> Copy Name
-                            </button>
-                        </div>
-                        <div class="track-map-container">
-                            <img class="track-map-img" 
-                                 src="${trackImgUrl}" 
-                                 alt="${displayName}" 
-                                 onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png';" />
-                        </div>
-                        <div class="server-meta">
-                            <div class="meta-item">
-                                <span class="meta-label">Status</span>
-                                <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
-                                    ${isOnline ? 'RUNNING' : 'OFFLINE'}
-                                </span>
-                            </div>
-                            <div class="meta-item">
-                                <span class="meta-label">Max Slots</span>
-                                <span class="meta-value">${maxSlots} Cars</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
+    html += `
+        <div class="server-card ${isOnline ? '' : 'offline'}">
+            <div class="server-header">
+                <div>
+                    <div class="server-title">${serverName}</div>
+                    <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${displayName.toUpperCase()}</div>
+                </div>
+                <button class="copy-btn" onclick="copyServerName('${serverName}')">
+                    <i class="fa-regular fa-copy"></i> Copy Name
+                </button>
+            </div>
+            <div class="track-map-container">
+                <img class="track-map-img" 
+                     src="${trackImgUrl}" 
+                     alt="${displayName}" 
+                     onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png';" />
+            </div>
+            <div class="server-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Status</span>
+                    <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                        ${isOnline ? 'RUNNING' : 'OFFLINE'}
+                    </span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Max Slots</span>
+                    <span class="meta-value">${maxSlots} Cars</span>
+                </div>
+            </div>
+        </div>
+    `;
+});
 
             container.innerHTML = html;
         } catch (err) {
