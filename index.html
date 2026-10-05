@@ -296,9 +296,27 @@ const ACC_TRACK_NAMES = {
 
 function getTrackFileName(rawTrackKey) {
     if (!rawTrackKey) return "nurburgring.svg";
+    
+    // Strip year suffixes (e.g., "spa_2020" -> "spa") and format lowercase
     const cleanKey = rawTrackKey.toLowerCase().replace(/_\d{4}$/, '').trim();
-    const matchedKey = Object.keys(ACC_TRACK_NAMES).find(k => cleanKey.includes(k));
-    return matchedKey ? `${matchedKey}.svg` : `${cleanKey}.svg`;
+    
+    // Special mapping overrides for multi-word files in your repo
+    const trackMap = {
+        "nurburgring_24h": "nurburgring.svg",
+        "nordschleife": "nurburgring.svg",
+        "bathurst": "mount_panorama.svg",
+        "mount_panorama": "mount_panorama.svg",
+        "laguna_seca": "laguna_seca.svg",
+        "brands_hatch": "brands_hatch.svg",
+        "oulton_park": "oulton_park.svg",
+        "paul_ricard": "paul_ricard.svg",
+        "red_bull_ring": "red_bull_ring.svg",
+        "watkins_glen": "watkins_glen.svg"
+    };
+
+    if (trackMap[cleanKey]) return trackMap[cleanKey];
+
+    return `${cleanKey}.svg`;
 }
 
 function getTrackDisplayName(rawTrackKey) {
