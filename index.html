@@ -105,24 +105,27 @@
 
         .track-map-container {
     width: 100%;
-    height: 110px;
+    height: 180px; /* Increased height to give track images ample room */
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 10px 0;
-    padding: 5px;
+    margin: 15px 0;
+    padding: 0;
+    overflow: hidden;
 }
 
 .track-map-img {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
     max-height: 100%;
-    max-width: 90%;
-    object-fit: contain;
-    filter: drop-shadow(0 0 8px var(--accent-cyan));
+    object-fit: contain; /* Scales up image while preserving original aspect ratio */
+    filter: drop-shadow(0 0 10px var(--accent-cyan)) brightness(1.1);
     transition: transform 0.3s ease;
 }
 
 .server-card:hover .track-map-img {
-    transform: scale(1.06);
+    transform: scale(1.08); /* Adds a smooth zoom effect on hover */
 }
 
         /* ALL ACC TRACKS SELECTOR */
