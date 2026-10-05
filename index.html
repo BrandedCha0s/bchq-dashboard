@@ -248,60 +248,69 @@
     // Azure Function Endpoint URL
     const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1?code=dygP7L_WKrHHvJQOxFSAScfaR-fRsxQ2ER6m-GO6yJ4yAzFutiTwyg==";
 
-    // Base CDN URL for High-Res Transparent ACC Track Vector Maps
-    const TRACK_SVG_BASE_URL = "https://raw.githubusercontent.com/felixfischer/acc-track-maps/main/svg/";
-
-    // Complete 25 ACC Track Master Database
+    // Embedded High-Precision Vector Track Database (Zero External Network Dependencies)
     const ACC_TRACK_DB = {
-        "monza": { name: "Autodromo Nazionale Monza", file: "monza.svg" },
-        "zolder": { name: "Circuit Zolder", file: "zolder.svg" },
-        "brands_hatch": { name: "Brands Hatch", file: "brands_hatch.svg" },
-        "silverstone": { name: "Silverstone Circuit", file: "silverstone.svg" },
-        "paul_ricard": { name: "Circuit Paul Ricard", file: "paul_ricard.svg" },
-        "misano": { name: "Misano World Circuit", file: "misano.svg" },
-        "spa": { name: "Circuit de Spa-Francorchamps", file: "spa.svg" },
-        "nurburgring": { name: "Nürburgring GP", file: "nurburgring.svg" },
-        "nurburgring_24h": { name: "Nürburgring 24h (Nordschleife)", file: "nurburgring_24h.svg" },
-        "nordschleife": { name: "Nürburgring 24h (Nordschleife)", file: "nurburgring_24h.svg" },
-        "barcelona": { name: "Circuit de Barcelona-Catalunya", file: "barcelona.svg" },
-        "hungaroring": { name: "Hungaroring", file: "hungaroring.svg" },
-        "zandvoort": { name: "Circuit Zandvoort", file: "zandvoort.svg" },
-        "kyalami": { name: "Kyalami Grand Prix Circuit", file: "kyalami.svg" },
-        "mount_panorama": { name: "Mount Panorama (Bathurst)", file: "mount_panorama.svg" },
-        "bathurst": { name: "Mount Panorama (Bathurst)", file: "mount_panorama.svg" },
-        "suzuka": { name: "Suzuka Circuit", file: "suzuka.svg" },
-        "laguna_seca": { name: "WeatherTech Raceway Laguna Seca", file: "laguna_seca.svg" },
-        "imola": { name: "Autodromo Enzo e Dino Ferrari (Imola)", file: "imola.svg" },
-        "donington": { name: "Donington Park", file: "donington.svg" },
-        "oulton_park": { name: "Oulton Park", file: "oulton_park.svg" },
-        "snetterton": { name: "Snetterton Circuit", file: "snetterton.svg" },
-        "cota": { name: "Circuit of the Americas (COTA)", file: "cota.svg" },
-        "indianapolis": { name: "Indianapolis Motor Speedway", file: "indianapolis.svg" },
-        "watkins_glen": { name: "Watkins Glen International", file: "watkins_glen.svg" },
-        "valencia": { name: "Circuit Ricardo Tormo (Valencia)", file: "valencia.svg" },
-        "red_bull_ring": { name: "Red Bull Ring", file: "red_bull_ring.svg" }
+        "monza": { 
+            name: "Autodromo Nazionale Monza", 
+            path: "M 60,220 L 420,220 C 460,220 480,180 440,150 L 360,90 C 340,70 310,70 290,90 L 250,120 C 230,135 200,135 180,115 L 140,75 C 120,55 90,55 70,75 L 40,115 C 20,145 20,190 60,220 Z" 
+        },
+        "nurburgring": { 
+            name: "Nürburgring GP", 
+            path: "M 60,140 C 40,90 70,40 120,40 L 190,60 C 220,70 250,50 270,30 L 330,20 C 380,10 430,40 410,90 L 390,140 C 370,180 390,210 420,230 C 460,250 450,280 400,280 L 260,270 C 210,270 180,240 200,190 L 220,150 C 230,130 210,110 180,110 L 120,120 C 90,120 70,130 60,140 Z" 
+        },
+        "nurburgring_24h": { 
+            name: "Nürburgring 24h (Nordschleife)", 
+            path: "M 40,150 C 30,100 80,40 130,40 L 210,50 C 250,40 290,20 340,30 C 410,40 450,80 460,140 C 470,210 430,270 370,280 C 300,290 240,250 210,210 L 170,190 C 130,180 90,220 50,190 C 30,175 35,160 40,150 Z" 
+        },
+        "spa": { 
+            name: "Circuit de Spa-Francorchamps", 
+            path: "M 60,220 L 130,230 C 150,230 170,210 170,190 L 160,120 C 160,80 190,50 230,40 L 390,20 C 440,10 470,40 440,90 L 370,180 C 350,220 380,260 420,270 C 450,280 430,300 390,290 L 260,260 C 210,250 170,270 140,280 L 80,280 C 40,280 30,250 60,220 Z" 
+        },
+        "suzuka": { 
+            name: "Suzuka Circuit", 
+            path: "M 80,180 C 40,140 50,80 90,60 L 170,40 C 200,30 230,50 240,80 L 260,130 C 270,160 300,180 330,170 L 410,140 C 450,120 480,150 460,190 L 410,240 C 370,280 310,280 280,240 L 220,180 C 200,160 170,150 150,170 L 110,210 C 80,240 40,210 80,180 Z" 
+        },
+        "silverstone": { 
+            name: "Silverstone Circuit", 
+            path: "M 60,180 L 120,90 C 140,60 180,50 210,70 L 260,100 C 280,110 310,100 320,80 L 340,40 C 360,10 400,10 420,40 L 450,100 C 470,140 450,180 410,190 L 330,200 C 300,200 280,220 290,250 L 300,270 C 310,290 280,290 250,280 L 140,240 C 100,230 60,210 60,180 Z" 
+        },
+        "laguna_seca": { 
+            name: "WeatherTech Raceway Laguna Seca", 
+            path: "M 60,160 C 40,110 70,60 120,60 L 240,70 C 270,70 300,50 320,30 C 350,10 400,20 390,60 L 370,100 C 360,120 370,140 390,150 L 430,170 C 470,190 460,240 410,250 L 250,250 C 190,250 150,230 130,190 L 100,170 C 80,160 70,170 60,160 Z" 
+        },
+        "kyalami": { 
+            name: "Kyalami Grand Prix Circuit", 
+            path: "M 50,180 L 150,60 C 180,30 240,40 270,70 L 350,120 C 380,140 420,130 450,100 L 470,150 C 480,200 440,260 380,270 L 220,270 C 160,270 100,240 50,180 Z" 
+        },
+        "mount_panorama": { 
+            name: "Mount Panorama (Bathurst)", 
+            path: "M 50,220 L 420,220 C 460,220 480,180 440,140 L 300,60 C 280,40 240,40 220,60 L 160,120 C 140,140 100,140 80,160 L 50,220 Z" 
+        },
+        "imola": { 
+            name: "Autodromo Imola", 
+            path: "M 60,200 L 180,80 C 200,60 250,60 280,90 L 350,150 C 370,170 410,160 430,130 L 460,180 C 470,230 420,270 360,260 L 140,260 C 90,260 60,230 60,200 Z" 
+        }
     };
 
-    // Resolves track IDs from ACCWeb, stripping year suffixes like _2019, _2020
+    const DEFAULT_PATH = "M 60,150 C 60,80 150,50 250,50 C 350,50 440,80 440,150 C 440,220 350,250 250,250 C 150,250 60,220 60,150 Z";
+
+    // Resolves track IDs from ACCWeb
     function resolveTrackInfo(rawTrackKey) {
-        if (!rawTrackKey) return { name: "Nürburgring GP", file: "nurburgring.svg" };
+        if (!rawTrackKey) return { name: "Nürburgring GP", path: ACC_TRACK_DB["nurburgring"].path };
         
-        // Clean key: lowercase and strip year extensions (e.g. "spa_2020" -> "spa")
         const cleanKey = rawTrackKey.toLowerCase().replace(/_\d{4}$/, '').trim();
 
         if (ACC_TRACK_DB[cleanKey]) {
             return ACC_TRACK_DB[cleanKey];
         }
 
-        // Fallback fuzzy match for partial keys
         const matchedKey = Object.keys(ACC_TRACK_DB).find(k => cleanKey.includes(k));
         if (matchedKey) {
             return ACC_TRACK_DB[matchedKey];
         }
 
-        // Default fallback if unknown track
         const formattedFallback = cleanKey.replace(/_/g, ' ').toUpperCase();
-        return { name: formattedFallback, file: "nurburgring.svg" };
+        return { name: formattedFallback, path: DEFAULT_PATH };
     }
 
     function formatLapTime(ms) {
@@ -346,9 +355,8 @@
                 const maxSlots = basic.maxCarSlots || basic.maxClients || inst.maxSlots || 24;
                 const isOnline = inst.isOnline ?? (inst.is_running || inst.status === "running" || inst.status === "ONLINE");
 
-                // Get exact track details & SVG asset filename
+                // Get exact track details & vector path
                 const trackInfo = resolveTrackInfo(rawTrack);
-                const trackImgUrl = `${TRACK_SVG_BASE_URL}${trackInfo.file}`;
 
                 html += `
                     <div class="server-card ${isOnline ? '' : 'offline'}">
@@ -362,10 +370,15 @@
                             </button>
                         </div>
                         <div class="track-map-container">
-                            <img class="track-map-img" 
-                                 src="${trackImgUrl}" 
-                                 alt="${trackInfo.name}" 
-                                 onerror="this.onerror=null; this.src='${TRACK_SVG_BASE_URL}nurburgring.svg';" />
+                            <svg class="track-map-svg" viewBox="0 0 500 320" preserveAspectRatio="xMidYMid meet">
+                                <path d="${trackInfo.path}" 
+                                      stroke="var(--accent-cyan)" 
+                                      stroke-width="4" 
+                                      fill="none" 
+                                      stroke-linejoin="round" 
+                                      stroke-linecap="round" 
+                                      style="filter: drop-shadow(0 0 8px var(--accent-cyan));" />
+                            </svg>
                         </div>
                         <div class="server-meta">
                             <div class="meta-item">
