@@ -257,196 +257,195 @@
     <div id="toast" class="toast"><i class="fa-solid fa-check"></i> Server name copied to clipboard!</div>
 
     <script>
-    const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1?code=dygP7L_WKrHHvJQOxFSAScfaR-fRsxQ2ER6m-GO6yJ4yAzFutiTwyg==";
+    // Azure Function Endpoint URL
+const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1?code=dygP7L_WKrHHvJQOxFSAScfaR-fRsxQ2ER6m-GO6yJ4yAzFutiTwyg==";
 
-    // Replace with your GitHub username and repository name
-    const GITHUB_USERNAME = "BrandedCha0s";
-    const GITHUB_REPO = "acc-track-assets";
-    const ASSET_CDN_URL = `https://cdn.jsdelivr.net/gh/${GITHUB_USERNAME}/${GITHUB_REPO}@main/tracks/`;
+// Relative Local Directory Path (Bypasses Tracking Prevention & CDN Blocks)
+const ASSET_PATH = "./tracks/";
 
-    // 25 ACC Track Lookup Mapping
-    const ACC_TRACK_NAMES = {
-        "monza": "Autodromo Nazionale Monza",
-        "zolder": "Circuit Zolder",
-        "brands_hatch": "Brands Hatch",
-        "silverstone": "Silverstone Circuit",
-        "paul_ricard": "Circuit Paul Ricard",
-        "misano": "Misano World Circuit",
-        "spa": "Circuit de Spa-Francorchamps",
-        "nurburgring": "Nürburgring GP",
-        "nurburgring_24h": "Nürburgring 24h (Nordschleife)",
-        "nordschleife": "Nürburgring 24h (Nordschleife)",
-        "barcelona": "Circuit de Barcelona-Catalunya",
-        "hungaroring": "Hungaroring",
-        "zandvoort": "Circuit Zandvoort",
-        "kyalami": "Kyalami Grand Prix Circuit",
-        "mount_panorama": "Mount Panorama (Bathurst)",
-        "bathurst": "Mount Panorama (Bathurst)",
-        "suzuka": "Suzuka Circuit",
-        "laguna_seca": "WeatherTech Raceway Laguna Seca",
-        "imola": "Autodromo Enzo e Dino Ferrari (Imola)",
-        "donington": "Donington Park",
-        "oulton_park": "Oulton Park",
-        "snetterton": "Snetterton Circuit",
-        "cota": "Circuit of the Americas (COTA)",
-        "indianapolis": "Indianapolis Motor Speedway",
-        "watkins_glen": "Watkins Glen International",
-        "valencia": "Circuit Ricardo Tormo (Valencia)",
-        "red_bull_ring": "Red Bull Ring"
-    };
+// 25 ACC Track Master Mapping
+const ACC_TRACK_NAMES = {
+    "monza": "Autodromo Nazionale Monza",
+    "zolder": "Circuit Zolder",
+    "brands_hatch": "Brands Hatch",
+    "silverstone": "Silverstone Circuit",
+    "paul_ricard": "Circuit Paul Ricard",
+    "misano": "Misano World Circuit",
+    "spa": "Circuit de Spa-Francorchamps",
+    "nurburgring": "Nürburgring GP",
+    "nurburgring_24h": "Nürburgring 24h (Nordschleife)",
+    "nordschleife": "Nürburgring 24h (Nordschleife)",
+    "barcelona": "Circuit de Barcelona-Catalunya",
+    "hungaroring": "Hungaroring",
+    "zandvoort": "Circuit Zandvoort",
+    "kyalami": "Kyalami Grand Prix Circuit",
+    "mount_panorama": "Mount Panorama (Bathurst)",
+    "bathurst": "Mount Panorama (Bathurst)",
+    "suzuka": "Suzuka Circuit",
+    "laguna_seca": "WeatherTech Raceway Laguna Seca",
+    "imola": "Autodromo Enzo e Dino Ferrari (Imola)",
+    "donington": "Donington Park",
+    "oulton_park": "Oulton Park",
+    "snetterton": "Snetterton Circuit",
+    "cota": "Circuit of the Americas (COTA)",
+    "indianapolis": "Indianapolis Motor Speedway",
+    "watkins_glen": "Watkins Glen International",
+    "valencia": "Circuit Ricardo Tormo (Valencia)",
+    "red_bull_ring": "Red Bull Ring"
+};
 
-    function getTrackFileName(rawTrackKey) {
-        if (!rawTrackKey) return "nurburgring.svg";
-        const cleanKey = rawTrackKey.toLowerCase().replace(/_\d{4}$/, '').trim();
-        const matchedKey = Object.keys(ACC_TRACK_NAMES).find(k => cleanKey.includes(k));
-        return matchedKey ? `${matchedKey}.svg` : `${cleanKey}.svg`;
-    }
+function getTrackFileName(rawTrackKey) {
+    if (!rawTrackKey) return "nurburgring.svg";
+    const cleanKey = rawTrackKey.toLowerCase().replace(/_\d{4}$/, '').trim();
+    const matchedKey = Object.keys(ACC_TRACK_NAMES).find(k => cleanKey.includes(k));
+    return matchedKey ? `${matchedKey}.svg` : `${cleanKey}.svg`;
+}
 
-    function getTrackDisplayName(rawTrackKey) {
-        if (!rawTrackKey) return "NÜRBURGRING GP";
-        const cleanKey = rawTrackKey.toLowerCase().replace(/_\d{4}$/, '').trim();
-        const matchedKey = Object.keys(ACC_TRACK_NAMES).find(k => cleanKey.includes(k));
-        return matchedKey ? ACC_TRACK_NAMES[matchedKey] : cleanKey.replace(/_/g, ' ').toUpperCase();
-    }
+function getTrackDisplayName(rawTrackKey) {
+    if (!rawTrackKey) return "NÜRBURGRING GP";
+    const cleanKey = rawTrackKey.toLowerCase().replace(/_\d{4}$/, '').trim();
+    const matchedKey = Object.keys(ACC_TRACK_NAMES).find(k => cleanKey.includes(k));
+    return matchedKey ? ACC_TRACK_NAMES[matchedKey] : cleanKey.replace(/_/g, ' ').toUpperCase();
+}
 
-    function formatLapTime(ms) {
-        if (!ms || ms === 999999999 || ms <= 0) return "--:--.---";
-        const min = Math.floor(ms / 60000);
-        const sec = Math.floor((ms % 60000) / 1000);
-        const millis = ms % 1000;
-        return `${min}:${sec.toString().padStart(2, '0')}.${millis.toString().padStart(3, '0')}`;
-    }
+function formatLapTime(ms) {
+    if (!ms || ms === 999999999 || ms <= 0) return "--:--.---";
+    const min = Math.floor(ms / 60000);
+    const sec = Math.floor((ms % 60000) / 1000);
+    const millis = ms % 1000;
+    return `${min}:${sec.toString().padStart(2, '0')}.${millis.toString().padStart(3, '0')}`;
+}
 
-    async function loadLiveServers() {
-        const container = document.getElementById("servers-container");
+async function loadLiveServers() {
+    const container = document.getElementById("servers-container");
 
-        try {
-            const response = await fetch(`${AZURE_API_URL}&type=servers`);
-            const data = await response.json();
+    try {
+        const response = await fetch(`${AZURE_API_URL}&type=servers`);
+        const data = await response.json();
 
-            if (!response.ok || data.error) {
-                container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;">
-                    ${data.error || 'Could not connect to ACCWeb instance API.'}
-                </div>`;
-                return;
-            }
+        if (!response.ok || data.error) {
+            container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;">
+                ${data.error || 'Could not connect to ACCWeb instance API.'}
+            </div>`;
+            return;
+        }
 
-            const instances = Array.isArray(data) ? data : (data.instances || []);
+        const instances = Array.isArray(data) ? data : (data.instances || []);
 
-            if (instances.length === 0) {
-                container.innerHTML = `<div style="color: var(--text-muted); padding: 20px;">No active ACCWeb servers running.</div>`;
-                return;
-            }
+        if (instances.length === 0) {
+            container.innerHTML = `<div style="color: var(--text-muted); padding: 20px;">No active ACCWeb servers running.</div>`;
+            return;
+        }
 
-            let html = "";
-            instances.forEach(inst => {
-                const config = inst.configuration || inst.config || inst.settings || {};
-                const basic = config.basic || inst.basic || {};
-                const event = config.event || inst.event || {};
-                const settings = config.settings || inst.settings || {};
+        let html = "";
+        instances.forEach(inst => {
+            const config = inst.configuration || inst.config || inst.settings || {};
+            const basic = config.basic || inst.basic || {};
+            const event = config.event || inst.event || {};
+            const settings = config.settings || inst.settings || {};
 
-                const serverName = settings.serverName || basic.serverName || inst.name || "ACC Server";
-                const rawTrack = event.track || inst.track || "nurburgring";
-                const maxSlots = basic.maxCarSlots || basic.maxClients || inst.maxSlots || 24;
-                const isOnline = inst.isOnline ?? (inst.is_running || inst.status === "running" || inst.status === "ONLINE");
+            const serverName = settings.serverName || basic.serverName || inst.name || "ACC Server";
+            const rawTrack = event.track || inst.track || "nurburgring";
+            const maxSlots = basic.maxCarSlots || basic.maxClients || inst.maxSlots || 24;
+            const isOnline = inst.isOnline ?? (inst.is_running || inst.status === "running" || inst.status === "ONLINE");
 
-                const fileName = getTrackFileName(rawTrack);
-                const displayName = getTrackDisplayName(rawTrack);
-                const trackImgUrl = `${ASSET_CDN_URL}${fileName}`;
+            const fileName = getTrackFileName(rawTrack);
+            const displayName = getTrackDisplayName(rawTrack);
+            const trackImgUrl = `${ASSET_PATH}${fileName}`;
 
-                html += `
-                    <div class="server-card ${isOnline ? '' : 'offline'}">
-                        <div class="server-header">
-                            <div>
-                                <div class="server-title">${serverName}</div>
-                                <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${displayName.toUpperCase()}</div>
-                            </div>
-                            <button class="copy-btn" onclick="copyServerName('${serverName}')">
-                                <i class="fa-regular fa-copy"></i> Copy Name
-                            </button>
+            html += `
+                <div class="server-card ${isOnline ? '' : 'offline'}">
+                    <div class="server-header">
+                        <div>
+                            <div class="server-title">${serverName}</div>
+                            <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${displayName.toUpperCase()}</div>
                         </div>
-                        <div class="track-map-container">
-                            <img class="track-map-img" 
-                                 src="${trackImgUrl}" 
-                                 alt="${displayName}" 
-                                 onerror="this.onerror=null; this.src='${ASSET_CDN_URL}nurburgring.svg';" />
+                        <button class="copy-btn" onclick="copyServerName('${serverName}')">
+                            <i class="fa-regular fa-copy"></i> Copy Name
+                        </button>
+                    </div>
+                    <div class="track-map-container">
+                        <img class="track-map-img" 
+                             src="${trackImgUrl}" 
+                             alt="${displayName}" 
+                             onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.svg';" />
+                    </div>
+                    <div class="server-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Status</span>
+                            <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                ${isOnline ? 'RUNNING' : 'OFFLINE'}
+                            </span>
                         </div>
-                        <div class="server-meta">
-                            <div class="meta-item">
-                                <span class="meta-label">Status</span>
-                                <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
-                                    ${isOnline ? 'RUNNING' : 'OFFLINE'}
-                                </span>
-                            </div>
-                            <div class="meta-item">
-                                <span class="meta-label">Max Slots</span>
-                                <span class="meta-value">${maxSlots} Cars</span>
-                            </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Max Slots</span>
+                            <span class="meta-value">${maxSlots} Cars</span>
                         </div>
                     </div>
-                `;
-            });
-
-            container.innerHTML = html;
-        } catch (err) {
-            console.error("Failed to fetch live ACCWeb servers:", err);
-            container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;">Could not connect to ACCWeb instance API.</div>`;
-        }
-    }
-
-    async function fetchLeaderboard(trackName) {
-        const tbody = document.getElementById("leaderboard-body");
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 30px; color: var(--text-muted);"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading records...</td></tr>`;
-
-        try {
-            const response = await fetch(`${AZURE_API_URL}&track=${encodeURIComponent(trackName)}`);
-            const drivers = await response.json();
-
-            if (!drivers || drivers.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 30px; color: var(--text-muted);">No recorded lap times for ${trackName} yet.</td></tr>`;
-                return;
-            }
-
-            let html = "";
-            const leaderLapMs = drivers[0].bestLapMs;
-
-            drivers.forEach((driver, index) => {
-                const rank = index + 1;
-                const rankClass = rank === 1 ? 'rank-1' : (rank === 2 ? 'rank-2' : (rank === 3 ? 'rank-3' : ''));
-                const gap = index === 0 ? "—" : `+${((driver.bestLapMs - leaderLapMs) / 1000).toFixed(3)}s`;
-
-                html += `
-                    <tr>
-                        <td class="rank-column ${rankClass}">#${rank}</td>
-                        <td class="driver-name">${driver.driverName || 'Unknown'}</td>
-                        <td><span class="car-badge">Car ID: ${driver.carModel ?? 'GT3'}</span></td>
-                        <td class="lap-time">${formatLapTime(driver.bestLapMs)}</td>
-                        <td class="gap-cell">${gap}</td>
-                        <td>${driver.lastUpdated ? new Date(driver.lastUpdated).toLocaleDateString() : '—'}</td>
-                    </tr>
-                `;
-            });
-
-            tbody.innerHTML = html;
-        } catch (err) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 30px; color: var(--accent-red);">Failed to query Azure DB records.</td></tr>`;
-        }
-    }
-
-    function onTrackChange(trackName) { fetchLeaderboard(trackName); }
-
-    function copyServerName(name) {
-        navigator.clipboard.writeText(name).then(() => {
-            const toast = document.getElementById("toast");
-            toast.classList.add("show");
-            setTimeout(() => toast.classList.remove("show"), 2500);
+                </div>
+            `;
         });
-    }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        loadLiveServers();
-        fetchLeaderboard("nurburgring");
+        container.innerHTML = html;
+    } catch (err) {
+        console.error("Failed to fetch live ACCWeb servers:", err);
+        container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;">Could not connect to ACCWeb instance API.</div>`;
+    }
+}
+
+async function fetchLeaderboard(trackName) {
+    const tbody = document.getElementById("leaderboard-body");
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 30px; color: var(--text-muted);"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading records...</td></tr>`;
+
+    try {
+        const response = await fetch(`${AZURE_API_URL}&track=${encodeURIComponent(trackName)}`);
+        const drivers = await response.json();
+
+        if (!drivers || drivers.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 30px; color: var(--text-muted);">No recorded lap times for ${trackName} yet.</td></tr>`;
+            return;
+        }
+
+        let html = "";
+        const leaderLapMs = drivers[0].bestLapMs;
+
+        drivers.forEach((driver, index) => {
+            const rank = index + 1;
+            const rankClass = rank === 1 ? 'rank-1' : (rank === 2 ? 'rank-2' : (rank === 3 ? 'rank-3' : ''));
+            const gap = index === 0 ? "—" : `+${((driver.bestLapMs - leaderLapMs) / 1000).toFixed(3)}s`;
+
+            html += `
+                <tr>
+                    <td class="rank-column ${rankClass}">#${rank}</td>
+                    <td class="driver-name">${driver.driverName || 'Unknown'}</td>
+                    <td><span class="car-badge">Car ID: ${driver.carModel ?? 'GT3'}</span></td>
+                    <td class="lap-time">${formatLapTime(driver.bestLapMs)}</td>
+                    <td class="gap-cell">${gap}</td>
+                    <td>${driver.lastUpdated ? new Date(driver.lastUpdated).toLocaleDateString() : '—'}</td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = html;
+    } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 30px; color: var(--accent-red);">Failed to query Azure DB records.</td></tr>`;
+    }
+}
+
+function onTrackChange(trackName) { fetchLeaderboard(trackName); }
+
+function copyServerName(name) {
+    navigator.clipboard.writeText(name).then(() => {
+        const toast = document.getElementById("toast");
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2500);
     });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadLiveServers();
+    fetchLeaderboard("nurburgring");
+});
 </script>
 </body>
 </html>
