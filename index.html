@@ -260,63 +260,23 @@
     // Azure Function Endpoint URL
 const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1?code=dygP7L_WKrHHvJQOxFSAScfaR-fRsxQ2ER6m-GO6yJ4yAzFutiTwyg==";
 
-// Relative Local Directory Path (Bypasses Tracking Prevention & CDN Blocks)
+// Target your repository tracks folder via jsDelivr
 const ASSET_PATH = "https://cdn.jsdelivr.net/gh/BrandedCha0s/bchq-dashboard@main/tracks/";
 
-// 25 ACC Track Master Mapping
-const ACC_TRACK_NAMES = {
-    "monza": "Autodromo Nazionale Monza",
-    "zolder": "Circuit Zolder",
-    "brands_hatch": "Brands Hatch",
-    "silverstone": "Silverstone Circuit",
-    "paul_ricard": "Circuit Paul Ricard",
-    "misano": "Misano World Circuit",
-    "spa": "Circuit de Spa-Francorchamps",
-    "nurburgring": "Nürburgring GP",
-    "nurburgring_24h": "Nürburgring 24h (Nordschleife)",
-    "nordschleife": "Nürburgring 24h (Nordschleife)",
-    "barcelona": "Circuit de Barcelona-Catalunya",
-    "hungaroring": "Hungaroring",
-    "zandvoort": "Circuit Zandvoort",
-    "kyalami": "Kyalami Grand Prix Circuit",
-    "mount_panorama": "Mount Panorama (Bathurst)",
-    "bathurst": "Mount Panorama (Bathurst)",
-    "suzuka": "Suzuka Circuit",
-    "laguna_seca": "WeatherTech Raceway Laguna Seca",
-    "imola": "Autodromo Enzo e Dino Ferrari (Imola)",
-    "donington": "Donington Park",
-    "oulton_park": "Oulton Park",
-    "snetterton": "Snetterton Circuit",
-    "cota": "Circuit of the Americas (COTA)",
-    "indianapolis": "Indianapolis Motor Speedway",
-    "watkins_glen": "Watkins Glen International",
-    "valencia": "Circuit Ricardo Tormo (Valencia)",
-    "red_bull_ring": "Red Bull Ring"
-};
-
 function getTrackFileName(rawTrackKey) {
-    if (!rawTrackKey) return "nurburgring.svg";
-    
-    // Strip year suffixes (e.g., "spa_2020" -> "spa") and format lowercase
+    if (!rawTrackKey) return "nurburgring.png";
     const cleanKey = rawTrackKey.toLowerCase().replace(/_\d{4}$/, '').trim();
     
-    // Special mapping overrides for multi-word files in your repo
     const trackMap = {
-        "nurburgring_24h": "nurburgring.svg",
-        "nordschleife": "nurburgring.svg",
-        "bathurst": "mount_panorama.svg",
-        "mount_panorama": "mount_panorama.svg",
-        "laguna_seca": "laguna_seca.svg",
-        "brands_hatch": "brands_hatch.svg",
-        "oulton_park": "oulton_park.svg",
-        "paul_ricard": "paul_ricard.svg",
-        "red_bull_ring": "red_bull_ring.svg",
-        "watkins_glen": "watkins_glen.svg"
+        "nurburgring_24h": "nurburgring.png",
+        "nordschleife": "nurburgring.png",
+        "bathurst": "mount_panorama.png",
+        "mount_panorama": "mount_panorama.png"
     };
 
     if (trackMap[cleanKey]) return trackMap[cleanKey];
 
-    return `${cleanKey}.svg`;
+    return `${cleanKey}.png`;
 }
 
 function getTrackDisplayName(rawTrackKey) {
