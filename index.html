@@ -245,24 +245,64 @@
     <div id="toast" class="toast"><i class="fa-solid fa-check"></i> Server name copied to clipboard!</div>
 
     <script>
-    // Set your Azure Function Endpoint URL
+    // Azure Function Endpoint URL
     const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1?code=dygP7L_WKrHHvJQOxFSAScfaR-fRsxQ2ER6m-GO6yJ4yAzFutiTwyg==";
 
-    // ACC Track Outline SVG Path Database
-    const TRACK_MAPS = {
-        "nurburgring": "M 20 40 Q 50 10 90 30 Q 130 50 170 30 Q 210 10 250 40 Q 280 70 240 80 Q 180 70 120 80 Q 60 70 20 40 Z",
-        "nurburgring_24h": "M 10 40 Q 30 10 70 15 Q 110 10 150 20 Q 200 10 260 25 Q 290 50 270 75 Q 220 80 160 70 Q 100 85 40 70 Z",
-        "spa": "M 30 20 L 110 25 L 210 15 L 270 40 L 250 75 L 180 85 L 110 65 L 40 80 Z",
-        "monza": "M 20 70 L 240 70 L 280 40 L 210 25 L 150 25 L 90 45 L 20 70 Z",
-        "silverstone": "M 30 30 L 110 15 L 180 35 L 260 20 L 280 65 L 190 85 L 110 70 L 40 75 Z",
-        "laguna_seca": "M 30 50 Q 60 20 120 25 Q 180 15 220 35 Q 270 40 250 75 Q 190 85 130 65 Q 70 80 30 50 Z",
-        "suzuka": "M 30 60 Q 70 20 120 30 Q 170 80 220 40 Q 270 20 250 75 Q 190 70 140 30 Q 80 80 30 60 Z",
-        "brands_hatch": "M 40 30 L 150 20 L 250 35 L 270 70 L 180 80 L 100 60 L 40 70 Z",
-        "hungaroring": "M 30 40 L 120 20 L 220 30 L 260 65 L 170 85 L 90 70 L 30 40 Z",
-        "kyalami": "M 20 50 L 100 20 L 200 25 L 270 50 L 220 80 L 120 75 L 20 50 Z"
+    // Base CDN URL for High-Res Transparent ACC Track Vector Maps
+    const TRACK_SVG_BASE_URL = "https://raw.githubusercontent.com/felixfischer/acc-track-maps/main/svg/";
+
+    // Complete 25 ACC Track Master Database
+    const ACC_TRACK_DB = {
+        "monza": { name: "Autodromo Nazionale Monza", file: "monza.svg" },
+        "zolder": { name: "Circuit Zolder", file: "zolder.svg" },
+        "brands_hatch": { name: "Brands Hatch", file: "brands_hatch.svg" },
+        "silverstone": { name: "Silverstone Circuit", file: "silverstone.svg" },
+        "paul_ricard": { name: "Circuit Paul Ricard", file: "paul_ricard.svg" },
+        "misano": { name: "Misano World Circuit", file: "misano.svg" },
+        "spa": { name: "Circuit de Spa-Francorchamps", file: "spa.svg" },
+        "nurburgring": { name: "Nürburgring GP", file: "nurburgring.svg" },
+        "nurburgring_24h": { name: "Nürburgring 24h (Nordschleife)", file: "nurburgring_24h.svg" },
+        "nordschleife": { name: "Nürburgring 24h (Nordschleife)", file: "nurburgring_24h.svg" },
+        "barcelona": { name: "Circuit de Barcelona-Catalunya", file: "barcelona.svg" },
+        "hungaroring": { name: "Hungaroring", file: "hungaroring.svg" },
+        "zandvoort": { name: "Circuit Zandvoort", file: "zandvoort.svg" },
+        "kyalami": { name: "Kyalami Grand Prix Circuit", file: "kyalami.svg" },
+        "mount_panorama": { name: "Mount Panorama (Bathurst)", file: "mount_panorama.svg" },
+        "bathurst": { name: "Mount Panorama (Bathurst)", file: "mount_panorama.svg" },
+        "suzuka": { name: "Suzuka Circuit", file: "suzuka.svg" },
+        "laguna_seca": { name: "WeatherTech Raceway Laguna Seca", file: "laguna_seca.svg" },
+        "imola": { name: "Autodromo Enzo e Dino Ferrari (Imola)", file: "imola.svg" },
+        "donington": { name: "Donington Park", file: "donington.svg" },
+        "oulton_park": { name: "Oulton Park", file: "oulton_park.svg" },
+        "snetterton": { name: "Snetterton Circuit", file: "snetterton.svg" },
+        "cota": { name: "Circuit of the Americas (COTA)", file: "cota.svg" },
+        "indianapolis": { name: "Indianapolis Motor Speedway", file: "indianapolis.svg" },
+        "watkins_glen": { name: "Watkins Glen International", file: "watkins_glen.svg" },
+        "valencia": { name: "Circuit Ricardo Tormo (Valencia)", file: "valencia.svg" },
+        "red_bull_ring": { name: "Red Bull Ring", file: "red_bull_ring.svg" }
     };
 
-    const DEFAULT_MAP = "M 30 40 Q 80 10 150 30 Q 220 50 260 30 Q 280 70 200 80 Q 100 70 30 40 Z";
+    // Resolves track IDs from ACCWeb, stripping year suffixes like _2019, _2020
+    function resolveTrackInfo(rawTrackKey) {
+        if (!rawTrackKey) return { name: "Nürburgring GP", file: "nurburgring.svg" };
+        
+        // Clean key: lowercase and strip year extensions (e.g. "spa_2020" -> "spa")
+        const cleanKey = rawTrackKey.toLowerCase().replace(/_\d{4}$/, '').trim();
+
+        if (ACC_TRACK_DB[cleanKey]) {
+            return ACC_TRACK_DB[cleanKey];
+        }
+
+        // Fallback fuzzy match for partial keys
+        const matchedKey = Object.keys(ACC_TRACK_DB).find(k => cleanKey.includes(k));
+        if (matchedKey) {
+            return ACC_TRACK_DB[matchedKey];
+        }
+
+        // Default fallback if unknown track
+        const formattedFallback = cleanKey.replace(/_/g, ' ').toUpperCase();
+        return { name: formattedFallback, file: "nurburgring.svg" };
+    }
 
     function formatLapTime(ms) {
         if (!ms || ms === 999999999 || ms <= 0) return "--:--.---";
@@ -296,37 +336,36 @@
 
             let html = "";
             instances.forEach(inst => {
-                // Navigate nested ACCWeb v1.27.0 configuration schema
                 const config = inst.configuration || inst.config || inst.settings || {};
                 const basic = config.basic || inst.basic || {};
                 const event = config.event || inst.event || {};
                 const settings = config.settings || inst.settings || {};
 
                 const serverName = settings.serverName || basic.serverName || inst.name || "ACC Server";
-                const track = (event.track || inst.track || "nurburgring").toLowerCase();
+                const rawTrack = event.track || inst.track || "nurburgring";
                 const maxSlots = basic.maxCarSlots || basic.maxClients || inst.maxSlots || 24;
                 const isOnline = inst.isOnline ?? (inst.is_running || inst.status === "running" || inst.status === "ONLINE");
 
-                // Match track key to SVG database
-                const trackKey = Object.keys(TRACK_MAPS).find(k => track.includes(k)) || track;
-                const path = TRACK_MAPS[trackKey] || DEFAULT_MAP;
-                const trackDisplayName = track.replace(/_/g, ' ').toUpperCase();
+                // Get exact track details & SVG asset filename
+                const trackInfo = resolveTrackInfo(rawTrack);
+                const trackImgUrl = `${TRACK_SVG_BASE_URL}${trackInfo.file}`;
 
                 html += `
                     <div class="server-card ${isOnline ? '' : 'offline'}">
                         <div class="server-header">
                             <div>
                                 <div class="server-title">${serverName}</div>
-                                <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${trackDisplayName}</div>
+                                <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${trackInfo.name.toUpperCase()}</div>
                             </div>
                             <button class="copy-btn" onclick="copyServerName('${serverName}')">
                                 <i class="fa-regular fa-copy"></i> Copy Name
                             </button>
                         </div>
                         <div class="track-map-container">
-                            <svg class="track-map-svg" viewBox="0 0 300 100">
-                                <path d="${path}" />
-                            </svg>
+                            <img class="track-map-img" 
+                                 src="${trackImgUrl}" 
+                                 alt="${trackInfo.name}" 
+                                 onerror="this.onerror=null; this.src='${TRACK_SVG_BASE_URL}nurburgring.svg';" />
                         </div>
                         <div class="server-meta">
                             <div class="meta-item">
