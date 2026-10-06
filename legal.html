@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCHQ HUB - Terms & Disclaimers</title>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0a0e14;
+            --card-bg: #111823;
+            --accent-cyan: #00f0ff;
+            --text-main: #e2e8f0;
+            --text-muted: #64748b;
+            --border-color: #1e293b;
+            --brand-bc: #3bb54a;
+            --brand-hq: #7f52c8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
+            padding: 30px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+        }
+        .header-title h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            color: #fff;
+        }
+        .brand-bc { color: var(--brand-bc); }
+        .brand-hq { color: var(--brand-hq); }
+
+        .content-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan);
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        p, li {
+            color: var(--text-main);
+            font-size: 1.05rem;
+            margin-bottom: 15px;
+        }
+        ul { padding-left: 20px; }
+        .back-btn {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        .back-btn:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-dark);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" class="header-title">
+            <i class="fa-solid fa-gauge-high" style="font-size: 2rem; color: var(--accent-cyan);"></i>
+            <h1><span class="brand-bc">BC</span><span class="brand-hq">HQ</span> HUB</h1>
+        </a>
+        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> BACK TO HUB</a>
+    </div>
+
+    <div class="content-card">
+        <h2><i class="fa-solid fa-scale-balanced"></i> Platform Disclaimers</h2>
+        <p><strong>BCHQ Hub</strong> is an independent, community-driven sim racing portal and telemetry dashboard. It is not affiliated with, endorsed by, or connected to Kunos Simulazioni, 505 Games, or any official motorsport governing body.</p>
+        <p>All game titles, trademarks, and track names referenced (such as Assetto Corsa Competizione) are the property of their respective copyright holders.</p>
+    </div>
+
+    <div class="content-card">
+        <h2><i class="fa-solid fa-shield-halved"></i> Community Rules & Code of Conduct</h2>
+        <p>By participating in BCHQ multiplayer servers and utilizing this platform, community members agree to:</p>
+        <ul>
+            <li>Maintain fair, respectful, and clean racing standards on all server instances.</li>
+            <li>Refrain from intentional blocking, wrecking, or toxic chat behavior.</li>
+            <li>Report technical bugs, track issues, or telemetry glitches responsibly via the issue tracker.</li>
+        </ul>
+    </div>
+
+    <div class="content-card">
+        <h2><i class="fa-solid fa-cookie-bite"></i> Data & Storage Notice</h2>
+        <p>BCHQ Hub uses browser <code>localStorage</code> purely to remember your preferred track selection for convenience. Telemetry lap times ingested from server instances are stored securely in backend cloud databases to power community leaderboards.</p>
+    </div>
+
+</body>
+</html>
