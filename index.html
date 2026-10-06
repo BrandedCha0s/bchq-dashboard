@@ -737,7 +737,12 @@ function getCarName(modelId) {
 
             try {
                 const response = await fetch(`${AZURE_API_URL}&track=${encodeURIComponent(trackName)}`);
-                const drivers = await response.json();
+                let drivers = await response.json();
+
+                // Limit results to top 10 maximum
+                if (Array.isArray(drivers)) {
+                    drivers = drivers.slice(0, 10);
+                }
 
                 if (!drivers || drivers.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--text-muted);">No recorded lap times for ${trackName} yet.</td></tr>`;
