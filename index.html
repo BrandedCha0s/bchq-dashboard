@@ -240,13 +240,6 @@
             padding: 10px;
         }
 
-        .track-map-img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.3));
-        }
-
         .server-meta {
             display: flex;
             justify-content: space-between;
@@ -413,10 +406,18 @@
             </div>
         </div>
         
-        <!-- Discord Link Header Button -->
-        <a href="https://discord.gg/SmvcXeXdyS" target="_blank" rel="noopener noreferrer" class="discord-btn-header">
-            <i class="fa-brands fa-discord"></i> JOIN OUR DISCORD
-        </a>
+        <!-- Navigation & Social Links -->
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <a href="streamers.html" class="discord-btn-header" style="background: rgba(0, 240, 255, 0.15); border-color: var(--accent-cyan); color: var(--accent-cyan);">
+                <i class="fa-solid fa-users" style="color: var(--accent-cyan);"></i> STREAMERS
+            </a>
+            <a href="issues.html" class="discord-btn-header" style="background: rgba(255, 51, 102, 0.15); border-color: var(--accent-red); color: var(--accent-red);">
+                <i class="fa-solid fa-bug" style="color: var(--accent-red);"></i> REPORT ISSUE
+            </a>
+            <a href="https://discord.gg/SmvcXeXdyS" target="_blank" rel="noopener noreferrer" class="discord-btn-header">
+                <i class="fa-brands fa-discord"></i> JOIN OUR DISCORD
+            </a>
+        </div>
     </div>
 
     <!-- Live Server Instances Section -->
@@ -450,7 +451,6 @@
             <option value="barcelona">Circuit de Barcelona-Catalunya</option>
             <option value="hungaroring">Hungaroring</option>
             <option value="zandvoort">Circuit Zandvoort</option>
-
             <option value="kyalami">Kyalami Grand Prix Circuit</option>
             <option value="mount_panorama">Mount Panorama (Bathurst)</option>
             <option value="suzuka">Suzuka Circuit</option>
