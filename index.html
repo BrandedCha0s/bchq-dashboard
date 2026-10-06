@@ -192,6 +192,23 @@
             align-items: center;
             gap: 6px;
         }
+        
+        .track-map-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.3));
+            transition: transform 0.3s ease;
+        }
+
+        /* Enlarge and rotate specific tracks */
+        .track-map-img.rotate-suzuka {
+            transform: scale(1.5) rotate(40deg);
+        }
+
+        .track-map-img.rotate-silverstone {
+            transform: scale(1.5) rotate(40deg);
+        }
 
         .copy-btn {
             background: rgba(0, 240, 255, 0.1);
@@ -606,49 +623,58 @@
                 });
 
                 let html = "";
-                instances.forEach(inst => {
-                    const serverName = inst.name || "ACC Server";
-                    const formattedTitle = formatBCHQText(serverName);
-                    const rawTrack = inst.track || "nurburgring";
-                    const maxSlots = inst.maxSlots || 20;
-                    const isOnline = Boolean(inst.isOnline);
+    instances.forEach(inst => {
+        const serverName = inst.name || "ACC Server";
+        const formattedTitle = formatBCHQText(serverName);
+        const rawTrack = inst.track || "nurburgring";
+        const maxSlots = inst.maxSlots || 20;
+        const isOnline = Boolean(inst.isOnline);
 
-                    const fileName = getTrackFileName(rawTrack);
-                    const displayName = getTrackDisplayName(rawTrack);
-                    const trackImgUrl = `${ASSET_PATH}${fileName}?v=1.1`;
+        const fileName = getTrackFileName(rawTrack);
+        const displayName = getTrackDisplayName(rawTrack);
+        const trackImgUrl = `${ASSET_PATH}${fileName}?v=1.1`;
 
-                    html += `
-                        <div class="server-card ${isOnline ? '' : 'offline'}">
-                            <div class="server-header">
-                                <div>
-                                    <div class="server-title">${formattedTitle}</div>
-                                    <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(displayName).toUpperCase()}</div>
-                                </div>
-                                <button class="copy-btn" data-name="${escapeHtml(serverName)}" onclick="copyServerName(this)">
-                                    <i class="fa-regular fa-copy"></i> Copy Name
-                                </button>
-                            </div>
-                            <div class="track-map-container">
-                                <img class="track-map-img" 
-                                     src="${trackImgUrl}" 
-                                     alt="${escapeHtml(displayName)}" 
-                                     onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png?v=1.1';" />
-                            </div>
-                            <div class="server-meta">
-                                <div class="meta-item">
-                                    <span class="meta-label">Status</span>
-                                    <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
-                                        ${isOnline ? 'RUNNING' : 'OFFLINE'}
-                                    </span>
-                                </div>
-                                <div class="meta-item">
-                                    <span class="meta-label">Max Slots</span>
-                                    <span class="meta-value">${maxSlots} Cars</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
+        // Determine specific rotation/scale class based on track key
+        let mapTransformClass = "";
+        const lowerTrack = rawTrack.toLowerCase();
+        if (lowerTrack.includes("suzuka")) {
+            mapTransformClass = "rotate-suzuka";
+        } else if (lowerTrack.includes("silverstone")) {
+            mapTransformClass = "rotate-silverstone";
+        }
+
+        html += `
+            <div class="server-card ${isOnline ? '' : 'offline'}">
+                <div class="server-header">
+                    <div>
+                        <div class="server-title">${formattedTitle}</div>
+                        <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(displayName).toUpperCase()}</div>
+                    </div>
+                    <button class="copy-btn" data-name="${escapeHtml(serverName)}" onclick="copyServerName(this)">
+                        <i class="fa-regular fa-copy"></i> Copy Name
+                    </button>
+                </div>
+                <div class="track-map-container">
+                    <img class="track-map-img ${mapTransformClass}" 
+                         src="${trackImgUrl}" 
+                         alt="${escapeHtml(displayName)}" 
+                         onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png?v=1.1';" />
+                </div>
+                <div class="server-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Status</span>
+                        <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                            ${isOnline ? 'RUNNING' : 'OFFLINE'}
+                        </span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Max Slots</span>
+                        <span class="meta-value">${maxSlots} Cars</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
 
                 container.innerHTML = html;
             } catch (err) {
