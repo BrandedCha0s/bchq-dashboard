@@ -148,6 +148,9 @@
             color: var(--text-muted);
             font-size: 0.95rem;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .streamer-bio {
@@ -156,6 +159,37 @@
             line-height: 1.5;
             margin-bottom: 25px;
             min-height: 70px;
+        }
+
+        /* Live Status Badges */
+        .live-badge {
+            background-color: var(--youtube-red);
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 4px;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            animation: pulse-live 2s infinite;
+        }
+
+        .live-badge i { font-size: 0.45rem; }
+
+        @keyframes pulse-live {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        .offline-badge {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
         }
 
         .social-links-container {
@@ -185,41 +219,7 @@
             width: 20px;
             text-align: center;
         }
-        
-        /* Live Status Badge */
-        .live-badge {
-            background-color: var(--youtube-red);
-            color: #fff;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem;
-            font-weight: 800;
-            padding: 3px 8px;
-            border-radius: 4px;
-            letter-spacing: 1px;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-            animation: pulse-live 2s infinite;
-        }
 
-        .live-badge i {
-            font-size: 0.5rem;
-        }
-
-        @keyframes pulse-live {
-            0% { opacity: 1; }
-            50% { opacity: 0.6; }
-            100% { opacity: 1; }
-        }
-
-        .offline-badge {
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        /* Platform Hover Themes */
         .social-btn.twitch:hover { background: rgba(145, 70, 255, 0.2); border-color: var(--twitch-purple); color: #fff; }
         .social-btn.twitch i { color: var(--twitch-purple); }
 
@@ -258,30 +258,29 @@
         <div class="streamer-card">
             <div>
                 <div class="streamer-header">
-                    <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/f7820437-3287-47b5-aaef-8fbc499615f7-profile_image-70x70.png" alt="Brandedchaos86" class="streamer-avatar" onerror="this.style.display='none'">
+                    <img src="YOUR_TWITCH_AVATAR_URL_HERE" alt="Brandedchaos86" class="streamer-avatar" onerror="this.style.display='none'">
                     <div>
                         <div class="streamer-name">Brandedchaos86</div>
-                        <div class="streamer-handle">@brandedchaos86</div>
-                        <div id="status-brandedchaos86" class="streamer-handle">Checking status...</div>
+                        <div id="status-brandedchaos86" class="streamer-handle">@brandedchaos86 <span class="offline-badge">Offline</span></div>
                     </div>
                 </div>
                 <p class="streamer-bio">Lead developer of BCHQ Hub, sim racing enthusiast competing in ACC, and tactical FPS player. Catch our community server broadcasts and live telemetry tracking!</p>
             </div>
             <div class="social-links-container">
                 <a href="https://twitch.tv/brandedchaos86" target="_blank" rel="noopener noreferrer" class="social-btn twitch">
-                    <i class="fa-brands fa-twitch"></i> Twitch
+                    <i class="fa-brands fa-twitch"></i> Twitch Broadcasts
                 </a>
                 <a href="https://youtube.com/@brandedcha0s86_gaming?si=D-QkqrUV1uuSBBFe" target="_blank" rel="noopener noreferrer" class="social-btn youtube">
-                    <i class="fa-brands fa-youtube"></i> YouTube
+                    <i class="fa-brands fa-youtube"></i> YouTube Channel
                 </a>
                 <a href="https://www.instagram.com/brandedcha0s86_gaming?stkn=c28xNG82bnNxdHFz&utm_source=qr" target="_blank" rel="noopener noreferrer" class="social-btn instagram">
-                    <i class="fa-brands fa-instagram"></i> Insta
+                    <i class="fa-brands fa-instagram"></i> Instagram Feed
                 </a>
                 <a href="https://www.facebook.com/share/19CeC4rEa2/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="social-btn facebook">
-                    <i class="fa-brands fa-facebook"></i> Facebook
+                    <i class="fa-brands fa-facebook"></i> Facebook Page
                 </a>
                 <a href="https://www.tiktok.com/@brandedcha0s86_ga" target="_blank" rel="noopener noreferrer" class="social-btn tiktok">
-                    <i class="fa-brands fa-tiktok"></i> TikTok
+                    <i class="fa-brands fa-tiktok"></i> TikTok Clips
                 </a>
             </div>
         </div>
@@ -290,24 +289,23 @@
         <div class="streamer-card">
             <div>
                 <div class="streamer-header">
-                    <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/7efb56e5-3b02-4ce3-8f06-1bd424a3952d-profile_image-70x70.png" alt="Harry" class="streamer-avatar" style="border-color: var(--accent-cyan);" onerror="this.style.display='none'">
+                    <img src="HARRY_TWITCH_AVATAR_URL_HERE" alt="Harry" class="streamer-avatar" style="border-color: var(--accent-cyan);" onerror="this.style.display='none'">
                     <div>
                         <div class="streamer-name">Harry</div>
-                        <div class="streamer-handle">@H477Y96</div>
-                        <div id="status-h477y96" class="streamer-handle">Checking status...</div>
+                        <div id="status-h477y96" class="streamer-handle">@H477Y96 <span class="offline-badge">Offline</span></div>
                     </div>
                 </div>
                 <p class="streamer-bio">Regular co-pilot and collaborator on multiplayer racing streams and competitive community events. Always pushing for podiums across GT3 grids.</p>
             </div>
             <div class="social-links-container">
                 <a href="https://twitch.tv/h477y96" target="_blank" rel="noopener noreferrer" class="social-btn twitch">
-                    <i class="fa-brands fa-twitch"></i> Twitch
+                    <i class="fa-brands fa-twitch"></i> Twitch Channel
                 </a>
                 <a href="https://youtube.com/@h477y96-racing?si=MdYf3CUggGevprQF" target="_blank" rel="noopener noreferrer" class="social-btn youtube">
-                    <i class="fa-brands fa-youtube"></i> YouTube
+                    <i class="fa-brands fa-youtube"></i> YouTube Racing
                 </a>
                 <a href="https://www.instagram.com/h477y96?stkn=MWNwY3J3dWhkem11aQ==" target="_blank" rel="noopener noreferrer" class="social-btn instagram">
-                    <i class="fa-brands fa-instagram"></i> Insta
+                    <i class="fa-brands fa-instagram"></i> Instagram Profile
                 </a>
             </div>
         </div>
@@ -316,67 +314,69 @@
         <div class="streamer-card">
             <div>
                 <div class="streamer-header">
-                    <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/4146271f-51b2-45d5-8ab9-98a4407d93d8-profile_image-70x70.png" alt="Alteredpixelz" class="streamer-avatar" style="border-color: var(--accent-green);" onerror="this.style.display='none'">
+                    <img src="PIXELZ_TWITCH_AVATAR_URL_HERE" alt="Alteredpixelz" class="streamer-avatar" style="border-color: var(--accent-green);" onerror="this.style.display='none'">
                     <div>
                         <div class="streamer-name">Alteredpixelz</div>
-                        <div class="streamer-handle">@alteredpixelz</div>
-                        <div id="status-alteredpixelz" class="streamer-handle">Checking status...</div>
+                        <div id="status-alteredpixelz" class="streamer-handle">@alteredpixelz <span class="offline-badge">Offline</span></div>
                     </div>
                 </div>
                 <p class="streamer-bio">Community stream partner and gaming companion. Bringing high energy and great banter to our multi-driver sessions and community broadcasts.</p>
             </div>
             <div class="social-links-container">
                 <a href="https://twitch.tv/alteredpixelz" target="_blank" rel="noopener noreferrer" class="social-btn twitch">
-                    <i class="fa-brands fa-twitch"></i> Twitch
+                    <i class="fa-brands fa-twitch"></i> Twitch Channel
                 </a>
                 <a href="https://youtube.com/@alteredpixelz?si=Y5pjn4Ly0QJxU9u0" target="_blank" rel="noopener noreferrer" class="social-btn youtube">
-                    <i class="fa-brands fa-youtube"></i> YouTube
+                    <i class="fa-brands fa-youtube"></i> YouTube Channel
                 </a>
                 <a href="https://www.instagram.com/altered.pixelz?stkn=MXhldTFsaXhvamxmdQ==" target="_blank" rel="noopener noreferrer" class="social-btn instagram">
-                    <i class="fa-brands fa-instagram"></i> Insta
+                    <i class="fa-brands fa-instagram"></i> Instagram Feed
                 </a>
                 <a href="https://www.tiktok.com/@alteredpixelz?_r=1&_t=ZN-9AKfTpPCA1W" target="_blank" rel="noopener noreferrer" class="social-btn tiktok">
-                    <i class="fa-brands fa-tiktok"></i> TikTok
+                    <i class="fa-brands fa-tiktok"></i> TikTok Clips
                 </a>
             </div>
         </div>
     </div>
+
     <script>
-    const AZURE_API_URL = "YOUR_AZURE_FUNCTION_URL_HERE";
+        // Azure Function Endpoint URL (matches index.html)
+        const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1?code=3A2bfZcYESD8oGX1amfeBVzDMGRtdApeqd9mftidBpjkAzFuSYbfKw==";
 
-    async function checkStreamerStatuses() {
-        const streamers = [
-            { username: 'brandedchaos86', id: 'status-brandedchaos86' },
-            { username: 'h477y96', id: 'status-h477y96' },
-            { username: 'alteredpixelz', id: 'status-alteredpixelz' }
-        ];
-        
-        streamers.forEach(async (streamer) => {
-            const statusDiv = document.getElementById(streamer.id);
-            if (!statusDiv) return;
+        async function checkStreamerStatuses() {
+            const streamers = [
+                { username: 'brandedchaos86', id: 'status-brandedchaos86', handle: '@brandedchaos86' },
+                { username: 'h477y96', id: 'status-h477y96', handle: '@H477Y96' },
+                { username: 'alteredpixelz', id: 'status-alteredpixelz', handle: '@alteredpixelz' }
+            ];
 
-            try {
-                const response = await fetch(`${AZURE_API_URL}&type=twitch&user=${streamer.username}`);
-                const data = await response.json();
+            streamers.forEach(async (streamer) => {
+                const statusDiv = document.getElementById(streamer.id);
+                if (!statusDiv) return;
 
-                if (data.isLive) {
-                    statusDiv.innerHTML = `
-                        <span class="live-badge">
-                            <i class="fa-solid fa-circle"></i> LIVE NOW
-                        </span>
-                    `;
-                } else {
-                    statusDiv.innerHTML = `<span class="offline-badge">Offline</span>`;
+                try {
+                    const response = await fetch(`${AZURE_API_URL}&type=twitch&user=${streamer.username}`);
+                    const data = await response.json();
+
+                    if (data.isLive) {
+                        statusDiv.innerHTML = `
+                            ${streamer.handle} 
+                            <span class="live-badge">
+                                <i class="fa-solid fa-circle"></i> LIVE NOW
+                            </span>
+                        `;
+                    } else {
+                        statusDiv.innerHTML = `${streamer.handle} <span class="offline-badge">Offline</span>`;
+                    }
+                } catch (err) {
+                    statusDiv.innerHTML = `${streamer.handle} <span class="offline-badge">Offline</span>`;
                 }
-            } catch (err) {
-                statusDiv.innerHTML = `<span class="offline-badge">Offline</span>`;
-            }
-        });
-    }
+            });
+        }
 
-    checkStreamerStatuses();
-    setInterval(checkStreamerStatuses, 60000); // Check every minute
-</script>
-
+        // Run immediately and then every 60 seconds
+        checkStreamerStatuses();
+        setInterval(checkStreamerStatuses, 60000);
+    </script>
 </body>
 </html>
