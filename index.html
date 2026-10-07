@@ -693,7 +693,8 @@
 
         function getCarName(modelId) {
             if (modelId === undefined || modelId === null) return "GT3";
-            return GT3_CAR_MODELS[modelId] || `Car ID: ${modelId}`;
+            let name = GT3_CAR_MODELS[modelId] || modelId;
+            return String(name).replace(/^Car ID:\s*/i, '').trim();
         }
 
         async function fetchLeaderboard(trackName) {
