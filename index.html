@@ -137,6 +137,35 @@
         }
         .twitch-btn-header:hover i { color: #fff; }
 
+        /* Report Issue Button Styling */
+        .report-issue-btn {
+            background: rgba(255, 51, 102, 0.15);
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .report-issue-btn i {
+            color: var(--accent-red);
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+        .report-issue-btn:hover {
+            background: var(--accent-red);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255, 51, 102, 0.5);
+            transform: translateY(-2px);
+        }
+        .report-issue-btn:hover i { color: #fff; }
+
         /* Live Pulsing Animation */
         @keyframes livePulse {
             0% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.7); border-color: var(--accent-red); }
@@ -149,9 +178,7 @@
             border-color: var(--accent-red) !important;
             background: rgba(255, 51, 102, 0.2) !important;
         }
-        .streamer-is-live i {
-            color: var(--accent-red) !important;
-        }
+        .streamer-is-live i { color: var(--accent-red) !important; }
 
         /* Section Titles */
         .section-title {
@@ -535,6 +562,56 @@
             "red_bull_ring": "Red Bull Ring"
         };
 
+        const CAR_SETUP_FOLDERS = [
+            { folder: "amr_v8_vantage_gt3", name: "Aston Martin V8 Vantage GT3" },
+            { folder: "audi_r8_lms_evo_ii", name: "Audi R8 LMS GT3 evo II" },
+            { folder: "bentley_continental_gt3_2018", name: "Bentley Continental GT3" },
+            { folder: "bmw_m4_gt3", name: "BMW M4 GT3" },
+            { folder: "ferrari_296_gt3", name: "Ferrari 296 GT3" },
+            { folder: "ferrari_488_gt3_evo", name: "Ferrari 488 GT3 Evo" },
+            { folder: "ford_mustang_gt3", name: "Ford Mustang GT3" },
+            { folder: "honda_nsx_gt3_evo", name: "Honda NSX GT3 Evo" },
+            { folder: "lamborghini_huracan_gt3_evo2", name: "Lamborghini Huracan Evo2" },
+            { folder: "lexus_rc_f_gt3", name: "Lexus RC F GT3" },
+            { folder: "mclaren_720s_gt3", name: "McLaren 720S GT3" },
+            { folder: "mclaren_720s_gt3_evo", name: "McLaren 720S GT3 Evo 2023" },
+            { folder: "mercedes_amg_gt3_evo", name: "Mercedes-AMG GT3 Evo" },
+            { folder: "nissan_gt_r_gt3_2018", name: "Nissan GT-R Nismo GT3" }
+        ];
+
+        const GITHUB_TRACK_FOLDERS = {
+            "monza": "monza",
+            "spa": "Spa",
+            "nurburgring": "nurburgring",
+            "nurburgring_24h": "nurburgring_24h",
+            "suzuka": "Suzuka",
+            "silverstone": "Silverstone",
+            "laguna_seca": "Laguna_Seca",
+            "imola": "Imola",
+            "brands_hatch": "brands_hatch",
+            "zolder": "Zolder",
+            "paul_ricard": "Paul_Ricard",
+            "barcelona": "Barcelona",
+            "hungaroring": "Hungaroring",
+            "zandvoort": "Zandvoort",
+            "kyalami": "Kyalami",
+            "mount_panorama": "mount_panorama",
+            "donington": "donington",
+            "oulton_park": "oulton_park",
+            "snetterton": "snetterton",
+            "cota": "cota",
+            "indianapolis": "indianapolis",
+            "watkins_glen": "watkins_glen",
+            "valencia": "Valencia",
+            "red_bull_ring": "red_bull_ring"
+        };
+
+        function getGitHubTrackFolder(rawTrack) {
+            if (!rawTrack) return "nurburgring";
+            const clean = rawTrack.toLowerCase().replace(/_\d{4}$/, '').trim();
+            return GITHUB_TRACK_FOLDERS[clean] || clean;
+        }
+
         function escapeHtml(str) {
             if (!str) return "";
             return String(str)
@@ -596,6 +673,64 @@
             }
         }
 
+        // Dynamic GitHub API setup fetcher and automatic file downloader
+        async function handleCarSetupSelection(carFolder, trackFolder, selectElement) {
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            
+            if (selectedOption.dataset.action === "fetch") {
+                const originalText = selectedOption.text;
+                selectElement.innerHTML = `<option value="" disabled selected>Loading setups...</option>`;
+                
+                try {
+                    const apiUrl = `https://api.github.com/repos/BrandedCha0s/acc-car-setups/contents/${carFolder}/${trackFolder}`;
+                    const res = await fetch(apiUrl);
+                    const files = await res.json();
+                    
+                    let optionsHtml = `<option value="" disabled selected>Select File (${originalText})...</option>`;
+                    
+                    if (Array.isArray(files)) {
+                        const jsonFiles = files.filter(f => f.name.endsWith('.json'));
+                        if (jsonFiles.length > 0) {
+                            jsonFiles.forEach(f => {
+                                optionsHtml += `<option value="${f.download_url}" data-filename="${f.name}">${f.name}</option>`;
+                            });
+                        } else {
+                            optionsHtml += `<option value="" disabled>No setup files found</option>`;
+                        }
+                    } else {
+                        optionsHtml += `<option value="" disabled>No setup folder exists yet</option>`;
+                    }
+                    
+                    selectElement.innerHTML = optionsHtml;
+                } catch (err) {
+                    console.error("Failed to fetch setups:", err);
+                    selectElement.innerHTML = `<option value="" disabled>Error loading setups</option>`;
+                }
+                return;
+            }
+
+            const fileUrl = selectedOption.value;
+            const fileName = selectedOption.getAttribute("data-filename");
+            
+            if (fileUrl && fileName) {
+                try {
+                    const response = await fetch(fileUrl);
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    selectElement.selectedIndex = 0;
+                } catch (e) {
+                    window.open(fileUrl, '_blank');
+                }
+            }
+        }
+
         // Fetch Live Server Instances
         async function loadLiveServers(isBackground = false) {
             const container = document.getElementById("servers-container");
@@ -606,10 +741,7 @@
                 const data = await response.json();
                 const instances = Array.isArray(data) ? data : (data.instances || []);
 
-                if (instances.length === 0) {
-                    container.innerHTML = `<div style="color: var(--text-muted); padding: 20px;">No active servers found.</div>`;
-                    return;
-                }
+                if (instances.length === 0) return;
 
                 instances.sort((a, b) => {
                     const getNum = name => {
@@ -637,6 +769,11 @@
                     if (lowerTrack.includes("suzuka")) mapTransformClass = "rotate-suzuka";
                     else if (lowerTrack.includes("silverstone")) mapTransformClass = "rotate-silverstone";
 
+                    const trackFolder = getGitHubTrackFolder(rawTrack);
+                    let carOptionsHtml = CAR_SETUP_FOLDERS.map(car => {
+                        return `<option value="#" data-action="fetch" onclick="event.preventDefault();" onmousedown="handleCarSetupSelection('${car.folder}', '${trackFolder}', this.form.elements['setupSelect'])">${car.name}</option>`;
+                    }).join('');
+
                     html += `
                         <div class="server-card ${isOnline ? '' : 'offline'}">
                             <div class="server-header">
@@ -652,7 +789,18 @@
                                 <img class="track-map-img ${mapTransformClass}" src="${trackImgUrl}" alt="${escapeHtml(displayName)}" onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png?v=1.1';" />
                             </div>
 
-                            <div style="margin: 12px 0 0 0; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                            <!-- Track Car Setups Dropdown -->
+                            <form style="margin: 10px 0; background: rgba(0, 240, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
+                                <span style="font-size: 0.8rem; font-family: 'Orbitron', sans-serif; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+                                    <i class="fa-solid fa-sliders" style="color: var(--accent-cyan);"></i> SETUPS
+                                </span>
+                                <select name="setupSelect" onchange="handleCarSetupSelection('', '', this)" style="background: var(--bg-dark); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; outline: none; max-width: 190px;">
+                                    <option value="" disabled selected>Select Car Setup...</option>
+                                    ${carOptionsHtml}
+                                </select>
+                            </form>
+
+                            <div style="margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
                                 <span class="meta-label">Connected Drivers</span>
                                 <span class="meta-value" style="color: var(--accent-cyan); font-weight: 700;">
                                     ${inst.connectedCount || 0} / ${maxSlots}
@@ -675,9 +823,7 @@
                     `;
                 });
                 container.innerHTML = html;
-            } catch (err) {
-                console.error("Error loading servers:", err);
-            }
+            } catch (err) {}
         }
 
         const GT3_CAR_MODELS = {
@@ -758,7 +904,7 @@
             checkStreamersLiveStatus();
 
             const savedTrack = localStorage.getItem("bchq_selected_track") || "nurburgring";
-            const trackSelect = document.querySelector("select");
+            const trackSelect = document.querySelector("#track-select");
             if (trackSelect) trackSelect.value = savedTrack;
 
             fetchLeaderboard(savedTrack);
@@ -783,8 +929,8 @@
         </div>
         <div style="display: flex; gap: 25px; align-items: center;">
             <a href="legal.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'">Terms & Disclaimers</a>
-            <a href="issues.html" class="discord-btn-header" style="background: rgba(255, 51, 102, 0.15); border-color: var(--accent-red); color: var(--accent-red); padding: 8px 16px; font-size: 0.75rem;">
-                <i class="fa-solid fa-bug" style="color: var(--accent-red); font-size: 0.9rem;"></i> REPORT ISSUE
+            <a href="issues.html" class="report-issue-btn">
+                <i class="fa-solid fa-bug"></i> REPORT ISSUE
             </a>
         </div>
     </div>
