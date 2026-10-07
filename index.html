@@ -681,23 +681,15 @@
                          onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png?v=1.1';" />
                 </div>
 
-                <!-- Connected Drivers Section -->
-                <div style="margin: 10px 0; padding-top: 10px; border-top: 1px solid var(--border-color);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <span class="meta-label">Connected Drivers</span>
-                        <span class="meta-value" style="color: var(--accent-cyan); font-size: 0.85rem;">
-                            ${inst.connectedCount || (inst.drivers ? inst.drivers.length : 0)} / ${maxSlots}
-                        </span>
-                    </div>
-                    <div style="display: flex; flex-wrap: wrap; gap: 6px; max-height: 75px; overflow-y: auto; padding-right: 4px;">
-                        ${inst.drivers && inst.drivers.length > 0 
-                            ? inst.drivers.map(d => `<span class="car-badge" style="font-size: 0.8rem; background: rgba(0, 240, 255, 0.1); color: var(--accent-cyan); border: 1px solid rgba(0, 240, 255, 0.3);"><i class="fa-solid fa-user-racing" style="margin-right: 4px;"></i>${escapeHtml(d)}</span>`).join('') 
-                            : '<span style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">No drivers currently on track</span>'
-                        }
-                    </div>
+                <!-- Clean Occupancy Metric -->
+                <div style="margin: 12px 0 0 0; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                    <span class="meta-label">Connected Drivers</span>
+                    <span class="meta-value" style="color: var(--accent-cyan); font-weight: 700;">
+                        ${inst.connectedCount || (inst.drivers ? inst.drivers.length : 0)} / ${maxSlots}
+                    </span>
                 </div>
 
-                <div class="server-meta">
+                <div class="server-meta" style="margin-top: 10px;">
                     <div class="meta-item">
                         <span class="meta-label">Status</span>
                         <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
