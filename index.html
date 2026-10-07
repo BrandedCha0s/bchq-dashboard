@@ -606,10 +606,17 @@
                 const data = await response.json();
                 const instances = Array.isArray(data) ? data : (data.instances || []);
 
-                if (instances.length === 0) return;
+                if (instances.length === 0) {
+                    container.innerHTML = `<div style="color: var(--text-muted); padding: 20px;">No active servers found.</div>`;
+                    return;
+                }
 
                 instances.sort((a, b) => {
-                    const getNum = name => (name.match(/#(\d+/) || [0, 999])[1];
+                    const getNum = name => {
+                        if (!name) return 999;
+                        const match = name.match(/#(\d+)/);
+                        return match ? parseInt(match[1], 10) : 1;
+                    };
                     return getNum(a.name) - getNum(b.name);
                 });
 
@@ -668,7 +675,9 @@
                     `;
                 });
                 container.innerHTML = html;
-            } catch (err) {}
+            } catch (err) {
+                console.error("Error loading servers:", err);
+            }
         }
 
         const GT3_CAR_MODELS = {
