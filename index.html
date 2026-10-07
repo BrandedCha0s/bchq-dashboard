@@ -224,7 +224,7 @@
         /* Server Cards Grid */
         .servers-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 480px), 1fr));
             gap: 25px;
             margin-bottom: 50px;
             min-height: 350px;
@@ -338,14 +338,31 @@
 
         /* Leaderboard Controls */
         .leaderboard-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
+        }
+
+        .leaderboard-controls select {
+            background: var(--bg-dark);
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            flex-grow: 1;      /* Expands to fill the control box nicely */
+            min-width: 300px;  /* Ensures it stays wide and readable */
         }
 
         .select-label {
