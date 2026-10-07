@@ -19,6 +19,7 @@
             --bg-dark: #0a0e14;
             --card-bg: #111823;
             --accent-cyan: #00f0ff;
+            --accent-green: #00ff88;
             --accent-red: #ff3366;
             --text-main: #e2e8f0;
             --text-muted: #64748b;
@@ -33,7 +34,7 @@
             color: var(--text-main);
             font-family: 'Rajdhani', sans-serif;
             padding: 30px 20px;
-            max-width: 1000px;
+            max-width: 900px;
             margin: 0 auto;
             line-height: 1.6;
         }
@@ -97,45 +98,91 @@
             gap: 10px;
         }
 
-        p, li {
+        p {
             color: var(--text-main);
             font-size: 1.05rem;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
-        ul { padding-left: 20px; margin-bottom: 20px; }
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
-        .github-btn {
+        label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        input, textarea {
+            background-color: var(--bg-dark);
+            color: #fff;
+            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.05rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--accent-red);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 140px;
+        }
+
+        .submit-btn {
             background: rgba(255, 51, 102, 0.15);
             border: 1px solid var(--accent-red);
             color: #fff;
-            padding: 14px 24px;
+            padding: 14px 28px;
             border-radius: 8px;
             font-family: 'Orbitron', sans-serif;
             font-size: 1rem;
             font-weight: 700;
-            text-decoration: none;
+            cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             transition: all 0.2s ease;
             box-shadow: 0 0 15px rgba(255, 51, 102, 0.2);
         }
 
-        .github-btn:hover {
+        .submit-btn:hover {
             background: var(--accent-red);
             box-shadow: 0 0 20px rgba(255, 51, 102, 0.6);
             transform: translateY(-2px);
         }
 
-        .github-btn i {
-            color: var(--accent-red);
-            font-size: 1.3rem;
-            transition: color 0.2s ease;
+        .alert-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            display: none;
         }
 
-        .github-btn:hover i {
-            color: #fff;
+        .alert-box.success {
+            background: rgba(0, 255, 136, 0.15);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+            display: block;
+        }
+
+        .alert-box.error {
+            background: rgba(255, 51, 102, 0.15);
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+            display: block;
         }
     </style>
 </head>
@@ -153,32 +200,72 @@
     </div>
 
     <div class="content-card">
-        <h2><i class="fa-solid fa-bug"></i> Report a Site or Telemetry Issue</h2>
-        <p>Encountered a bug on the leaderboard, a glitch with server status polling, or a layout problem? You can submit an issue directly to our GitHub repository tracking board.</p>
+        <h2><i class="fa-solid fa-bug"></i> Report a Bug or Issue</h2>
+        <p>Found a problem with telemetry polling, server cards, or leaderboards? Fill out the form below, and it will be logged directly to our GitHub issue tracker.</p>
         
-        <p style="margin-top: 25px; margin-bottom: 15px; font-family: 'Orbitron', sans-serif; font-size: 1rem; color: #fff;">When submitting an issue, please try to include:</p>
-        <ul>
-            <li><strong>Description:</strong> What happened or what is not working as expected.</li>
-            <li><strong>Steps to Reproduce:</strong> How can we replicate the bug on our end?</li>
-            <li><strong>Screenshots / Error Logs:</strong> If applicable, attach a screenshot or paste console error details.</li>
-        </ul>
+        <form id="issue-form" onsubmit="submitIssue(event)">
+            <div class="form-group">
+                <label for="issue-title">ISSUE TITLE</label>
+                <input type="text" id="issue-title" placeholder="e.g., Leaderboard gap calculation incorrect for Monza" required>
+            </div>
 
-        <div style="margin-top: 30px;">
-            <a href="https://github.com/BrandedCha0s/bchq-dashboard/issues/new" target="_blank" rel="noopener noreferrer" class="github-btn">
-                <i class="fa-brands fa-github"></i> OPEN ISSUE ON GITHUB
-            </a>
-        </div>
-    </div>
-    <!-- Footer Legal Section -->
-    <div style="margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.9rem; flex-wrap: wrap; gap: 15px;">
-        <div>
-            &copy; 2026 <span class="brand-bc">BC</span><span class="brand-hq">HQ</span> HUB. Independent community platform.
-        </div>
-        <div style="display: flex; gap: 20px;">
-            <a href="legal.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'">Terms & Disclaimers</a>
-            <a href="issues.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'">Report an Issue</a>
-        </div>
+            <div class="form-group">
+                <label for="issue-desc">DESCRIPTION & STEPS TO REPRODUCE</label>
+                <textarea id="issue-desc" placeholder="Describe what went wrong, what you expected to happen, and how we can reproduce it..." required></textarea>
+            </div>
+
+            <button type="submit" id="submit-btn" class="submit-btn">
+                <i class="fa-solid fa-paper-plane"></i> SUBMIT TO GITHUB
+            </button>
+        </form>
+
+        <div id="alert-container"></div>
     </div>
 
+    <script>
+        const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1?code=3A2bfZcYESD8oGX1amfeBVzDMGRtdApeqd9mftidBpjkAzFuSYbfKw==";
+
+        async function submitIssue(event) {
+            event.preventDefault();
+            const titleInput = document.getElementById("issue-title");
+            const descInput = document.getElementById("issue-desc");
+            const submitBtn = document.getElementById("submit-btn");
+            const alertContainer = document.getElementById("alert-container");
+
+            const title = titleInput.value.trim();
+            const description = descInput.value.trim();
+
+            if (!title || !description) return;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> SUBMITTING...`;
+            alertContainer.innerHTML = "";
+
+            try {
+                const response = await fetch(`${AZURE_API_URL}&type=issue`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ title, description })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    alertContainer.className = "alert-box success";
+                    alertContainer.innerHTML = `<i class="fa-solid fa-check-circle"></i> Issue successfully created on GitHub! <a href="${data.issueUrl}" target="_blank" style="color: #fff; text-decoration: underline; margin-left: 5px;">View Issue #${data.issueUrl.split('/').pop()}</a>`;
+                    titleInput.value = "";
+                    descInput.value = "";
+                } else {
+                    throw new Error(data.error || "Failed to submit issue.");
+                }
+            } catch (err) {
+                alertContainer.className = "alert-box error";
+                alertContainer.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Error: ${err.message}`;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> SUBMIT TO GITHUB`;
+            }
+        }
+    </script>
 </body>
 </html>
