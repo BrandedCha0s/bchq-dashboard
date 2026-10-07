@@ -644,67 +644,66 @@
                 });
 
                 let html = "";
-                instances.forEach(inst => {
-                    const serverName = inst.name || "ACC Server";
-                    const formattedTitle = formatBCHQText(serverName);
-                    const rawTrack = inst.track || "nurburgring";
-                    const maxSlots = inst.maxSlots || 20;
-                    const isOnline = Boolean(inst.isOnline);
+        servers.forEach(inst => {
+            const isOnline = inst.isOnline || inst.status === "ONLINE";
+            const serverName = inst.name || "ACC Server";
+            const track = (inst.track || "nurburgring").toLowerCase();
+            const maxSlots = inst.maxSlots || 20;
 
-                    const fileName = getTrackFileName(rawTrack);
-                    const displayName = getTrackDisplayName(rawTrack);
-                    const trackImgUrl = `${ASSET_PATH}${fileName}?v=1.1`;
+            // Format title & track display names...
+            let formattedTitle = escapeHtml(serverName);
+            formattedTitle = formattedTitle
+                .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color: var(--accent-cyan); text-decoration: none;">$1</a>')
+                .replace(/<Join Discord>/gi, '<span style="color: var(--brand-hq); font-weight: 700;">&lt;Join Discord&gt;</span>');
 
-                    let mapTransformClass = "";
-                    const lowerTrack = rawTrack.toLowerCase();
-                    if (lowerTrack.includes("suzuka")) {
-                        mapTransformClass = "rotate-suzuka";
-                    } else if (lowerTrack.includes("silverstone")) {
-                        mapTransformClass = "rotate-silverstone";
-                    }
+            const displayName = track.replace(/_/g, " ");
+            const trackImgUrl = `${ASSET_PATH}${track}.png?v=1.1`;
+            const mapTransformClass = track === "monza" ? "monza-fix" : "";
 
-                    html += `
-            <div class="server-card ${isOnline ? '' : 'offline'}">
-                <div class="server-header">
-                    <div>
-                        <div class="server-title">${formattedTitle}</div>
-                        <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(displayName).toUpperCase()}</div>
+            html += `
+                <div class="server-card ${isOnline ? '' : 'offline'}">
+                    <div class="server-header">
+                        <div>
+                            <div class="server-title">${formattedTitle}</div>
+                            <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(displayName).toUpperCase()}</div>
+                        </div>
+                        <button class="copy-btn" data-name="${escapeHtml(serverName)}" onclick="copyServerName(this)">
+                            <i class="fa-regular fa-copy"></i> Copy Name
+                        </button>
                     </div>
-                    <button class="copy-btn" data-name="${escapeHtml(serverName)}" onclick="copyServerName(this)">
-                        <i class="fa-regular fa-copy"></i> Copy Name
-                    </button>
-                </div>
-                <div class="track-map-container">
-                    <img class="track-map-img ${mapTransformClass}" 
-                         src="${trackImgUrl}" 
-                         alt="${escapeHtml(displayName)}" 
-                         onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png?v=1.1';" />
-                </div>
-                    <div style="display: flex; flex-wrap: wrap; gap: 6px; max-height: 75px; overflow-y: auto; padding-right: 4px;">
-                        ${inst.drivers && inst.drivers.length > 0 
-                            ? inst.drivers.map(d => `<span class="car-badge" style="font-size: 0.8rem; background: rgba(0, 240, 255, 0.1); color: var(--accent-cyan); border: 1px solid rgba(0, 240, 255, 0.3);"><i class="fa-solid fa-user-racing" style="margin-right: 4px;"></i>${escapeHtml(d)}</span>`).join('') 
-                            : '<span style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">No drivers currently on track</span>'
-                        }
+                    
+                    <div class="track-map-container">
+                        <img class="track-map-img ${mapTransformClass}" 
+                             src="${trackImgUrl}" 
+                             alt="${escapeHtml(displayName)}" 
+                             onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png?v=1.1';" />
                     </div>
-                </div>
 
-                <div class="server-meta">
-                    <div class="meta-item">
-                        <span class="meta-label">Status</span>
-                        <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
-                            ${isOnline ? 'RUNNING' : 'OFFLINE'}
+                    <!-- Connected Drivers Metric -->
+                    <div style="margin: 12px 0 0 0; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                        <span class="meta-label">Connected Drivers</span>
+                        <span class="meta-value" style="color: var(--accent-cyan); font-weight: 700;">
+                            ${inst.connectedCount || 0} / ${maxSlots}
                         </span>
                     </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Capacity</span>
-                        <span class="meta-value">${maxSlots} Slots</span>
+
+                    <!-- Server Meta Footer -->
+                    <div class="server-meta" style="margin-top: 10px;">
+                        <div class="meta-item">
+                            <span class="meta-label">Status</span>
+                            <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                ${isOnline ? 'RUNNING' : 'OFFLINE'}
+                            </span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Capacity</span>
+                            <span class="meta-value">${maxSlots} Slots</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
-                });
-
-                container.innerHTML = html;
+            `;
+        });
+        document.getElementById("servers-container").innerHTML = html;
             } catch (err) {
                 console.error("Failed to fetch live ACCWeb servers:", err);
                 if (!isBackground) {
