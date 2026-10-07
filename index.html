@@ -48,13 +48,8 @@
         }
 
         /* BCHQ Text Styling */
-        .brand-bc {
-            color: var(--brand-bc);
-        }
-
-        .brand-hq {
-            color: var(--brand-hq);
-        }
+        .brand-bc { color: var(--brand-bc); }
+        .brand-hq { color: var(--brand-hq); }
 
         /* Header */
         .header {
@@ -140,8 +135,22 @@
             transform: translateY(-2px);
             color: #fff;
         }
-        .twitch-btn-header:hover i {
-            color: #fff;
+        .twitch-btn-header:hover i { color: #fff; }
+
+        /* Live Pulsing Animation */
+        @keyframes livePulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.7); border-color: var(--accent-red); }
+            70% { box-shadow: 0 0 0 12px rgba(255, 51, 102, 0); border-color: var(--accent-red); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0); border-color: var(--accent-red); }
+        }
+
+        .streamer-is-live {
+            animation: livePulse 1.8s infinite;
+            border-color: var(--accent-red) !important;
+            background: rgba(255, 51, 102, 0.2) !important;
+        }
+        .streamer-is-live i {
+            color: var(--accent-red) !important;
         }
 
         /* Section Titles */
@@ -156,9 +165,7 @@
             letter-spacing: 1px;
         }
 
-        .section-title i {
-            color: var(--accent-cyan);
-        }
+        .section-title i { color: var(--accent-cyan); }
 
         /* Server Cards Grid */
         .servers-grid {
@@ -186,9 +193,7 @@
             border-color: var(--accent-cyan);
         }
 
-        .server-card.offline {
-            opacity: 0.6;
-        }
+        .server-card.offline { opacity: 0.6; }
 
         .server-header {
             display: flex;
@@ -219,17 +224,10 @@
             max-height: 100%;
             object-fit: contain;
             filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.3));
-            transition: transform 0.3s ease;
         }
 
-        /* Enlarge and rotate specific tracks */
-        .track-map-img.rotate-suzuka {
-            transform: scale(1.7) rotate(20deg);
-        }
-
-        .track-map-img.rotate-silverstone {
-            transform: scale(1.5) rotate(35deg);
-        }
+        .track-map-img.rotate-suzuka { transform: scale(1.7) rotate(20deg); }
+        .track-map-img.rotate-silverstone { transform: scale(1.5) rotate(35deg); }
 
         .copy-btn {
             background: rgba(0, 240, 255, 0.1);
@@ -268,11 +266,6 @@
             padding-top: 15px;
             border-top: 1px solid var(--border-color);
             font-size: 0.95rem;
-        }
-
-        .meta-item {
-            display: flex;
-            flex-direction: column;
         }
 
         .meta-label {
@@ -349,13 +342,8 @@
             font-weight: 600;
         }
 
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover td {
-            background-color: rgba(0, 240, 255, 0.03);
-        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: rgba(0, 240, 255, 0.03); }
 
         .rank-column {
             font-family: 'Orbitron', sans-serif;
@@ -367,10 +355,6 @@
         .rank-1 { color: #ffd700; }
         .rank-2 { color: #c0c0c0; }
         .rank-3 { color: #cd7f32; }
-
-        .driver-name {
-            color: #fff;
-        }
 
         .car-badge {
             background: rgba(255, 255, 255, 0.05);
@@ -426,16 +410,21 @@
             </div>
         </div>
         
-        <!-- Navigation & Social Links (Evenly Spaced) -->
-        <div style="display: flex; gap: 80px; align-items: center;">
-            <a href="streamers.html" class="discord-btn-header twitch-btn-header">
-                <i class="fa-solid fa-users"></i> STREAMERS
-            </a>
-            <a href="issues.html" class="discord-btn-header" style="background: rgba(255, 51, 102, 0.15); border-color: var(--accent-red); color: var(--accent-red);">
-                <i class="fa-solid fa-bug" style="color: var(--accent-red);"></i> REPORT ISSUE
-            </a>
+        <!-- Navigation & Social Links -->
+        <div style="display: flex; gap: 30px; align-items: center;">
+            <!-- Streamers Button with Live Pulse & Notification Badge -->
+            <div style="display: flex; flex-direction: column; align-items: center; position: relative;">
+                <a href="streamers.html" id="header-streamers-btn" class="discord-btn-header twitch-btn-header">
+                    <i class="fa-solid fa-users"></i> STREAMERS
+                </a>
+                <span id="streamer-live-badge" style="display: none; position: absolute; bottom: -20px; font-size: 0.68rem; font-family: 'Orbitron', sans-serif; color: var(--accent-red); font-weight: 800; letter-spacing: 1px;">
+                    🔴 LIVE NOW
+                </span>
+            </div>
+
+            <!-- Discord Community Button -->
             <a href="https://discord.gg/SmvcXeXdyS" target="_blank" rel="noopener noreferrer" class="discord-btn-header">
-                <i class="fa-brands fa-discord"></i> JOIN OUR DISCORD
+                <i class="fa-brands fa-discord"></i> DISCORD
             </a>
         </div>
     </div>
@@ -515,13 +504,9 @@
     </div>
 
     <script>
-        // Azure Function Endpoint URL
         const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1?code=3A2bfZcYESD8oGX1amfeBVzDMGRtdApeqd9mftidBpjkAzFuSYbfKw==";
-
-        // Target repository tracks folder via jsDelivr CDN (.png format)
         const ASSET_PATH = "https://cdn.jsdelivr.net/gh/BrandedCha0s/bchq-dashboard@main/tracks/";
 
-        // Master 25-Track Mapping Dictionary
         const ACC_TRACK_NAMES = {
             "monza": "Autodromo Nazionale Monza",
             "zolder": "Circuit Zolder",
@@ -532,13 +517,11 @@
             "spa": "Circuit de Spa-Francorchamps",
             "nurburgring": "Nürburgring GP",
             "nurburgring_24h": "Nürburgring 24h (Nordschleife)",
-            "nordschleife": "Nürburgring 24h (Nordschleife)",
             "barcelona": "Circuit de Barcelona-Catalunya",
             "hungaroring": "Hungaroring",
             "zandvoort": "Circuit Zandvoort",
             "kyalami": "Kyalami Grand Prix Circuit",
             "mount_panorama": "Mount Panorama (Bathurst)",
-            "bathurst": "Mount Panorama (Bathurst)",
             "suzuka": "Suzuka Circuit",
             "laguna_seca": "WeatherTech Raceway Laguna Seca",
             "imola": "Autodromo Enzo e Dino Ferrari (Imola)",
@@ -555,17 +538,12 @@
         function escapeHtml(str) {
             if (!str) return "";
             return String(str)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#39;");
+                .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
         }
 
         function formatBCHQText(text) {
             if (!text) return "";
-            const safeText = escapeHtml(text);
-            return safeText.replace(/BCHQ/g, '<span class="brand-bc">BC</span><span class="brand-hq">HQ</span>');
+            return escapeHtml(text).replace(/BCHQ/g, '<span class="brand-bc">BC</span><span class="brand-hq">HQ</span>');
         }
 
         function getTrackFileName(rawTrackKey) {
@@ -590,57 +568,49 @@
             return `${min}:${sec.toString().padStart(2, '0')}.${millis.toString().padStart(3, '0')}`;
         }
 
+        // Check Live Streamer Status for Header Pulse
+        async function checkStreamersLiveStatus() {
+            const streamers = ["brandedchaos86", "H477Y96", "Alteredpixelz"];
+            const btn = document.getElementById("header-streamers-btn");
+            const badge = document.getElementById("streamer-live-badge");
+            if (!btn || !badge) return;
+
+            let anyLive = false;
+            for (const user of streamers) {
+                try {
+                    const res = await fetch(`${AZURE_API_URL}&type=twitch&user=${user}`);
+                    const data = await res.json();
+                    if (data && data.isLive) {
+                        anyLive = true;
+                        break;
+                    }
+                } catch (e) {}
+            }
+
+            if (anyLive) {
+                btn.classList.add("streamer-is-live");
+                badge.style.display = "block";
+            } else {
+                btn.classList.remove("streamer-is-live");
+                badge.style.display = "none";
+            }
+        }
+
         // Fetch Live Server Instances
         async function loadLiveServers(isBackground = false) {
             const container = document.getElementById("servers-container");
             if (!container) return;
 
-            if (!isBackground && (!container.children.length || container.innerHTML.includes("Fetching"))) {
-                container.innerHTML = `<div style="color: var(--text-muted); padding: 20px;">
-                    <i class="fa-solid fa-circle-notch fa-spin"></i> Fetching live server instances...
-                </div>`;
-            }
-
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 12000);
-
-                const response = await fetch(`${AZURE_API_URL}&type=servers`, {
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-
+                const response = await fetch(`${AZURE_API_URL}&type=servers`);
                 const data = await response.json();
-
-                if (!response.ok || data.error) {
-                    if (!isBackground) {
-                        container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;">
-                            <i class="fa-solid fa-triangle-exclamation"></i> ${data.error || 'Could not connect to ACCWeb instance API.'}
-                        </div>`;
-                    }
-                    return;
-                }
-
                 const instances = Array.isArray(data) ? data : (data.instances || []);
 
-                if (instances.length === 0) {
-                    container.innerHTML = `<div style="color: var(--text-muted); padding: 20px;">No active ACCWeb servers running.</div>`;
-                    return;
-                }
-
-                function getServerOrderNumber(name) {
-                    if (!name) return 999;
-                    const match = name.match(/#(\d+)/);
-                    if (match) return parseInt(match[1], 10);
-                    if (name.toUpperCase().includes("BCHQ")) return 1;
-                    return 999;
-                }
+                if (instances.length === 0) return;
 
                 instances.sort((a, b) => {
-                    const orderA = getServerOrderNumber(a.name);
-                    const orderB = getServerOrderNumber(b.name);
-                    if (orderA !== orderB) return orderA - orderB;
-                    return (a.name || "").localeCompare(b.name || "");
+                    const getNum = name => (name.match(/#(\d+/) || [0, 999])[1];
+                    return getNum(a.name) - getNum(b.name);
                 });
 
                 let html = "";
@@ -657,120 +627,73 @@
 
                     let mapTransformClass = "";
                     const lowerTrack = rawTrack.toLowerCase();
-                    if (lowerTrack.includes("suzuka")) {
-                        mapTransformClass = "rotate-suzuka";
-                    } else if (lowerTrack.includes("silverstone")) {
-                        mapTransformClass = "rotate-silverstone";
-                    }
+                    if (lowerTrack.includes("suzuka")) mapTransformClass = "rotate-suzuka";
+                    else if (lowerTrack.includes("silverstone")) mapTransformClass = "rotate-silverstone";
 
                     html += `
-            <div class="server-card ${isOnline ? '' : 'offline'}">
-                <div class="server-header">
-                    <div>
-                        <div class="server-title">${formattedTitle}</div>
-                        <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(displayName).toUpperCase()}</div>
-                    </div>
-                    <button class="copy-btn" data-name="${escapeHtml(serverName)}" onclick="copyServerName(this)">
-                        <i class="fa-regular fa-copy"></i> Copy Name
-                    </button>
-                </div>
-                <div class="track-map-container">
-                    <img class="track-map-img ${mapTransformClass}" 
-                         src="${trackImgUrl}" 
-                         alt="${escapeHtml(displayName)}" 
-                         onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png?v=1.1';" />
-                </div>
+                        <div class="server-card ${isOnline ? '' : 'offline'}">
+                            <div class="server-header">
+                                <div>
+                                    <div class="server-title">${formattedTitle}</div>
+                                    <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(displayName).toUpperCase()}</div>
+                                </div>
+                                <button class="copy-btn" data-name="${escapeHtml(serverName)}" onclick="copyServerName(this)">
+                                    <i class="fa-regular fa-copy"></i> Copy Name
+                                </button>
+                            </div>
+                            <div class="track-map-container">
+                                <img class="track-map-img ${mapTransformClass}" src="${trackImgUrl}" alt="${escapeHtml(displayName)}" onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png?v=1.1';" />
+                            </div>
 
-                <!-- Clean Occupancy Metric -->
-                <div style="margin: 12px 0 0 0; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-                    <span class="meta-label">Connected Drivers</span>
-                    <span class="meta-value" style="color: var(--accent-cyan); font-weight: 700;">
-                        ${inst.connectedCount || (inst.drivers ? inst.drivers.length : 0)} / ${maxSlots}
-                    </span>
-                </div>
+                            <div style="margin: 12px 0 0 0; padding-top: 10px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                                <span class="meta-label">Connected Drivers</span>
+                                <span class="meta-value" style="color: var(--accent-cyan); font-weight: 700;">
+                                    ${inst.connectedCount || 0} / ${maxSlots}
+                                </span>
+                            </div>
 
-                <div class="server-meta" style="margin-top: 10px;">
-                    <div class="meta-item">
-                        <span class="meta-label">Status</span>
-                        <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
-                            ${isOnline ? 'RUNNING' : 'OFFLINE'}
-                        </span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Capacity</span>
-                        <span class="meta-value">${maxSlots} Slots</span>
-                    </div>
-                </div>
-            </div>
-        `;
+                            <div class="server-meta" style="margin-top: 10px;">
+                                <div class="meta-item">
+                                    <span class="meta-label">Status</span>
+                                    <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                        ${isOnline ? 'RUNNING' : 'OFFLINE'}
+                                    </span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Capacity</span>
+                                    <span class="meta-value">${maxSlots} Slots</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                 });
-
                 container.innerHTML = html;
-            } catch (err) {
-                console.error("Failed to fetch live ACCWeb servers:", err);
-                if (!isBackground) {
-                    const errMsg = err.name === "AbortError" 
-                        ? "Connection timed out requesting ACCWeb data." 
-                        : "Could not connect to ACCWeb instance API.";
-                    container.innerHTML = `<div style="color: var(--accent-red); padding: 20px;"><i class="fa-solid fa-triangle-exclamation"></i> ${errMsg}</div>`;
-                }
-            }
+            } catch (err) {}
         }
 
-        // ACC Car Model ID to Name Dictionary
         const GT3_CAR_MODELS = {
-            0: "Porsche 991 GT3 R",
-            1: "Mercedes-AMG GT3",
-            2: "Ferrari 488 GT3",
-            3: "Audi R8 LMS",
-            4: "Lamborghini Huracan GT3",
-            5: "McLaren 650S GT3",
-            6: "Nissan GT-R Nismo GT3 2018",
-            7: "BMW M6 GT3",
-            8: "Bentley Continental GT3 2018",
-            10: "Nissan GT-R Nismo GT3 2017",
-            11: "Bentley Continental GT3 2016",
-            12: "Aston Martin V12 Vantage GT3",
-            13: "Lamborghini Gallardo R-EX",
-            14: "Jaguar G3",
-            15: "Lexus RC F GT3",
-            16: "Lamborghini Huracan Evo (2019)",
-            17: "Honda NSX GT3",
-            19: "Audi R8 LMS Evo (2019)",
-            20: "AMR V8 Vantage (2019)",
-            21: "Honda NSX Evo (2019)",
-            22: "McLaren 720S GT3 (2019)",
-            23: "Porsche 911II GT3 R (2019)",
-            24: "Ferrari 488 GT3 Evo 2020",
-            25: "Mercedes-AMG GT3 2020",
-            30: "BMW M4 GT3",
-            31: "Audi R8 LMS GT3 evo II",
-            32: "Ferrari 296 GT3",
-            33: "Lamborghini Huracan Evo2",
-            34: "Porsche 992 GT3 R",
-            35: "McLaren 720S GT3 Evo 2023",
-            36: "Ford Mustang GT3"
+            0: "Porsche 991 GT3 R", 1: "Mercedes-AMG GT3", 2: "Ferrari 488 GT3", 3: "Audi R8 LMS", 4: "Lamborghini Huracan GT3",
+            5: "McLaren 650S GT3", 6: "Nissan GT-R Nismo GT3 2018", 7: "BMW M6 GT3", 8: "Bentley Continental GT3 2018",
+            10: "Nissan GT-R Nismo GT3 2017", 11: "Bentley Continental GT3 2016", 12: "Aston Martin V12 Vantage GT3",
+            13: "Lamborghini Gallardo R-EX", 14: "Jaguar G3", 15: "Lexus RC F GT3", 16: "Lamborghini Huracan Evo (2019)",
+            17: "Honda NSX GT3", 19: "Audi R8 LMS Evo (2019)", 20: "AMR V8 Vantage (2019)", 21: "Honda NSX Evo (2019)",
+            22: "McLaren 720S GT3 (2019)", 23: "Porsche 911II GT3 R (2019)", 24: "Ferrari 488 GT3 Evo 2020", 25: "Mercedes-AMG GT3 2020",
+            30: "BMW M4 GT3", 31: "Audi R8 LMS GT3 evo II", 32: "Ferrari 296 GT3", 33: "Lamborghini Huracan Evo2",
+            34: "Porsche 992 GT3 R", 35: "McLaren 720S GT3 Evo 2023", 36: "Ford Mustang GT3"
         };
 
         function getCarName(modelId) {
             if (modelId === undefined || modelId === null) return "GT3";
-            if (typeof modelId === "string" && isNaN(modelId)) return modelId;
             return GT3_CAR_MODELS[modelId] || `Car ID: ${modelId}`;
         }
 
-        // Fetch Persistent Cosmos DB Leaderboards
         async function fetchLeaderboard(trackName) {
             const tbody = document.getElementById("leaderboard-body");
             if (!tbody) return;
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--text-muted);"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading records...</td></tr>`;
-
             try {
                 const response = await fetch(`${AZURE_API_URL}&track=${encodeURIComponent(trackName)}`);
                 let drivers = await response.json();
-
-                if (Array.isArray(drivers)) {
-                    drivers = drivers.slice(0, 10);
-                }
+                if (Array.isArray(drivers)) drivers = drivers.slice(0, 10);
 
                 if (!drivers || drivers.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--text-muted);">No recorded lap times for ${trackName} yet.</td></tr>`;
@@ -797,7 +720,6 @@
                         </tr>
                     `;
                 });
-
                 tbody.innerHTML = html;
             } catch (err) {
                 tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--accent-red);">Failed to query Azure DB records.</td></tr>`;
@@ -823,17 +745,17 @@
 
         function initDashboard() {
             loadLiveServers();
+            checkStreamersLiveStatus();
 
             const savedTrack = localStorage.getItem("bchq_selected_track") || "nurburgring";
             const trackSelect = document.querySelector("select");
-            if (trackSelect) {
-                trackSelect.value = savedTrack;
-            }
+            if (trackSelect) trackSelect.value = savedTrack;
 
             fetchLeaderboard(savedTrack);
 
             setInterval(() => {
                 loadLiveServers(true);
+                checkStreamersLiveStatus();
             }, 15000);
         }
 
@@ -843,14 +765,17 @@
             initDashboard();
         }
     </script>
-    <!-- Footer Legal Section -->
+
+    <!-- Footer Legal & Report Issue Button Section -->
     <div style="margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.9rem; flex-wrap: wrap; gap: 15px;">
         <div>
             &copy; 2026 <span class="brand-bc">BC</span><span class="brand-hq">HQ</span> HUB. Independent community platform.
         </div>
-        <div style="display: flex; gap: 20px;">
+        <div style="display: flex; gap: 25px; align-items: center;">
             <a href="legal.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'">Terms & Disclaimers</a>
-            <a href="issues.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'">Report an Issue</a>
+            <a href="issues.html" class="discord-btn-header" style="background: rgba(255, 51, 102, 0.15); border-color: var(--accent-red); color: var(--accent-red); padding: 8px 16px; font-size: 0.75rem;">
+                <i class="fa-solid fa-bug" style="color: var(--accent-red); font-size: 0.9rem;"></i> REPORT ISSUE
+            </a>
         </div>
     </div>
 </body>
