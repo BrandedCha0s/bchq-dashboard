@@ -664,36 +664,53 @@
                     }
 
                     html += `
-                        <div class="server-card ${isOnline ? '' : 'offline'}">
-                            <div class="server-header">
-                                <div>
-                                    <div class="server-title">${formattedTitle}</div>
-                                    <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(displayName).toUpperCase()}</div>
-                                </div>
-                                <button class="copy-btn" data-name="${escapeHtml(serverName)}" onclick="copyServerName(this)">
-                                    <i class="fa-regular fa-copy"></i> Copy Name
-                                </button>
-                            </div>
-                            <div class="track-map-container">
-                                <img class="track-map-img ${mapTransformClass}" 
-                                     src="${trackImgUrl}" 
-                                     alt="${escapeHtml(displayName)}" 
-                                     onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png?v=1.1';" />
-                            </div>
-                            <div class="server-meta">
-                                <div class="meta-item">
-                                    <span class="meta-label">Status</span>
-                                    <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
-                                        ${isOnline ? 'RUNNING' : 'OFFLINE'}
-                                    </span>
-                                </div>
-                                <div class="meta-item">
-                                    <span class="meta-label">Max Slots</span>
-                                    <span class="meta-value">${maxSlots} Cars</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+            <div class="server-card ${isOnline ? '' : 'offline'}">
+                <div class="server-header">
+                    <div>
+                        <div class="server-title">${formattedTitle}</div>
+                        <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(displayName).toUpperCase()}</div>
+                    </div>
+                    <button class="copy-btn" data-name="${escapeHtml(serverName)}" onclick="copyServerName(this)">
+                        <i class="fa-regular fa-copy"></i> Copy Name
+                    </button>
+                </div>
+                <div class="track-map-container">
+                    <img class="track-map-img ${mapTransformClass}" 
+                         src="${trackImgUrl}" 
+                         alt="${escapeHtml(displayName)}" 
+                         onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png?v=1.1';" />
+                </div>
+
+                <!-- Connected Drivers Section -->
+                <div style="margin: 10px 0; padding-top: 10px; border-top: 1px solid var(--border-color);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span class="meta-label">Connected Drivers</span>
+                        <span class="meta-value" style="color: var(--accent-cyan); font-size: 0.85rem;">
+                            ${inst.connectedCount || (inst.drivers ? inst.drivers.length : 0)} / ${maxSlots}
+                        </span>
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px; max-height: 75px; overflow-y: auto; padding-right: 4px;">
+                        ${inst.drivers && inst.drivers.length > 0 
+                            ? inst.drivers.map(d => `<span class="car-badge" style="font-size: 0.8rem; background: rgba(0, 240, 255, 0.1); color: var(--accent-cyan); border: 1px solid rgba(0, 240, 255, 0.3);"><i class="fa-solid fa-user-racing" style="margin-right: 4px;"></i>${escapeHtml(d)}</span>`).join('') 
+                            : '<span style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">No drivers currently on track</span>'
+                        }
+                    </div>
+                </div>
+
+                <div class="server-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Status</span>
+                        <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                            ${isOnline ? 'RUNNING' : 'OFFLINE'}
+                        </span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Capacity</span>
+                        <span class="meta-value">${maxSlots} Slots</span>
+                    </div>
+                </div>
+            </div>
+        `;
                 });
 
                 container.innerHTML = html;
