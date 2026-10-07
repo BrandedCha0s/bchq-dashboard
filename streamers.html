@@ -258,7 +258,7 @@
         <div class="streamer-card">
             <div>
                 <div class="streamer-header">
-                    <img src="YOUR_TWITCH_AVATAR_URL_HERE" alt="Brandedchaos86" class="streamer-avatar" onerror="this.style.display='none'">
+                    <img id="avatar-brandedchaos86" alt="Brandedchaos86" class="streamer-avatar">
                     <div>
                         <div class="streamer-name">Brandedchaos86</div>
                         <div id="status-brandedchaos86" class="streamer-handle">@brandedchaos86 <span class="offline-badge">Offline</span></div>
@@ -289,7 +289,7 @@
         <div class="streamer-card">
             <div>
                 <div class="streamer-header">
-                    <img src="HARRY_TWITCH_AVATAR_URL_HERE" alt="Harry" class="streamer-avatar" style="border-color: var(--accent-cyan);" onerror="this.style.display='none'">
+                    <img id="avatar-h477y96" alt="Harry" class="streamer-avatar">
                     <div>
                         <div class="streamer-name">Harry</div>
                         <div id="status-h477y96" class="streamer-handle">@H477Y96 <span class="offline-badge">Offline</span></div>
@@ -314,7 +314,7 @@
         <div class="streamer-card">
             <div>
                 <div class="streamer-header">
-                    <img src="PIXELZ_TWITCH_AVATAR_URL_HERE" alt="Alteredpixelz" class="streamer-avatar" style="border-color: var(--accent-green);" onerror="this.style.display='none'">
+                    <img id="avatar-alteredpixelz" alt="Alteredpixelz" class="streamer-avatar">
                     <div>
                         <div class="streamer-name">Alteredpixelz</div>
                         <div id="status-alteredpixelz" class="streamer-handle">@alteredpixelz <span class="offline-badge">Offline</span></div>
@@ -340,23 +340,29 @@
     </div>
 
     <script>
-        // Azure Function Endpoint URL (matches index.html)
         const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1?code=3A2bfZcYESD8oGX1amfeBVzDMGRtdApeqd9mftidBpjkAzFuSYbfKw==";
 
         async function checkStreamerStatuses() {
             const streamers = [
-                { username: 'brandedchaos86', id: 'status-brandedchaos86', handle: '@brandedchaos86' },
-                { username: 'h477y96', id: 'status-h477y96', handle: '@H477Y96' },
-                { username: 'alteredpixelz', id: 'status-alteredpixelz', handle: '@alteredpixelz' }
+                { username: 'brandedchaos86', id: 'status-brandedchaos86', avatarId: 'avatar-brandedchaos86', handle: '@brandedchaos86' },
+                { username: 'h477y96', id: 'status-h477y96', avatarId: 'avatar-h477y96', handle: '@H477Y96' },
+                { username: 'alteredpixelz', id: 'status-alteredpixelz', avatarId: 'avatar-alteredpixelz', handle: '@alteredpixelz' }
             ];
 
             streamers.forEach(async (streamer) => {
                 const statusDiv = document.getElementById(streamer.id);
+                const avatarImg = document.getElementById(streamer.avatarId);
                 if (!statusDiv) return;
 
                 try {
                     const response = await fetch(`${AZURE_API_URL}&type=twitch&user=${streamer.username}`);
                     const data = await response.json();
+
+                    // Update avatar image if returned
+                    if (data.avatarUrl && avatarImg) {
+                        avatarImg.src = data.avatarUrl;
+                        avatarImg.style.display = 'block';
+                    }
 
                     if (data.isLive) {
                         statusDiv.innerHTML = `
@@ -374,7 +380,6 @@
             });
         }
 
-        // Run immediately and then every 60 seconds
         checkStreamerStatuses();
         setInterval(checkStreamerStatuses, 60000);
     </script>
