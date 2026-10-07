@@ -645,7 +645,6 @@
             return `${min}:${sec.toString().padStart(2, '0')}.${millis.toString().padStart(3, '0')}`;
         }
 
-        // Check Live Streamer Status for Header Pulse
         async function checkStreamersLiveStatus() {
             const streamers = ["brandedchaos86", "H477Y96", "Alteredpixelz"];
             const btn = document.getElementById("header-streamers-btn");
@@ -673,21 +672,24 @@
             }
         }
 
-        // Dynamic GitHub API setup fetcher and automatic file downloader
-        async function handleCarSetupSelection(carFolder, trackFolder, selectElement) {
-            const selectedOption = selectElement.options[selectElement.selectedIndex];
-            
-            if (selectedOption.dataset.action === "fetch") {
-                const originalText = selectedOption.text;
+        // Clean and reliable setup selector & automatic downloader
+        async function handleCarSetupSelection(selectElement, trackFolder) {
+            const selectedValue = selectElement.value;
+            if (!selectedValue) return;
+
+            // If a car folder was selected (not a download URL)
+            if (!selectedValue.startsWith('http')) {
+                const carFolder = selectedValue;
+                const selectedOptionText = selectElement.options[selectElement.selectedIndex].text;
                 selectElement.innerHTML = `<option value="" disabled selected>Loading setups...</option>`;
-                
+
                 try {
                     const apiUrl = `https://api.github.com/repos/BrandedCha0s/acc-car-setups/contents/${carFolder}/${trackFolder}`;
                     const res = await fetch(apiUrl);
                     const files = await res.json();
-                    
-                    let optionsHtml = `<option value="" disabled selected>Select File (${originalText})...</option>`;
-                    
+
+                    let optionsHtml = `<option value="" disabled selected>Select File (${selectedOptionText})...</option>`;
+
                     if (Array.isArray(files)) {
                         const jsonFiles = files.filter(f => f.name.endsWith('.json'));
                         if (jsonFiles.length > 0) {
@@ -695,12 +697,12 @@
                                 optionsHtml += `<option value="${f.download_url}" data-filename="${f.name}">${f.name}</option>`;
                             });
                         } else {
-                            optionsHtml += `<option value="" disabled>No setup files found</option>`;
+                            optionsHtml += `<option value="" disabled>No setup files found for this track</option>`;
                         }
                     } else {
-                        optionsHtml += `<option value="" disabled>No setup folder exists yet</option>`;
+                        optionsHtml += `<option value="" disabled>No setup folder exists for this track</option>`;
                     }
-                    
+
                     selectElement.innerHTML = optionsHtml;
                 } catch (err) {
                     console.error("Failed to fetch setups:", err);
@@ -709,25 +711,25 @@
                 return;
             }
 
-            const fileUrl = selectedOption.value;
-            const fileName = selectedOption.getAttribute("data-filename");
-            
-            if (fileUrl && fileName) {
-                try {
-                    const response = await fetch(fileUrl);
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = fileName;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                    selectElement.selectedIndex = 0;
-                } catch (e) {
-                    window.open(fileUrl, '_blank');
-                }
+            // Otherwise, a specific .json setup file was selected -> trigger download
+            const fileUrl = selectedValue;
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            const fileName = selectedOption.getAttribute("data-filename") || "setup.json";
+
+            try {
+                const response = await fetch(fileUrl);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                selectElement.selectedIndex = 0;
+            } catch (e) {
+                window.open(fileUrl, '_blank');
             }
         }
 
@@ -771,7 +773,7 @@
 
                     const trackFolder = getGitHubTrackFolder(rawTrack);
                     let carOptionsHtml = CAR_SETUP_FOLDERS.map(car => {
-                        return `<option value="#" data-action="fetch" onclick="event.preventDefault();" onmousedown="handleCarSetupSelection('${car.folder}', '${trackFolder}', this.form.elements['setupSelect'])">${car.name}</option>`;
+                        return `<option value="${car.folder}">${car.name}</option>`;
                     }).join('');
 
                     html += `
@@ -790,15 +792,15 @@
                             </div>
 
                             <!-- Track Car Setups Dropdown -->
-                            <form style="margin: 10px 0; background: rgba(0, 240, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
+                            <div style="margin: 10px 0; background: rgba(0, 240, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
                                 <span style="font-size: 0.8rem; font-family: 'Orbitron', sans-serif; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
                                     <i class="fa-solid fa-sliders" style="color: var(--accent-cyan);"></i> SETUPS
                                 </span>
-                                <select name="setupSelect" onchange="handleCarSetupSelection('', '', this)" style="background: var(--bg-dark); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; outline: none; max-width: 190px;">
+                                <select onchange="handleCarSetupSelection(this, '${trackFolder}')" style="background: var(--bg-dark); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; outline: none; max-width: 190px;">
                                     <option value="" disabled selected>Select Car Setup...</option>
                                     ${carOptionsHtml}
                                 </select>
-                            </form>
+                            </div>
 
                             <div style="margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
                                 <span class="meta-label">Connected Drivers</span>
