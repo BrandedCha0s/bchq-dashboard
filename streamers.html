@@ -20,6 +20,7 @@
             --card-bg: #111823;
             --accent-cyan: #00f0ff;
             --accent-green: #00ff88;
+            --accent-red: #ff3366;
             --twitch-purple: #9146FF;
             --youtube-red: #FF0000;
             --facebook-blue: #1877F2;
@@ -81,6 +82,23 @@
         .back-btn:hover {
             background: var(--accent-cyan);
             color: var(--bg-dark);
+        }
+
+        /* Button style for footer report issue */
+        .discord-btn-header {
+            background: rgba(88, 101, 242, 0.15);
+            border: 1px solid var(--discord-blurple);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            transition: all 0.2s ease;
         }
 
         .section-title {
@@ -383,14 +401,16 @@
         checkStreamerStatuses();
         setInterval(checkStreamerStatuses, 60000);
     </script>
-    <!-- Footer Legal Section -->
+    <!-- Footer Legal & Report Issue Button Section -->
     <div style="margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.9rem; flex-wrap: wrap; gap: 15px;">
         <div>
             &copy; 2026 <span class="brand-bc">BC</span><span class="brand-hq">HQ</span> HUB. Independent community platform.
         </div>
-        <div style="display: flex; gap: 20px;">
+        <div style="display: flex; gap: 25px; align-items: center;">
             <a href="legal.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'">Terms & Disclaimers</a>
-            <a href="issues.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'">Report an Issue</a>
+            <a href="issues.html" class="discord-btn-header" style="background: rgba(255, 51, 102, 0.15); border-color: var(--accent-red); color: var(--accent-red); padding: 8px 16px; font-size: 0.75rem;">
+                <i class="fa-solid fa-bug" style="color: var(--accent-red); font-size: 0.9rem;"></i> REPORT ISSUE
+            </a>
         </div>
     </div>
 </body>
