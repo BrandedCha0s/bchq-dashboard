@@ -342,29 +342,38 @@
         </div>
     </div>
     <script>
+    const AZURE_API_URL = "YOUR_AZURE_FUNCTION_URL_HERE";
+
     async function checkStreamerStatuses() {
-        const streamers = ['brandedchaos86', 'h477y96', 'alteredpixelz'];
+        const streamers = [
+            { username: 'brandedchaos86', id: 'status-brandedchaos86' },
+            { username: 'h477y96', id: 'status-h477y96' },
+            { username: 'alteredpixelz', id: 'status-alteredpixelz' }
+        ];
         
-        streamers.forEach(async (username) => {
-            const statusDiv = document.getElementById(`status-${username}`);
+        streamers.forEach(async (streamer) => {
+            const statusDiv = document.getElementById(streamer.id);
             if (!statusDiv) return;
 
             try {
-                // You can route this through your Azure Function backend if you add a twitch route, 
-                // or check via a public CORS-friendly proxy/service.
-                const response = await fetch(`https://api.twitch.tv/helix/streams?user_login=${username}`, {
-                    // Note: Calls to Twitch Helix require a Bearer token and Client-ID.
-                });
-                
-                // Alternatively, if you want a zero-key public check, you can use RSS/JSON bridges 
-                // or check via your Azure Function endpoint: `${AZURE_API_URL}&type=twitch&user=${username}`
+                const response = await fetch(`${AZURE_API_URL}&type=twitch&user=${streamer.username}`);
+                const data = await response.json();
+
+                if (data.isLive) {
+                    statusDiv.innerHTML = `
+                        <span class="live-badge">
+                            <i class="fa-solid fa-circle"></i> LIVE NOW
+                        </span>
+                    `;
+                } else {
+                    statusDiv.innerHTML = `<span class="offline-badge">Offline</span>`;
+                }
             } catch (err) {
                 statusDiv.innerHTML = `<span class="offline-badge">Offline</span>`;
             }
         });
     }
 
-    // Run on load
     checkStreamerStatuses();
     setInterval(checkStreamerStatuses, 60000); // Check every minute
 </script>
