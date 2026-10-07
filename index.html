@@ -849,78 +849,78 @@ function renderServerCards(instances, container) {
         return getNum(a.name) - getNum(b.name);
     });
 
-            let html = "";
-            instances.forEach(inst => {
-                const serverName = inst.name || "ACC Server";
-                const formattedTitle = formatBCHQText(serverName);
-                const rawTrack = inst.track || "nurburgring";
-                const maxSlots = inst.maxSlots || 20;
-                const isOnline = Boolean(inst.isOnline);
+    let html = "";
+    instances.forEach(inst => {
+        const serverName = inst.name || "ACC Server";
+        const formattedTitle = formatBCHQText(serverName);
+        const rawTrack = inst.track || "nurburgring";
+        const maxSlots = inst.maxSlots || 20;
+        const isOnline = Boolean(inst.isOnline);
 
-                const fileName = getTrackFileName(rawTrack);
-                const displayName = getTrackDisplayName(rawTrack);
-                const trackImgUrl = `${ASSET_PATH}${fileName}?v=1.1`;
+        const fileName = getTrackFileName(rawTrack);
+        const displayName = getTrackDisplayName(rawTrack);
+        const trackImgUrl = `${ASSET_PATH}${fileName}?v=1.1`;
 
-                let mapTransformClass = "";
-                const lowerTrack = rawTrack.toLowerCase();
-                if (lowerTrack.includes("suzuka")) mapTransformClass = "rotate-suzuka";
-                else if (lowerTrack.includes("silverstone")) mapTransformClass = "rotate-silverstone";
+        let mapTransformClass = "";
+        const lowerTrack = rawTrack.toLowerCase();
+        if (lowerTrack.includes("suzuka")) mapTransformClass = "rotate-suzuka";
+        else if (lowerTrack.includes("silverstone")) mapTransformClass = "rotate-silverstone";
 
-                const trackFolder = getGitHubTrackFolder(rawTrack);
-                let carOptionsHtml = CAR_SETUP_FOLDERS.map(car => {
-                    return `<option value="${car.folder}">${car.name}</option>`;
-                }).join('');
+        const trackFolder = getGitHubTrackFolder(rawTrack);
+        let carOptionsHtml = CAR_SETUP_FOLDERS.map(car => {
+            return `<option value="${car.folder}">${car.name}</option>`;
+        }).join('');
 
-                html += `
-                    <div class="server-card ${isOnline ? '' : 'offline'}">
-                        <div class="server-header">
-                            <div>
-                                <div class="server-title">${formattedTitle}</div>
-                                <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(displayName).toUpperCase()}</div>
-                            </div>
-                            <button class="copy-btn" data-name="${escapeHtml(serverName)}" onclick="copyServerName(this)">
-                                <i class="fa-regular fa-copy"></i> Copy Name
-                            </button>
-                        </div>
-                        <div class="track-map-container">
-                            <img class="track-map-img ${mapTransformClass}" src="${trackImgUrl}" alt="${escapeHtml(displayName)}" onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png?v=1.1';" />
-                        </div>
-
-                        <!-- Track Car Setups Dropdown -->
-                        <div style="margin: 10px 0; background: rgba(0, 240, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
-                            <span style="font-size: 0.8rem; font-family: 'Orbitron', sans-serif; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
-                                <i class="fa-solid fa-sliders" style="color: var(--accent-cyan);"></i> SETUPS
-                            </span>
-                            <select onchange="handleCarSetupSelection(this, '${trackFolder}')" style="background: var(--bg-dark); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; outline: none; max-width: 190px;">
-                                <option value="" disabled selected>Select Car Setup...</option>
-                                ${carOptionsHtml}
-                            </select>
-                        </div>
-
-                        <div style="margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-                            <span class="meta-label">Connected Drivers</span>
-                            <span class="meta-value" style="color: var(--accent-cyan); font-weight: 700;">
-                                ${inst.connectedCount || 0} / ${maxSlots}
-                            </span>
-                        </div>
-
-                        <div class="server-meta" style="margin-top: 10px;">
-                            <div class="meta-item">
-                                <span class="meta-label">Status</span>
-                                <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
-                                    ${isOnline ? 'RUNNING' : 'OFFLINE'}
-                                </span>
-                            </div>
-                            <div class="meta-item">
-                                <span class="meta-label">Capacity</span>
-                                <span class="meta-value">${maxSlots} Slots</span>
-                            </div>
-                        </div>
+        html += `
+            <div class="server-card ${isOnline ? '' : 'offline'}">
+                <div class="server-header">
+                    <div>
+                        <div class="server-title">${formattedTitle}</div>
+                        <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(displayName).toUpperCase()}</div>
                     </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
+                    <button class="copy-btn" data-name="${escapeHtml(serverName)}" onclick="copyServerName(this)">
+                        <i class="fa-regular fa-copy"></i> Copy Name
+                    </button>
+                </div>
+                <div class="track-map-container">
+                    <img class="track-map-img ${mapTransformClass}" src="${trackImgUrl}" alt="${escapeHtml(displayName)}" onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png?v=1.1';" />
+                </div>
+
+                <!-- Track Car Setups Dropdown -->
+                <div style="margin: 10px 0; background: rgba(0, 240, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
+                    <span style="font-size: 0.8rem; font-family: 'Orbitron', sans-serif; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-sliders" style="color: var(--accent-cyan);"></i> SETUPS
+                    </span>
+                    <select onchange="handleCarSetupSelection(this, '${trackFolder}')" style="background: var(--bg-dark); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; outline: none; max-width: 190px;">
+                        <option value="" disabled selected>Select Car Setup...</option>
+                        ${carOptionsHtml}
+                    </select>
+                </div>
+
+                <div style="margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                    <span class="meta-label">Connected Drivers</span>
+                    <span class="meta-value" style="color: var(--accent-cyan); font-weight: 700;">
+                        ${inst.connectedCount || 0} / ${maxSlots}
+                    </span>
+                </div>
+
+                <div class="server-meta" style="margin-top: 10px;">
+                    <div class="meta-item">
+                        <span class="meta-label">Status</span>
+                        <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                            ${isOnline ? 'RUNNING' : 'OFFLINE'}
+                        </span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Capacity</span>
+                        <span class="meta-value">${maxSlots} Slots</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
 
         const GT3_CAR_MODELS = {
             0: "Porsche 991 GT3 R", 1: "Mercedes-AMG GT3", 2: "Ferrari 488 GT3", 3: "Audi R8 LMS", 4: "Lamborghini Huracan GT3",
