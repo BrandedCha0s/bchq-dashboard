@@ -739,7 +739,7 @@
             let anyLive = false;
             for (const user of streamers) {
                 try {
-                    const res = await fetch(`${AZURE_API_URL}&type=twitch&user=${user}`);
+                    const res = await fetch(`${AZURE_API_URL}?type=twitch&user=${user}`);
                     const data = await res.json();
                     if (data && data.isLive) {
                         anyLive = true;
@@ -834,7 +834,7 @@ async function loadLiveServers(isBackground = false) {
     }
 
     try {
-        const response = await fetch(`${AZURE_API_URL}&type=servers`);
+        const response = await fetch(`${AZURE_API_URL}?type=servers`);
         const data = await response.json();
         
         localStorage.setItem("bchq_cached_servers", JSON.stringify(data));
@@ -951,7 +951,7 @@ function renderServerCards(instances, container) {
             const tbody = document.getElementById("leaderboard-body");
             if (!tbody) return;
             try {
-                const response = await fetch(`${AZURE_API_URL}&track=${encodeURIComponent(trackName)}`);
+                const response = await fetch(`${AZURE_API_URL}?track=${encodeURIComponent(trackName)}`);
                 let drivers = await response.json();
                 if (Array.isArray(drivers)) drivers = drivers.slice(0, 10);
 
