@@ -255,6 +255,12 @@
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .server-header > div:first-child {
+            flex: 1;
+            min-width: 0; /* Crucial: prevents flex items from overflowing their container */
         }
 
         .server-title {
@@ -263,6 +269,8 @@
             font-weight: 700;
             color: #fff;
             margin-bottom: 5px;
+            overflow-wrap: break-word; /* Forces long URLs to wrap inside the card */
+            word-break: break-word;
         }
 
         .server-track {
