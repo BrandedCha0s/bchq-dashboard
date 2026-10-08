@@ -250,7 +250,10 @@
     </div>
 
     <script>
-        const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1?code=3A2bfZcYESD8oGX1amfeBVzDMGRtdApeqd9mftidBpjkAzFuSYbfKw==";
+        const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1";
+
+        let lastSubmissionTime = 0;
+        const COOLDOWN_PERIOD = 30000; // 30 seconds cooldown
 
         async function submitIssue(event) {
             event.preventDefault();
@@ -258,6 +261,14 @@
             const descInput = document.getElementById("issue-desc");
             const submitBtn = document.getElementById("submit-btn");
             const alertContainer = document.getElementById("alert-container");
+
+            const now = Date.now();
+            if (now - lastSubmissionTime < COOLDOWN_PERIOD) {
+                const remaining = Math.ceil((COOLDOWN_PERIOD - (now - lastSubmissionTime)) / 1000);
+                alertContainer.className = "alert-box error";
+                alertContainer.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Please wait ${remaining} seconds before submitting another issue.`;
+                return;
+            }
 
             const title = titleInput.value.trim();
             const description = descInput.value.trim();
@@ -269,7 +280,7 @@
             alertContainer.innerHTML = "";
 
             try {
-                const response = await fetch(`${AZURE_API_URL}&type=issue`, {
+                const response = await fetch(`${AZURE_API_URL}?type=issue`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ title, description })
@@ -278,6 +289,7 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
+                    lastSubmissionTime = Date.now(); // Set cooldown timestamp on success
                     alertContainer.className = "alert-box success";
                     alertContainer.innerHTML = `<i class="fa-solid fa-check-circle"></i> Issue successfully created on GitHub! <a href="${data.issueUrl}" target="_blank" style="color: #fff; text-decoration: underline; margin-left: 5px;">View Issue #${data.issueUrl.split('/').pop()}</a>`;
                     titleInput.value = "";
