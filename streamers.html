@@ -391,7 +391,7 @@
     </div>
 
     <script>
-        const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1?code=3A2bfZcYESD8oGX1amfeBVzDMGRtdApeqd9mftidBpjkAzFuSYbfKw==";
+        const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1";
 
         async function checkStreamerStatuses() {
             const streamers = [
@@ -406,7 +406,7 @@
                 if (!statusDiv) return;
 
                 try {
-                    const response = await fetch(`${AZURE_API_URL}&type=twitch&user=${streamer.username}`);
+                    const response = await fetch(`${AZURE_API_URL}?type=twitch&user=${streamer.username}`);
                     const data = await response.json();
 
                     // Update avatar image if returned
