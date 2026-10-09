@@ -454,7 +454,6 @@
             border-radius: 12px;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            min-height: 300px;
         }
 
         table {
@@ -640,11 +639,35 @@
             <option value="red_bull_ring">Red Bull Ring</option>
         </select>
 
-        <!-- Session Switch Buttons -->
+        <!-- Session Switch Buttons (Race on Left, Qualifying on Right) -->
         <div class="session-tabs">
-            <button id="btn-qualifying" class="session-tab-btn" onclick="switchSessionTable('qualifying')">QUALIFYING</button>
             <button id="btn-race" class="session-tab-btn active" onclick="switchSessionTable('race')">RACE</button>
+            <button id="btn-qualifying" class="session-tab-btn" onclick="switchSessionTable('qualifying')">QUALIFYING</button>
         </div>
+    </div>
+
+    <!-- Race Table Container (Default View) -->
+    <div id="race-table-wrapper" class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="rank-column">POS</th>
+                    <th>DRIVER</th>
+                    <th>CAR MODEL</th>
+                    <th>SESSION</th>
+                    <th>BEST LAP</th>
+                    <th>GAP</th>
+                    <th>DATE RECORDED</th>
+                </tr>
+            </thead>
+            <tbody id="race-leaderboard-body">
+                <tr>
+                    <td colspan="7" style="text-align:center; padding: 30px; color: var(--text-muted);">
+                        Select a track to load records...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
     <!-- Qualifying Table Container (Hidden by Default) -->
