@@ -355,6 +355,49 @@
             font-weight: 600;
         }
 
+        /* Session Switch Buttons */
+        .session-tabs {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .session-tab-btn {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .session-tab-btn:hover {
+            border-color: var(--accent-cyan);
+            color: #fff;
+        }
+
+        .session-tab-btn.active {
+            background: rgba(0, 240, 255, 0.15);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .session-tabs {
+            width: 100%;
+            margin-left: 0;
+        }
+        .session-tab-btn {
+            flex: 1;
+            text-align: center;
+        }
+    }
+
         /* Leaderboard Controls */
         .leaderboard-controls {
             display: flex;
@@ -596,9 +639,16 @@
             <option value="valencia">Valencia</option>
             <option value="red_bull_ring">Red Bull Ring</option>
         </select>
+
+        <!-- Session Switch Buttons -->
+        <div class="session-tabs">
+            <button id="btn-qualifying" class="session-tab-btn" onclick="switchSessionTable('qualifying')">QUALIFYING</button>
+            <button id="btn-race" class="session-tab-btn active" onclick="switchSessionTable('race')">RACE</button>
+        </div>
     </div>
 
-    <div class="table-container">
+    <!-- Qualifying Table Container (Hidden by Default) -->
+    <div id="qualifying-table-wrapper" class="table-container" style="display: none;">
         <table>
             <thead>
                 <tr>
@@ -611,10 +661,34 @@
                     <th>DATE RECORDED</th>
                 </tr>
             </thead>
-            <tbody id="leaderboard-body">
+            <tbody id="qualifying-leaderboard-body">
                 <tr>
                     <td colspan="7" style="text-align:center; padding: 30px; color: var(--text-muted);">
-                        Select a track to load live records...
+                        Select a track to load records...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Race Table Container (Visible by Default) -->
+    <div id="race-table-wrapper" class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="rank-column">POS</th>
+                    <th>DRIVER</th>
+                    <th>CAR MODEL</th>
+                    <th>SESSION</th>
+                    <th>BEST LAP</th>
+                    <th>GAP</th>
+                    <th>DATE RECORDED</th>
+                </tr>
+            </thead>
+            <tbody id="race-leaderboard-body">
+                <tr>
+                    <td colspan="7" style="text-align:center; padding: 30px; color: var(--text-muted);">
+                        Select a track to load records...
                     </td>
                 </tr>
             </tbody>
@@ -958,42 +1032,97 @@ function renderServerCards(instances, container) {
             return String(name).replace(/^Car ID:\s*/i, '').trim();
         }
 
+        function switchSessionTable(sessionType) {
+            const qualWrapper = document.getElementById('qualifying-table-wrapper');
+            const raceWrapper = document.getElementById('race-table-wrapper');
+            const btnQual = document.getElementById('btn-qualifying');
+            const btnRace = document.getElementById('btn-race');
+
+            if (sessionType === 'qualifying') {
+                qualWrapper.style.display = 'block';
+                raceWrapper.style.display = 'none';
+                btnQual.classList.add('active');
+                btnRace.classList.remove('active');
+            } else {
+                qualWrapper.style.display = 'none';
+                raceWrapper.style.display = 'block';
+                btnQual.classList.remove('active');
+                btnRace.classList.add('active');
+            }
+        }
+
         async function fetchLeaderboard(trackName) {
-            const tbody = document.getElementById("leaderboard-body");
-            if (!tbody) return;
+            const qualTbody = document.getElementById("qualifying-leaderboard-body");
+            const raceTbody = document.getElementById("race-leaderboard-body");
+            if (!qualTbody || !raceTbody) return;
+
             try {
                 const response = await fetch(`${AZURE_API_URL}?track=${encodeURIComponent(trackName)}`);
                 let drivers = await response.json();
-                if (Array.isArray(drivers)) drivers = drivers.slice(0, 10);
 
-                if (!drivers || drivers.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--text-muted);">No recorded lap times for ${trackName} yet.</td></tr>`;
-                    return;
+                let qualDrivers = [];
+                let raceDrivers = [];
+
+                if (Array.isArray(drivers)) {
+                    qualDrivers = drivers.filter(d => d.sessionType && d.sessionType.toLowerCase().includes('qualifying')).slice(0, 10);
+                    raceDrivers = drivers.filter(d => !d.sessionType || d.sessionType.toLowerCase().includes('race')).slice(0, 10);
                 }
 
-                let html = "";
-                const leaderLapMs = drivers[0].bestLapMs;
+                // Render Qualifying Table
+                if (qualDrivers.length === 0) {
+                    qualTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--text-muted);">No recorded qualifying lap times for ${trackName} yet.</td></tr>`;
+                } else {
+                    let html = "";
+                    const leaderLapMs = qualDrivers[0].bestLapMs;
+                    qualDrivers.forEach((driver, index) => {
+                        const rank = index + 1;
+                        const rankClass = rank === 1 ? 'rank-1' : (rank === 2 ? 'rank-2' : (rank === 3 ? 'rank-3' : ''));
+                        const gap = index === 0 ? "—" : `+${((driver.bestLapMs - leaderLapMs) / 1000).toFixed(3)}s`;
 
-                drivers.forEach((driver, index) => {
-                    const rank = index + 1;
-                    const rankClass = rank === 1 ? 'rank-1' : (rank === 2 ? 'rank-2' : (rank === 3 ? 'rank-3' : ''));
-                    const gap = index === 0 ? "—" : `+${((driver.bestLapMs - leaderLapMs) / 1000).toFixed(3)}s`;
+                        html += `
+                            <tr>
+                                <td class="rank-column ${rankClass}">#${rank}</td>
+                                <td class="driver-name">${escapeHtml(driver.driverName) || 'Unknown'}</td>
+                                <td><span class="car-badge">${escapeHtml(getCarName(driver.carModel))}</span></td>
+                                <td class="session">${driver.sessionType || 'Qualifying'}</td>
+                                <td class="lap-time">${formatLapTime(driver.bestLapMs)}</td>
+                                <td class="gap-cell">${gap}</td>
+                                <td>${driver.lastUpdated ? new Date(driver.lastUpdated).toLocaleDateString() : '—'}</td>
+                            </tr>
+                        `;
+                    });
+                    qualTbody.innerHTML = html;
+                }
 
-                    html += `
-                        <tr>
-                            <td class="rank-column ${rankClass}">#${rank}</td>
-                            <td class="driver-name">${escapeHtml(driver.driverName) || 'Unknown'}</td>
-                            <td><span class="car-badge">${escapeHtml(getCarName(driver.carModel))}</span></td>
-                            <td class="session">${driver.sessionType || 'Race'}</td>
-                            <td class="lap-time">${formatLapTime(driver.bestLapMs)}</td>
-                            <td class="gap-cell">${gap}</td>
-                            <td>${driver.lastUpdated ? new Date(driver.lastUpdated).toLocaleDateString() : '—'}</td>
-                        </tr>
-                    `;
-                });
-                tbody.innerHTML = html;
+                // Render Race Table
+                if (raceDrivers.length === 0) {
+                    raceTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--text-muted);">No recorded race lap times for ${trackName} yet.</td></tr>`;
+                } else {
+                    let html = "";
+                    const leaderLapMs = raceDrivers[0].bestLapMs;
+                    raceDrivers.forEach((driver, index) => {
+                        const rank = index + 1;
+                        const rankClass = rank === 1 ? 'rank-1' : (rank === 2 ? 'rank-2' : (rank === 3 ? 'rank-3' : ''));
+                        const gap = index === 0 ? "—" : `+${((driver.bestLapMs - leaderLapMs) / 1000).toFixed(3)}s`;
+
+                        html += `
+                            <tr>
+                                <td class="rank-column ${rankClass}">#${rank}</td>
+                                <td class="driver-name">${escapeHtml(driver.driverName) || 'Unknown'}</td>
+                                <td><span class="car-badge">${escapeHtml(getCarName(driver.carModel))}</span></td>
+                                <td class="session">${driver.sessionType || 'Race'}</td>
+                                <td class="lap-time">${formatLapTime(driver.bestLapMs)}</td>
+                                <td class="gap-cell">${gap}</td>
+                                <td>${driver.lastUpdated ? new Date(driver.lastUpdated).toLocaleDateString() : '—'}</td>
+                            </tr>
+                        `;
+                    });
+                    raceTbody.innerHTML = html;
+                }
+
             } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--accent-red);">Failed to query Azure DB records.</td></tr>`;
+                qualTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--accent-red);">Failed to query Azure DB records.</td></tr>`;
+                raceTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--accent-red);">Failed to query Azure DB records.</td></tr>`;
             }
         }
 
