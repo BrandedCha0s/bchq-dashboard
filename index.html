@@ -1043,6 +1043,7 @@ function renderServerCards(instances, container) {
                 const lowerTrack = rawTrack.toLowerCase();
                 if (lowerTrack.includes("suzuka")) mapTransformClass = "rotate-suzuka";
                 else if (lowerTrack.includes("silverstone")) mapTransformClass = "rotate-silverstone";
+                else if (lowerTrack.includes("nurburgring_24h")) mapTransformClass = "rotate-nurburgring_24h";
 
                 const trackFolder = getGitHubTrackFolder(rawTrack);
                 let carOptionsHtml = CAR_SETUP_FOLDERS.map(car => {
