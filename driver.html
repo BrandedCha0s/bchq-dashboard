@@ -116,7 +116,7 @@
             transform: translateY(-2px);
         }
 
-        /* Search Container */
+        /* Search Container & Autocomplete Dropdown */
         .search-container {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -127,11 +127,17 @@
             gap: 15px;
             align-items: center;
             flex-wrap: wrap;
+            position: relative;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+            min-width: 280px;
+            position: relative;
         }
 
         .search-container input {
-            flex: 1;
-            min-width: 280px;
+            width: 100%;
             background: var(--bg-dark);
             color: #fff;
             border: 1px solid var(--accent-cyan);
@@ -141,6 +147,41 @@
             font-size: 1.1rem;
             font-weight: 600;
             outline: none;
+        }
+
+        /* Suggestions Dropdown Box */
+        .suggestions-dropdown {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 8px;
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 10px 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--accent-cyan);
         }
 
         .search-btn {
@@ -249,10 +290,13 @@
         </a>
     </div>
 
-    <!-- Search Input Bar -->
+    <!-- Search Input Bar with Autocomplete Dropdown -->
     <div class="search-container">
-        <input type="text" id="driver-search-input" placeholder="Enter driver name (e.g. B Brandedchaos86)..." onkeypress="if(event.key === 'Enter') searchDriverRecords()">
-        <button class="search-btn" onclick="searchDriverRecords()">
+        <div class="search-input-wrapper">
+            <input type="text" id="driver-search-input" placeholder="Start typing driver name..." oninput="onDriverInput(this.value)" onkeypress="if(event.key === 'Enter') { hideSuggestions(); searchDriverRecords(); }">
+            <div id="suggestions-dropdown" class="suggestions-dropdown"></div>
+        </div>
+        <button class="search-btn" onclick="hideSuggestions(); searchDriverRecords()">
             <i class="fa-solid fa-magnifying-glass"></i> SEARCH DRIVER
         </button>
     </div>
@@ -286,6 +330,7 @@
     <!-- Script Logic -->
     <script>
         const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1";
+        let debounceTimer = null;
 
         const ACC_TRACK_NAMES = {
             "monza": "Monza",
@@ -352,6 +397,55 @@
             return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
+        // Handle Typing with Debounce for Autocomplete
+        function onDriverInput(val) {
+            clearTimeout(debounceTimer);
+            const dropdown = document.getElementById("suggestions-dropdown");
+
+            if (!val || val.trim().length < 2) {
+                dropdown.style.display = "none";
+                return;
+            }
+
+            debounceTimer = setTimeout(async () => {
+                try {
+                    const res = await fetch(`${AZURE_API_URL}?suggest=${encodeURIComponent(val.trim())}`);
+                    const names = await res.json();
+
+                    if (Array.isArray(names) && names.length > 0) {
+                        let html = "";
+                        names.forEach(name => {
+                            html += `<div class="suggestion-item" onclick="selectSuggestion('${escapeHtml(name)}')">${escapeHtml(name)}</div>`;
+                        });
+                        dropdown.innerHTML = html;
+                        dropdown.style.display = "block";
+                    } else {
+                        dropdown.style.display = "none";
+                    }
+                } catch (e) {
+                    dropdown.style.display = "none";
+                }
+            }, 300);
+        }
+
+        function selectSuggestion(name) {
+            document.getElementById("driver-search-input").value = name;
+            hideSuggestions();
+            searchDriverRecords();
+        }
+
+        function hideSuggestions() {
+            const dropdown = document.getElementById("suggestions-dropdown");
+            if (dropdown) dropdown.style.display = "none";
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", function(e) {
+            if (!e.target.closest(".search-input-wrapper")) {
+                hideSuggestions();
+            }
+        });
+
         async function searchDriverRecords() {
             const queryInput = document.getElementById("driver-search-input").value.trim();
             const tbody = document.getElementById("driver-results-body");
@@ -360,7 +454,6 @@
             tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px; color: var(--accent-cyan);"><i class="fa-solid fa-circle-notch fa-spin"></i> Searching database for driver "${escapeHtml(queryInput)}"...</td></tr>`;
 
             try {
-                // Calls the optimized global endpoint updated in index.js
                 const res = await fetch(`${AZURE_API_URL}?driver=${encodeURIComponent(queryInput)}`);
                 const records = await res.json();
 
@@ -369,7 +462,6 @@
                     return;
                 }
 
-                // Sort results alphabetically by track name
                 records.sort((a, b) => getTrackDisplayName(a.track).localeCompare(getTrackDisplayName(b.track)));
 
                 let html = "";
