@@ -877,14 +877,17 @@
         function getTrackFileName(rawTrackKey) {
             if (!rawTrackKey) return "nurburgring.png";
             const cleanKey = rawTrackKey.toLowerCase().replace(/_\d{4}$/, '').trim();
-            const matchedKey = Object.keys(ACC_TRACK_NAMES).find(k => cleanKey.includes(k));
+            // Sort keys by length descending to match longer names (e.g., nurburgring_24h) first
+            const sortedKeys = Object.keys(ACC_TRACK_NAMES).sort((a, b) => b.length - a.length);
+            const matchedKey = sortedKeys.find(k => cleanKey.includes(k));
             return matchedKey ? `${matchedKey}.png` : `${cleanKey}.png`;
         }
 
         function getTrackDisplayName(rawTrackKey) {
             if (!rawTrackKey) return "NÜRBURGRING GP";
             const cleanKey = rawTrackKey.toLowerCase().replace(/_\d{4}$/, '').trim();
-            const matchedKey = Object.keys(ACC_TRACK_NAMES).find(k => cleanKey.includes(k));
+            const sortedKeys = Object.keys(ACC_TRACK_NAMES).sort((a, b) => b.length - a.length);
+            const matchedKey = sortedKeys.find(k => cleanKey.includes(k));
             return matchedKey ? ACC_TRACK_NAMES[matchedKey] : cleanKey.replace(/_/g, ' ').toUpperCase();
         }
 
