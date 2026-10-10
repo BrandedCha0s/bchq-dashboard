@@ -265,6 +265,47 @@
             background: var(--accent-cyan);
             color: var(--bg-dark);
         }
+
+         /* --- ENVIRONMENT BADGES --- */
+        .server-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 12px 0;
+        }
+
+        .server-badge {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: #ccc;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .server-badge i {
+            color: #00ffcc;
+        }
+
+        .badge-locked { 
+            border-color: rgba(255, 75, 75, 0.4); 
+            color: #ff6b6b; 
+        }
+        .badge-locked i { 
+            color: #ff6b6b; 
+        }
+
+        .badge-open { 
+            border-color: rgba(75, 255, 150, 0.4); 
+            color: #51cf66; 
+        }
+        .badge-open i { 
+            color: #51cf66; 
+        }   
         
         /* Track Targets Box */
         .track-targets-box {
