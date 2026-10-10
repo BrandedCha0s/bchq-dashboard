@@ -542,6 +542,9 @@ function renderServerCards(instances, container) {
                             <img class="track-map-img ${mapTransformClass}" src="${trackImgUrl}" alt="${escapeHtml(displayName)}" onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png?v=1.1';" />
                         </div>
 
+                        <!-- Environment Badges -->
+                        ${badgesHtml}
+
                         <!-- Track Car Setups Dropdown -->
                         <div style="margin: 10px 0; background: rgba(0, 240, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
                             <span style="font-size: 0.8rem; font-family: 'Orbitron', sans-serif; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
