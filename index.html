@@ -500,6 +500,33 @@ function renderServerCards(instances, container) {
                     `;
                 }
 
+                // --- ENVIRONMENT BADGES DATA & HTML ---
+                const isLocked = inst.passwordProtected || inst.isLocked || false;
+                const ambientTemp = inst.ambientTemp ?? "22";
+                const trackTemp = inst.trackTemp ?? "28";
+                const rainChance = inst.rainChance ?? "0%";
+
+                const badgesHtml = `
+                    <div class="server-badges">
+                        <div class="server-badge ${isLocked ? 'badge-locked' : 'badge-open'}">
+                            <i class="fa-solid fa-${isLocked ? 'lock' : 'lock-open'}"></i> 
+                            ${isLocked ? 'LOCKED' : 'OPEN'}
+                        </div>
+                        <div class="server-badge">
+                            <i class="fa-solid fa-temperature-half"></i> 
+                            Amb: ${ambientTemp}°C
+                        </div>
+                        <div class="server-badge">
+                            <i class="fa-solid fa-road"></i> 
+                            Track: ${trackTemp}°C
+                        </div>
+                        <div class="server-badge">
+                            <i class="fa-solid fa-cloud-rain"></i> 
+                            Rain: ${rainChance}
+                        </div>
+                    </div>
+                `;
+
                 html += `
                     <div class="server-card ${isOnline ? '' : 'offline'}">
                         <div class="server-header">
