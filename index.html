@@ -280,16 +280,24 @@
         function handleServerCardClick(cardEl) {
             const port = cardEl.getAttribute('data-port');
             const name = cardEl.getAttribute('data-name');
-            openLiveModal(port, name);
+            const track = cardEl.getAttribute('data-track');
+            openLiveModal(port, name, track);
         }
 
-        function openLiveModal(serverPort, serverName) {
+        function openLiveModal(serverPort, serverName, rawTrack) {
             const modal = document.getElementById('live-modal');
             const titleEl = document.getElementById('modal-server-title');
             const tbody = document.getElementById('modal-live-tbody');
+            const trackImg = document.getElementById('modal-track-img');
 
             if (titleEl) titleEl.textContent = serverName;
             if (modal) modal.style.display = 'flex';
+
+            if (trackImg && rawTrack) {
+                const fileName = getTrackFileName(rawTrack);
+                trackImg.src = `${ASSET_PATH}${fileName}?v=1.1`;
+            }
+
             if (tbody) {
                 tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--text-muted);">Listening for port ${serverPort} telemetry...</td></tr>`;
             }
@@ -624,7 +632,7 @@ function renderServerCards(instances, container) {
                 `;
 
                 html += `
-                        <div class="server-card ${isOnline ? '' : 'offline'}" data-port="${inst.broadcastingPort || (9100 + getNum(inst.name))}" data-name="${escapeHtml(serverName)}" onclick="handleServerCardClick(this)" style="cursor: pointer;">
+                        <div class="server-card ${isOnline ? '' : 'offline'}" data-port="${inst.broadcastingPort || (9100 + getNum(inst.name))}" data-name="${escapeHtml(serverName)}" data-track="${escapeHtml(rawTrack)}" onclick="handleServerCardClick(this)" style="cursor: pointer;">
                         <div class="server-header">
                             <div>
                                 <div class="server-title">${formattedTitle}</div>
