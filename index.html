@@ -171,594 +171,561 @@
     </div>
 
     <script>
-        const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1";
-        const ASSET_PATH = "https://cdn.jsdelivr.net/gh/BrandedCha0s/bchq-dashboard@main/tracks/";
+    const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1";
+    const ASSET_PATH = "https://cdn.jsdelivr.net/gh/BrandedCha0s/bchq-dashboard@main/tracks/";
 
-        const ACC_TRACK_NAMES = {
-            "monza": "Autodromo Nazionale Monza",
-            "zolder": "Circuit Zolder",
-            "brands_hatch": "Brands Hatch",
-            "silverstone": "Silverstone Circuit",
-            "paul_ricard": "Circuit Paul Ricard",
-            "misano": "Misano World Circuit",
-            "spa": "Circuit de Spa-Francorchamps",
-            "nurburgring": "Nürburgring GP",
-            "nurburgring_24h": "Nürburgring 24h (Nordschleife)",
-            "barcelona": "Circuit de Barcelona-Catalunya",
-            "hungaroring": "Hungaroring",
-            "zandvoort": "Circuit Zandvoort",
-            "kyalami": "Kyalami Grand Prix Circuit",
-            "mount_panorama": "Mount Panorama (Bathurst)",
-            "suzuka": "Suzuka Circuit",
-            "laguna_seca": "WeatherTech Raceway Laguna Seca",
-            "imola": "Autodromo Enzo e Dino Ferrari (Imola)",
-            "donington": "Donington Park",
-            "oulton_park": "Oulton Park",
-            "snetterton": "Snetterton Circuit",
-            "cota": "Circuit of the Americas (COTA)",
-            "indianapolis": "Indianapolis Motor Speedway",
-            "watkins_glen": "Watkins Glen International",
-            "valencia": "Circuit Ricardo Tormo (Valencia)",
-            "red_bull_ring": "Red Bull Ring"
-        };
+    const ACC_TRACK_NAMES = {
+        "monza": "Autodromo Nazionale Monza",
+        "zolder": "Circuit Zolder",
+        "brands_hatch": "Brands Hatch",
+        "silverstone": "Silverstone Circuit",
+        "paul_ricard": "Circuit Paul Ricard",
+        "misano": "Misano World Circuit",
+        "spa": "Circuit de Spa-Francorchamps",
+        "nurburgring": "Nürburgring GP",
+        "nurburgring_24h": "Nürburgring 24h (Nordschleife)",
+        "barcelona": "Circuit de Barcelona-Catalunya",
+        "hungaroring": "Hungaroring",
+        "zandvoort": "Circuit Zandvoort",
+        "kyalami": "Kyalami Grand Prix Circuit",
+        "mount_panorama": "Mount Panorama (Bathurst)",
+        "suzuka": "Suzuka Circuit",
+        "laguna_seca": "WeatherTech Raceway Laguna Seca",
+        "imola": "Autodromo Enzo e Dino Ferrari (Imola)",
+        "donington": "Donington Park",
+        "oulton_park": "Oulton Park",
+        "snetterton": "Snetterton Circuit",
+        "cota": "Circuit of the Americas (COTA)",
+        "indianapolis": "Indianapolis Motor Speedway",
+        "watkins_glen": "Watkins Glen International",
+        "valencia": "Circuit Ricardo Tormo (Valencia)",
+        "red_bull_ring": "Red Bull Ring"
+    };
 
-        const CAR_SETUP_FOLDERS = [
-            { folder: "amr_v8_vantage_gt3", name: "Aston Martin V8 Vantage GT3" },
-            { folder: "audi_r8_lms_evo_ii", name: "Audi R8 LMS GT3 evo II" },
-            { folder: "bentley_continental_gt3_2018", name: "Bentley Continental GT3" },
-            { folder: "bmw_m4_gt3", name: "BMW M4 GT3" },
-            { folder: "ferrari_296_gt3", name: "Ferrari 296 GT3" },
-            { folder: "ferrari_488_gt3_evo", name: "Ferrari 488 GT3 Evo" },
-            { folder: "ford_mustang_gt3", name: "Ford Mustang GT3" },
-            { folder: "honda_nsx_gt3_evo", name: "Honda NSX GT3 Evo" },
-            { folder: "lamborghini_huracan_gt3_evo2", name: "Lamborghini Huracan Evo2" },
-            { folder: "lexus_rc_f_gt3", name: "Lexus RC F GT3" },
-            { folder: "mclaren_720s_gt3", name: "McLaren 720S GT3" },
-            { folder: "mclaren_720s_gt3_evo", name: "McLaren 720S GT3 Evo 2023" },
-            { folder: "mercedes_amg_gt3_evo", name: "Mercedes-AMG GT3 Evo" },
-            { folder: "nissan_gt_r_gt3_2018", name: "Nissan GT-R Nismo GT3" }
-        ];
+    const CAR_SETUP_FOLDERS = [
+        { folder: "amr_v8_vantage_gt3", name: "Aston Martin V8 Vantage GT3" },
+        { folder: "audi_r8_lms_evo_ii", name: "Audi R8 LMS GT3 evo II" },
+        { folder: "bentley_continental_gt3_2018", name: "Bentley Continental GT3" },
+        { folder: "bmw_m4_gt3", name: "BMW M4 GT3" },
+        { folder: "ferrari_296_gt3", name: "Ferrari 296 GT3" },
+        { folder: "ferrari_488_gt3_evo", name: "Ferrari 488 GT3 Evo" },
+        { folder: "ford_mustang_gt3", name: "Ford Mustang GT3" },
+        { folder: "honda_nsx_gt3_evo", name: "Honda NSX GT3 Evo" },
+        { folder: "lamborghini_huracan_gt3_evo2", name: "Lamborghini Huracan Evo2" },
+        { folder: "lexus_rc_f_gt3", name: "Lexus RC F GT3" },
+        { folder: "mclaren_720s_gt3", name: "McLaren 720S GT3" },
+        { folder: "mclaren_720s_gt3_evo", name: "McLaren 720S GT3 Evo 2023" },
+        { folder: "mercedes_amg_gt3_evo", name: "Mercedes-AMG GT3 Evo" },
+        { folder: "nissan_gt_r_gt3_2018", name: "Nissan GT-R Nismo GT3" }
+    ];
 
-        const GITHUB_TRACK_FOLDERS = {
-            "monza": "monza",
-            "spa": "Spa",
-            "nurburgring": "nurburgring",
-            "nurburgring_24h": "nurburgring_24h",
-            "suzuka": "Suzuka",
-            "silverstone": "Silverstone",
-            "laguna_seca": "Laguna_Seca",
-            "imola": "Imola",
-            "brands_hatch": "brands_hatch",
-            "zolder": "Zolder",
-            "paul_ricard": "Paul_Ricard",
-            "barcelona": "Barcelona",
-            "hungaroring": "Hungaroring",
-            "zandvoort": "Zandvoort",
-            "kyalami": "Kyalami",
-            "mount_panorama": "mount_panorama",
-            "donington": "donington",
-            "oulton_park": "oulton_park",
-            "snetterton": "snetterton",
-            "cota": "cota",
-            "indianapolis": "indianapolis",
-            "watkins_glen": "watkins_glen",
-            "valencia": "Valencia",
-            "red_bull_ring": "red_bull_ring"
-        };
+    const GITHUB_TRACK_FOLDERS = {
+        "monza": "monza",
+        "spa": "Spa",
+        "nurburgring": "nurburgring",
+        "nurburgring_24h": "nurburgring_24h",
+        "suzuka": "Suzuka",
+        "silverstone": "Silverstone",
+        "laguna_seca": "Laguna_Seca",
+        "imola": "Imola",
+        "brands_hatch": "brands_hatch",
+        "zolder": "Zolder",
+        "paul_ricard": "Paul_Ricard",
+        "barcelona": "Barcelona",
+        "hungaroring": "Hungaroring",
+        "zandvoort": "Zandvoort",
+        "kyalami": "Kyalami",
+        "mount_panorama": "mount_panorama",
+        "donington": "donington",
+        "oulton_park": "oulton_park",
+        "snetterton": "snetterton",
+        "cota": "cota",
+        "indianapolis": "indianapolis",
+        "watkins_glen": "watkins_glen",
+        "valencia": "Valencia",
+        "red_bull_ring": "red_bull_ring"
+    };
 
-        // Comprehensive target lap times for all 25 ACC circuits
-        const ACC_AMATEUR_TARGETS = {
-            "monza": { beginner: "1:52–1:55", amateur: "1:49–1:50", strong: "1:47–1:48", pro: "1:45–1:46" },
-            "spa": { beginner: "2:22–2:25", amateur: "2:19–2:20", strong: "2:17–2:18", pro: "2:15–2:16" },
-            "silverstone": { beginner: "2:03–2:06", amateur: "1:59–2:00", strong: "1:57–1:58", pro: "1:55–1:56" },
-            "barcelona": { beginner: "1:48–1:51", amateur: "1:45–1:46", strong: "1:43–1:44", pro: "1:42–1:43" },
-            "nurburgring": { beginner: "1:58–2:01", amateur: "1:55–1:56", strong: "1:53–1:54", pro: "1:52–1:53" },
-            "brands_hatch": { beginner: "1:28–1:30", amateur: "1:25–1:26", strong: "1:23–1:24", pro: "1:22–1:23" },
-            "paul_ricard": { beginner: "1:58–2:01", amateur: "1:55–1:56", strong: "1:53–1:54", pro: "1:52–1:53" },
-            "suzuka": { beginner: "2:04–2:07", amateur: "2:00–2:02", strong: "1:59–2:00", pro: "1:57–1:58" },
-            "misano": { beginner: "1:39–1:41", amateur: "1:35–1:36", strong: "1:33–1:34", pro: "1:32–1:33" },
-            "zolder": { beginner: "1:32–1:34", amateur: "1:29–1:30", strong: "1:27–1:28", pro: "1:26–1:27" },
-            "nurburgring_24h": { beginner: "8:40–9:00", amateur: "8:20–8:30", strong: "8:05–8:15", pro: "7:55–8:02" },
-            "imola": { beginner: "1:49–1:52", amateur: "1:46–1:47", strong: "1:44–1:45", pro: "1:42–1:43" },
-            "hungaroring": { beginner: "1:46–1:49", amateur: "1:43–1:44", strong: "1:41–1:42", pro: "1:39–1:40" },
-            "zandvoort": { beginner: "1:39–1:42", amateur: "1:36–1:37", strong: "1:34–1:35", pro: "1:32–1:33" },
-            "kyalami": { beginner: "1:45–1:48", amateur: "1:42–1:43", strong: "1:40–1:41", pro: "1:38–1:39" },
-            "mount_panorama": { beginner: "2:07–2:12", amateur: "2:03–2:05", strong: "2:00–2:02", pro: "1:58–1:59" },
-            "laguna_seca": { beginner: "1:25–1:28", amateur: "1:22–1:23", strong: "1:20–1:21", pro: "1:18–1:19" },
-            "donington": { beginner: "1:31–1:34", amateur: "1:28–1:29", strong: "1:26–1:27", pro: "1:24–1:25" },
-            "oulton_park": { beginner: "1:39–1:42", amateur: "1:36–1:37", strong: "1:34–1:35", pro: "1:32–1:33" },
-            "snetterton": { beginner: "1:52–1:55", amateur: "1:48–1:50", strong: "1:46–1:47", pro: "1:44–1:45" },
-            "cota": { beginner: "2:10–2:14", amateur: "2:06–2:08", strong: "2:03–2:05", pro: "2:01–2:02" },
-            "indianapolis": { beginner: "1:26–1:29", amateur: "1:23–1:24", strong: "1:21–1:22", pro: "1:19–1:20" },
-            "watkins_glen": { beginner: "1:49–1:52", amateur: "1:46–1:47", strong: "1:44–1:45", pro: "1:42–1:43" },
-            "valencia": { beginner: "1:35–1:38", amateur: "1:32–1:33", strong: "1:30–1:31", pro: "1:28–1:29" },
-            "red_bull_ring": { beginner: "1:31–1:34", amateur: "1:28–1:29", strong: "1:26–1:27", pro: "1:24–1:25" }
-        };
+    const ACC_AMATEUR_TARGETS = {
+        "monza": { beginner: "1:52–1:55", amateur: "1:49–1:50", strong: "1:47–1:48", pro: "1:45–1:46" },
+        "spa": { beginner: "2:22–2:25", amateur: "2:19–2:20", strong: "2:17–2:18", pro: "2:15–2:16" },
+        "silverstone": { beginner: "2:03–2:06", amateur: "1:59–2:00", strong: "1:57–1:58", pro: "1:55–1:56" },
+        "barcelona": { beginner: "1:48–1:51", amateur: "1:45–1:46", strong: "1:43–1:44", pro: "1:42–1:43" },
+        "nurburgring": { beginner: "1:58–2:01", amateur: "1:55–1:56", strong: "1:53–1:54", pro: "1:52–1:53" },
+        "brands_hatch": { beginner: "1:28–1:30", amateur: "1:25–1:26", strong: "1:23–1:24", pro: "1:22–1:23" },
+        "paul_ricard": { beginner: "1:58–2:01", amateur: "1:55–1:56", strong: "1:53–1:54", pro: "1:52–1:53" },
+        "suzuka": { beginner: "2:04–2:07", amateur: "2:00–2:02", strong: "1:59–2:00", pro: "1:57–1:58" },
+        "misano": { beginner: "1:39–1:41", amateur: "1:35–1:36", strong: "1:33–1:34", pro: "1:32–1:33" },
+        "zolder": { beginner: "1:32–1:34", amateur: "1:29–1:30", strong: "1:27–1:28", pro: "1:26–1:27" },
+        "nurburgring_24h": { beginner: "8:40–9:00", amateur: "8:20–8:30", strong: "8:05–8:15", pro: "7:55–8:02" },
+        "imola": { beginner: "1:49–1:52", amateur: "1:46–1:47", strong: "1:44–1:45", pro: "1:42–1:43" },
+        "hungaroring": { beginner: "1:46–1:49", amateur: "1:43–1:44", strong: "1:41–1:42", pro: "1:39–1:40" },
+        "zandvoort": { beginner: "1:39–1:42", amateur: "1:36–1:37", strong: "1:34–1:35", pro: "1:32–1:33" },
+        "kyalami": { beginner: "1:45–1:48", amateur: "1:42–1:43", strong: "1:40–1:41", pro: "1:38–1:39" },
+        "mount_panorama": { beginner: "2:07–2:12", amateur: "2:03–2:05", strong: "2:00–2:02", pro: "1:58–1:59" },
+        "laguna_seca": { beginner: "1:25–1:28", amateur: "1:22–1:23", strong: "1:20–1:21", pro: "1:18–1:19" },
+        "donington": { beginner: "1:31–1:34", amateur: "1:28–1:29", strong: "1:26–1:27", pro: "1:24–1:25" },
+        "oulton_park": { beginner: "1:39–1:42", amateur: "1:36–1:37", strong: "1:34–1:35", pro: "1:32–1:33" },
+        "snetterton": { beginner: "1:52–1:55", amateur: "1:48–1:50", strong: "1:46–1:47", pro: "1:44–1:45" },
+        "cota": { beginner: "2:10–2:14", amateur: "2:06–2:08", strong: "2:03–2:05", pro: "2:01–2:02" },
+        "indianapolis": { beginner: "1:26–1:29", amateur: "1:23–1:24", strong: "1:21–1:22", pro: "1:19–1:20" },
+        "watkins_glen": { beginner: "1:49–1:52", amateur: "1:46–1:47", strong: "1:44–1:45", pro: "1:42–1:43" },
+        "valencia": { beginner: "1:35–1:38", amateur: "1:32–1:33", strong: "1:30–1:31", pro: "1:28–1:29" },
+        "red_bull_ring": { beginner: "1:31–1:34", amateur: "1:28–1:29", strong: "1:26–1:27", pro: "1:24–1:25" }
+    };
 
-            let html = "";
-            sortedCars.forEach((car, index) => {
-                const rank = index + 1;
-                const formattedLap = formatLapTime(car.bestLap);
+    function getGitHubTrackFolder(rawTrack) {
+        if (!rawTrack) return "nurburgring";
+        const clean = rawTrack.toLowerCase().replace(/_\d{4}$/, '').trim();
+        return GITHUB_TRACK_FOLDERS[clean] || clean;
+    }
 
-                html += `
-                    <tr style="border-bottom: 1px solid var(--border-color, #1a233a);">
-                        <td style="padding: 10px; font-weight: 700; color: var(--accent-cyan);">#${rank}</td>
-                        <td style="padding: 10px;">Car #${car.carIndex}</td>
-                        <td style="padding: 10px;"><span class="car-badge">GT3</span></td>
-                        <td style="padding: 10px; font-family: 'Orbitron', sans-serif;">${formattedLap}</td>
-                        <td style="padding: 10px; color: var(--text-muted);">${car.speed} km/h</td>
-                    </tr>
-                `;
-            });
+    function escapeHtml(str) {
+        if (!str) return "";
+        return String(str)
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    }
 
-    tbody.innerHTML = html || `<tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--text-muted);">Waiting for active drivers...</td></tr>`;
+    function formatBCHQText(text) {
+        if (!text) return "";
+        return escapeHtml(text).replace(/BCHQ/g, '<span class="brand-bc">BC</span><span class="brand-hq">HQ</span>');
+    }
 
-        
-        function getGitHubTrackFolder(rawTrack) {
-            if (!rawTrack) return "nurburgring";
-            const clean = rawTrack.toLowerCase().replace(/_\d{4}$/, '').trim();
-            return GITHUB_TRACK_FOLDERS[clean] || clean;
-        }
+    function getTrackFileName(rawTrackKey) {
+        if (!rawTrackKey) return "nurburgring.png";
+        const cleanKey = rawTrackKey.toLowerCase().replace(/_\d{4}$/, '').trim();
+        const sortedKeys = Object.keys(ACC_TRACK_NAMES).sort((a, b) => b.length - a.length);
+        const matchedKey = sortedKeys.find(k => cleanKey.includes(k));
+        return matchedKey ? `${matchedKey}.png` : `${cleanKey}.png`;
+    }
 
-        function escapeHtml(str) {
-            if (!str) return "";
-            return String(str)
-                .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-        }
+    function getTrackDisplayName(rawTrackKey) {
+        if (!rawTrackKey) return "NÜRBURGRING GP";
+        const cleanKey = rawTrackKey.toLowerCase().replace(/_\d{4}$/, '').trim();
+        const sortedKeys = Object.keys(ACC_TRACK_NAMES).sort((a, b) => b.length - a.length);
+        const matchedKey = sortedKeys.find(k => cleanKey.includes(k));
+        return matchedKey ? ACC_TRACK_NAMES[matchedKey] : cleanKey.replace(/_/g, ' ').toUpperCase();
+    }
 
-        function formatBCHQText(text) {
-            if (!text) return "";
-            return escapeHtml(text).replace(/BCHQ/g, '<span class="brand-bc">BC</span><span class="brand-hq">HQ</span>');
-        }
+    function formatLapTime(ms) {
+        if (!ms || ms === 999999999 || ms <= 0) return "--:--.---";
+        const min = Math.floor(ms / 60000);
+        const sec = Math.floor((ms % 60000) / 1000);
+        const millis = ms % 1000;
+        return `${min}:${sec.toString().padStart(2, '0')}.${millis.toString().padStart(3, '0')}`;
+    }
 
-        function getTrackFileName(rawTrackKey) {
-            if (!rawTrackKey) return "nurburgring.png";
-            const cleanKey = rawTrackKey.toLowerCase().replace(/_\d{4}$/, '').trim();
-            // Sort keys by length descending to match longer names (e.g., nurburgring_24h) first
-            const sortedKeys = Object.keys(ACC_TRACK_NAMES).sort((a, b) => b.length - a.length);
-            const matchedKey = sortedKeys.find(k => cleanKey.includes(k));
-            return matchedKey ? `${matchedKey}.png` : `${cleanKey}.png`;
-        }
+    async function checkStreamersLiveStatus() {
+        const streamers = ["brandedchaos86", "H477Y96", "Alteredpixelz"];
+        const btn = document.getElementById("header-streamers-btn");
+        const badge = document.getElementById("streamer-live-badge");
+        if (!btn || !badge) return;
 
-        function getTrackDisplayName(rawTrackKey) {
-            if (!rawTrackKey) return "NÜRBURGRING GP";
-            const cleanKey = rawTrackKey.toLowerCase().replace(/_\d{4}$/, '').trim();
-            const sortedKeys = Object.keys(ACC_TRACK_NAMES).sort((a, b) => b.length - a.length);
-            const matchedKey = sortedKeys.find(k => cleanKey.includes(k));
-            return matchedKey ? ACC_TRACK_NAMES[matchedKey] : cleanKey.replace(/_/g, ' ').toUpperCase();
-        }
-
-        function formatLapTime(ms) {
-            if (!ms || ms === 999999999 || ms <= 0) return "--:--.---";
-            const min = Math.floor(ms / 60000);
-            const sec = Math.floor((ms % 60000) / 1000);
-            const millis = ms % 1000;
-            return `${min}:${sec.toString().padStart(2, '0')}.${millis.toString().padStart(3, '0')}`;
-        }
-
-        async function checkStreamersLiveStatus() {
-            const streamers = ["brandedchaos86", "H477Y96", "Alteredpixelz"];
-            const btn = document.getElementById("header-streamers-btn");
-            const badge = document.getElementById("streamer-live-badge");
-            if (!btn || !badge) return;
-
-            let anyLive = false;
-            for (const user of streamers) {
-                try {
-                    const res = await fetch(`${AZURE_API_URL}?type=twitch&user=${user}`);
-                    const data = await res.json();
-                    if (data && data.isLive) {
-                        anyLive = true;
-                        break;
-                    }
-                } catch (e) {}
-            }
-
-            if (anyLive) {
-                btn.classList.add("streamer-is-live");
-                badge.style.display = "block";
-            } else {
-                btn.classList.remove("streamer-is-live");
-                badge.style.display = "none";
-            }
-        }
-
-        // Clean and reliable setup selector & automatic downloader
-        async function handleCarSetupSelection(selectElement, trackFolder) {
-            const selectedValue = selectElement.value;
-            if (!selectedValue) return;
-
-            // If a car folder was selected (not a download URL)
-            if (!selectedValue.startsWith('http')) {
-                const carFolder = selectedValue;
-                const selectedOptionText = selectElement.options[selectElement.selectedIndex].text;
-                selectElement.innerHTML = `<option value="" disabled selected>Loading setups...</option>`;
-
-                try {
-                    const apiUrl = `https://api.github.com/repos/BrandedCha0s/acc-car-setups/contents/${carFolder}/${trackFolder}`;
-                    const res = await fetch(apiUrl);
-                    const files = await res.json();
-
-                    let optionsHtml = `<option value="" disabled selected>Select File (${selectedOptionText})...</option>`;
-
-                    if (Array.isArray(files)) {
-                        const jsonFiles = files.filter(f => f.name.endsWith('.json'));
-                        if (jsonFiles.length > 0) {
-                            jsonFiles.forEach(f => {
-                                optionsHtml += `<option value="${f.download_url}" data-filename="${f.name}">${f.name}</option>`;
-                            });
-                        } else {
-                            optionsHtml += `<option value="" disabled>No setup files found for this track</option>`;
-                        }
-                    } else {
-                        optionsHtml += `<option value="" disabled>No setup folder exists for this track</option>`;
-                    }
-
-                    selectElement.innerHTML = optionsHtml;
-                } catch (err) {
-                    console.error("Failed to fetch setups:", err);
-                    selectElement.innerHTML = `<option value="" disabled>Error loading setups</option>`;
+        let anyLive = false;
+        for (const user of streamers) {
+            try {
+                const res = await fetch(`${AZURE_API_URL}?type=twitch&user=${user}`);
+                const data = await res.json();
+                if (data && data.isLive) {
+                    anyLive = true;
+                    break;
                 }
-                return;
-            }
-
-            // Otherwise, a specific .json setup file was selected -> trigger download
-            const fileUrl = selectedValue;
-            const selectedOption = selectElement.options[selectElement.selectedIndex];
-            const fileName = selectedOption.getAttribute("data-filename") || "setup.json";
-
-            try {
-                const response = await fetch(fileUrl);
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = fileName;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-                selectElement.selectedIndex = 0;
-            } catch (e) {
-                window.open(fileUrl, '_blank');
-            }
+            } catch (e) {}
         }
 
-        // Fetch Live Server Instances with LocalStorage Caching
-async function loadLiveServers(isBackground = false) {
-    const container = document.getElementById("servers-container");
-    if (!container) return;
-
-    if (!isBackground) {
-        const cachedData = localStorage.getItem("bchq_cached_servers");
-        if (cachedData) {
-            try {
-                const parsed = JSON.parse(cachedData);
-                renderServerCards(parsed, container);
-            } catch (e) {}
+        if (anyLive) {
+            btn.classList.add("streamer-is-live");
+            badge.style.display = "block";
+        } else {
+            btn.classList.remove("streamer-is-live");
+            badge.style.display = "none";
         }
     }
 
-    try {
-        const response = await fetch(`${AZURE_API_URL}?type=servers`);
-        const data = await response.json();
-        
-        localStorage.setItem("bchq_cached_servers", JSON.stringify(data));
-        
-        const instances = Array.isArray(data) ? data : (data.instances || []);
-        if (instances.length > 0) {
-            renderServerCards(instances, container);
-        }
-    } catch (err) {}
-}
+    async function handleCarSetupSelection(selectElement, trackFolder) {
+        const selectedValue = selectElement.value;
+        if (!selectedValue) return;
 
-        function getNum(name) {
-            if (!name) return 999;
-            const match = name.match(/#(\d+)/);
-            return match ? parseInt(match[1], 10) : 1;
-        }
-
-// Move renderServerCards here (outside of loadLiveServers)
-function renderServerCards(instances, container) {
-            instances.sort((a, b) => {
-                const getNum = name => {
-                    if (!name) return 999;
-                    const match = name.match(/#(\d+)/);
-                    return match ? parseInt(match[1], 10) : 1;
-                };
-                return getNum(a.name) - getNum(b.name);
-            });
-
-            let html = "";
-            instances.forEach(inst => {
-                const serverName = inst.name || "ACC Server";
-                const formattedTitle = formatBCHQText(serverName);
-                const rawTrack = inst.track || "nurburgring";
-                const maxSlots = inst.maxSlots || 20;
-                const isOnline = Boolean(inst.isOnline);
-
-                const fileName = getTrackFileName(rawTrack);
-                const displayName = getTrackDisplayName(rawTrack);
-                const trackImgUrl = `${ASSET_PATH}${fileName}?v=1.1`;
-
-                let mapTransformClass = "";
-                const lowerTrack = rawTrack.toLowerCase();
-                if (lowerTrack.includes("suzuka")) mapTransformClass = "rotate-suzuka";
-                else if (lowerTrack.includes("silverstone")) mapTransformClass = "rotate-silverstone";
-                else if (lowerTrack.includes("nurburgring_24h")) mapTransformClass = "rotate-nurburgring_24h";
-
-                const trackFolder = getGitHubTrackFolder(rawTrack);
-                let carOptionsHtml = CAR_SETUP_FOLDERS.map(car => {
-                    return `<option value="${car.folder}">${car.name}</option>`;
-                }).join('');
-
-                // Check if amateur targets exist for this track
-                const cleanTrackKey = lowerTrack.replace(/_\d{4}$/, '').trim();
-                const trackTargets = ACC_AMATEUR_TARGETS[cleanTrackKey];
-                let targetsHtml = "";
-                
-                if (trackTargets) {
-                    targetsHtml = `
-                        <div class="track-targets-box">
-                            <div class="targets-header">
-                                <i class="fa-solid fa-flag-checkered"></i> AMATEUR TARGET LAP TIMES
-                            </div>
-                            <div class="targets-grid">
-                                <div class="target-item">
-                                    <span class="target-label">Beginner</span>
-                                    <span class="target-time">${trackTargets.beginner}</span>
-                                </div>
-                                <div class="target-item">
-                                    <span class="target-label">Amateur</span>
-                                    <span class="target-time">${trackTargets.amateur}</span>
-                                </div>
-                                <div class="target-item">
-                                    <span class="target-label">Strong Amateur</span>
-                                    <span class="target-time">${trackTargets.strong}</span>
-                                </div>
-                                <div class="target-item">
-                                    <span class="target-label">Very Fast</span>
-                                    <span class="target-time">${trackTargets.pro}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                // --- ENVIRONMENT BADGES DATA & HTML ---
-                const isLocked = inst.passwordProtected || inst.isLocked || false;
-                const ambientTemp = inst.ambientTemp ?? "22";
-                const trackTemp = inst.trackTemp ?? "28";
-                const rainChance = inst.rainChance ?? "0%";
-
-                const badgesHtml = `
-                    <div class="server-badges">
-                        <div class="server-badge ${isLocked ? 'badge-locked' : 'badge-open'}">
-                            <i class="fa-solid fa-${isLocked ? 'lock' : 'lock-open'}"></i> 
-                            ${isLocked ? 'LOCKED' : 'OPEN'}
-                        </div>
-                        <div class="server-badge">
-                            <i class="fa-solid fa-temperature-half"></i> 
-                            Amb: ${ambientTemp}°C
-                        </div>
-                        <div class="server-badge">
-                            <i class="fa-solid fa-road"></i> 
-                            Track: ${trackTemp}°C
-                        </div>
-                        <div class="server-badge">
-                            <i class="fa-solid fa-cloud-rain"></i> 
-                            Rain: ${rainChance}
-                        </div>
-                    </div>
-                `;
-
-                html += `
-                       <div class="server-card ${isOnline ? '' : 'offline'}">
-                        <div class="server-header">
-                            <div>
-                                <div class="server-title">${formattedTitle}</div>
-                                <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(displayName).toUpperCase()}</div>
-                            </div>
-                            <button class="copy-btn" data-name="${escapeHtml(serverName)}" onclick="copyServerName(this)">
-                                <i class="fa-regular fa-copy"></i> Copy Name
-                            </button>
-                        </div>
-                        <div class="track-map-container">
-                            <img class="track-map-img ${mapTransformClass}" src="${trackImgUrl}" alt="${escapeHtml(displayName)}" onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png?v=1.1';" />
-                        </div>
-
-                        <!-- Environment Badges -->
-                        ${badgesHtml}
-
-                        <!-- Track Car Setups Dropdown -->
-                        <div style="margin: 10px 0; background: rgba(0, 240, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
-                            <span style="font-size: 0.8rem; font-family: 'Orbitron', sans-serif; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
-                                <i class="fa-solid fa-sliders" style="color: var(--accent-cyan);"></i> SETUPS
-                            </span>
-                            <select onchange="handleCarSetupSelection(this, '${trackFolder}')" style="background: var(--bg-dark); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; outline: none; max-width: 190px;">
-                                <option value="" disabled selected>Select Car Setup...</option>
-                                ${carOptionsHtml}
-                            </select>
-                        </div>
-
-                        <!-- Target Lap Times Widget -->
-                        ${targetsHtml}
-
-                        <div style="margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-                            <span class="meta-label">Connected Drivers</span>
-                            <span class="meta-value" style="color: var(--accent-cyan); font-weight: 700;">
-                                ${inst.connectedCount || 0} / ${maxSlots}
-                            </span>
-                        </div>
-
-                        <div class="server-meta" style="margin-top: 10px;">
-                            <div class="meta-item">
-                                <span class="meta-label">Status</span>
-                                <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
-                                    ${isOnline ? 'RUNNING' : 'OFFLINE'}
-                                </span>
-                            </div>
-                            <div class="meta-item">
-                                <span class="meta-label">Capacity</span>
-                                <span class="meta-value">${maxSlots} Slots</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-        }
-
-        const GT3_CAR_MODELS = {
-            0: "Porsche 991 GT3 R", 1: "Mercedes-AMG GT3", 2: "Ferrari 488 GT3", 3: "Audi R8 LMS", 4: "Lamborghini Huracan GT3",
-            5: "McLaren 650S GT3", 6: "Nissan GT-R Nismo GT3 2018", 7: "BMW M6 GT3", 8: "Bentley Continental GT3 2018",
-            10: "Nissan GT-R Nismo GT3 2017", 11: "Bentley Continental GT3 2016", 12: "Aston Martin V12 Vantage GT3",
-            13: "Lamborghini Gallardo R-EX", 14: "Jaguar G3", 15: "Lexus RC F GT3", 16: "Lamborghini Huracan Evo (2019)",
-            17: "Honda NSX GT3", 19: "Audi R8 LMS Evo (2019)", 20: "AMR V8 Vantage (2019)", 21: "Honda NSX Evo (2019)",
-            22: "McLaren 720S GT3 (2019)", 23: "Porsche 911II GT3 R (2019)", 24: "Ferrari 488 GT3 Evo 2020", 25: "Mercedes-AMG GT3 2020",
-            30: "BMW M4 GT3", 31: "Audi R8 LMS GT3 evo II", 32: "Ferrari 296 GT3", 33: "Lamborghini Huracan Evo2",
-            34: "Porsche 992 GT3 R", 35: "McLaren 720S GT3 Evo 2023", 36: "Ford Mustang GT3"
-        };
-
-        function getCarName(modelId) {
-            if (modelId === undefined || modelId === null) return "GT3";
-            let name = GT3_CAR_MODELS[modelId] || modelId;
-            return String(name).replace(/^Car ID:\s*/i, '').trim();
-        }
-
-        function switchSessionTable(sessionType) {
-            const qualWrapper = document.getElementById('qualifying-table-wrapper');
-            const raceWrapper = document.getElementById('race-table-wrapper');
-            const btnQual = document.getElementById('btn-qualifying');
-            const btnRace = document.getElementById('btn-race');
-
-            if (sessionType === 'qualifying') {
-                qualWrapper.style.display = 'block';
-                raceWrapper.style.display = 'none';
-                btnQual.classList.add('active');
-                btnRace.classList.remove('active');
-            } else {
-                qualWrapper.style.display = 'none';
-                raceWrapper.style.display = 'block';
-                btnQual.classList.remove('active');
-                btnRace.classList.add('active');
-            }
-        }
-
-        async function fetchLeaderboard(trackName) {
-            const qualTbody = document.getElementById("qualifying-leaderboard-body");
-            const raceTbody = document.getElementById("race-leaderboard-body");
-            if (!qualTbody || !raceTbody) return;
+        if (!selectedValue.startsWith('http')) {
+            const carFolder = selectedValue;
+            const selectedOptionText = selectElement.options[selectElement.selectedIndex].text;
+            selectElement.innerHTML = `<option value="" disabled selected>Loading setups...</option>`;
 
             try {
-                const response = await fetch(`${AZURE_API_URL}?track=${encodeURIComponent(trackName)}`);
-                let drivers = await response.json();
+                const apiUrl = `https://api.github.com/repos/BrandedCha0s/acc-car-setups/contents/${carFolder}/${trackFolder}`;
+                const res = await fetch(apiUrl);
+                const files = await res.json();
 
-                let qualDrivers = [];
-                let raceDrivers = [];
+                let optionsHtml = `<option value="" disabled selected>Select File (${selectedOptionText})...</option>`;
 
-                if (Array.isArray(drivers)) {
-                    qualDrivers = drivers.filter(d => d.sessionType && d.sessionType.toLowerCase().includes('qualifying')).slice(0, 10);
-                    raceDrivers = drivers.filter(d => !d.sessionType || d.sessionType.toLowerCase().includes('race')).slice(0, 10);
-                }
-
-                // Render Qualifying Table
-                if (qualDrivers.length === 0) {
-                    qualTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--text-muted);">No recorded qualifying lap times for ${trackName} yet.</td></tr>`;
+                if (Array.isArray(files)) {
+                    const jsonFiles = files.filter(f => f.name.endsWith('.json'));
+                    if (jsonFiles.length > 0) {
+                        jsonFiles.forEach(f => {
+                            optionsHtml += `<option value="${f.download_url}" data-filename="${f.name}">${f.name}</option>`;
+                        });
+                    } else {
+                        optionsHtml += `<option value="" disabled>No setup files found for this track</option>`;
+                    }
                 } else {
-                    let html = "";
-                    const leaderLapMs = qualDrivers[0].bestLapMs;
-                    qualDrivers.forEach((driver, index) => {
-                        const rank = index + 1;
-                        const rankClass = rank === 1 ? 'rank-1' : (rank === 2 ? 'rank-2' : (rank === 3 ? 'rank-3' : ''));
-                        const gap = index === 0 ? "—" : `+${((driver.bestLapMs - leaderLapMs) / 1000).toFixed(3)}s`;
-
-                        html += `
-                            <tr>
-                                <td class="rank-column ${rankClass}">#${rank}</td>
-                                <td class="driver-name">${escapeHtml(driver.driverName) || 'Unknown'}</td>
-                                <td><span class="car-badge">${escapeHtml(getCarName(driver.carModel))}</span></td>
-                                <td class="session">${driver.sessionType || 'Qualifying'}</td>
-                                <td class="lap-time">${formatLapTime(driver.bestLapMs)}</td>
-                                <td class="gap-cell">${gap}</td>
-                                <td>${driver.lastUpdated ? new Date(driver.lastUpdated).toLocaleDateString() : '—'}</td>
-                            </tr>
-                        `;
-                    });
-                    qualTbody.innerHTML = html;
+                    optionsHtml += `<option value="" disabled>No setup folder exists for this track</option>`;
                 }
 
-                // Render Race Table
-                if (raceDrivers.length === 0) {
-                    raceTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--text-muted);">No recorded race lap times for ${trackName} yet.</td></tr>`;
-                } else {
-                    let html = "";
-                    const leaderLapMs = raceDrivers[0].bestLapMs;
-                    raceDrivers.forEach((driver, index) => {
-                        const rank = index + 1;
-                        const rankClass = rank === 1 ? 'rank-1' : (rank === 2 ? 'rank-2' : (rank === 3 ? 'rank-3' : ''));
-                        const gap = index === 0 ? "—" : `+${((driver.bestLapMs - leaderLapMs) / 1000).toFixed(3)}s`;
-
-                        html += `
-                            <tr>
-                                <td class="rank-column ${rankClass}">#${rank}</td>
-                                <td class="driver-name">${escapeHtml(driver.driverName) || 'Unknown'}</td>
-                                <td><span class="car-badge">${escapeHtml(getCarName(driver.carModel))}</span></td>
-                                <td class="session">${driver.sessionType || 'Race'}</td>
-                                <td class="lap-time">${formatLapTime(driver.bestLapMs)}</td>
-                                <td class="gap-cell">${gap}</td>
-                                <td>${driver.lastUpdated ? new Date(driver.lastUpdated).toLocaleDateString() : '—'}</td>
-                            </tr>
-                        `;
-                    });
-                    raceTbody.innerHTML = html;
-                }
-
+                selectElement.innerHTML = optionsHtml;
             } catch (err) {
-                qualTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--accent-red);">Failed to query Azure DB records.</td></tr>`;
-                raceTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--accent-red);">Failed to query Azure DB records.</td></tr>`;
+                console.error("Failed to fetch setups:", err);
+                selectElement.innerHTML = `<option value="" disabled>Error loading setups</option>`;
+            }
+            return;
+        }
+
+        const fileUrl = selectedValue;
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        const fileName = selectedOption.getAttribute("data-filename") || "setup.json";
+
+        try {
+            const response = await fetch(fileUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            selectElement.selectedIndex = 0;
+        } catch (e) {
+            window.open(fileUrl, '_blank');
+        }
+    }
+
+    async function loadLiveServers(isBackground = false) {
+        const container = document.getElementById("servers-container");
+        if (!container) return;
+
+        if (!isBackground) {
+            const cachedData = localStorage.getItem("bchq_cached_servers");
+            if (cachedData) {
+                try {
+                    const parsed = JSON.parse(cachedData);
+                    renderServerCards(parsed, container);
+                } catch (e) {}
             }
         }
 
-        function onTrackChange(trackName) {
-            localStorage.setItem("bchq_selected_track", trackName);
-            fetchLeaderboard(trackName);
-        }
+        try {
+            const response = await fetch(`${AZURE_API_URL}?type=servers`);
+            const data = await response.json();
+            
+            localStorage.setItem("bchq_cached_servers", JSON.stringify(data));
+            
+            const instances = Array.isArray(data) ? data : (data.instances || []);
+            if (instances.length > 0) {
+                renderServerCards(instances, container);
+            }
+        } catch (err) {}
+    }
 
-        function copyServerName(btn) {
-            const name = btn.getAttribute("data-name");
-            if (!name) return;
-            navigator.clipboard.writeText(name).then(() => {
-                const toast = document.getElementById("toast");
-                if (toast) {
-                    toast.classList.add("show");
-                    setTimeout(() => toast.classList.remove("show"), 2500);
-                }
-            });
-        }
+    function getNum(name) {
+        if (!name) return 999;
+        const match = name.match(/#(\d+)/);
+        return match ? parseInt(match[1], 10) : 1;
+    }
 
-        function initDashboard() {
-            loadLiveServers();
-            checkStreamersLiveStatus();
+    function renderServerCards(instances, container) {
+        instances.sort((a, b) => {
+            const getNum = name => {
+                if (!name) return 999;
+                const match = name.match(/#(\d+)/);
+                return match ? parseInt(match[1], 10) : 1;
+            };
+            return getNum(a.name) - getNum(b.name);
+        });
 
-            const savedTrack = localStorage.getItem("bchq_selected_track") || "nurburgring";
-            const trackSelect = document.querySelector("#track-select");
-            if (trackSelect) trackSelect.value = savedTrack;
+        let html = "";
+        instances.forEach(inst => {
+            const serverName = inst.name || "ACC Server";
+            const formattedTitle = formatBCHQText(serverName);
+            const rawTrack = inst.track || "nurburgring";
+            const maxSlots = inst.maxSlots || 20;
+            const isOnline = Boolean(inst.isOnline);
 
-            fetchLeaderboard(savedTrack);
+            const fileName = getTrackFileName(rawTrack);
+            const displayName = getTrackDisplayName(rawTrack);
+            const trackImgUrl = `${ASSET_PATH}${fileName}?v=1.1`;
 
-            setInterval(() => {
-                loadLiveServers(true);
-                checkStreamersLiveStatus();
-            }, 15000);
-        }
+            let mapTransformClass = "";
+            const lowerTrack = rawTrack.toLowerCase();
+            if (lowerTrack.includes("suzuka")) mapTransformClass = "rotate-suzuka";
+            else if (lowerTrack.includes("silverstone")) mapTransformClass = "rotate-silverstone";
+            else if (lowerTrack.includes("nurburgring_24h")) mapTransformClass = "rotate-nurburgring_24h";
 
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", initDashboard);
+            const trackFolder = getGitHubTrackFolder(rawTrack);
+            let carOptionsHtml = CAR_SETUP_FOLDERS.map(car => {
+                return `<option value="${car.folder}">${car.name}</option>`;
+            }).join('');
+
+            const cleanTrackKey = lowerTrack.replace(/_\d{4}$/, '').trim();
+            const trackTargets = ACC_AMATEUR_TARGETS[cleanTrackKey];
+            let targetsHtml = "";
+            
+            if (trackTargets) {
+                targetsHtml = `
+                    <div class="track-targets-box">
+                        <div class="targets-header">
+                            <i class="fa-solid fa-flag-checkered"></i> AMATEUR TARGET LAP TIMES
+                        </div>
+                        <div class="targets-grid">
+                            <div class="target-item">
+                                <span class="target-label">Beginner</span>
+                                <span class="target-time">${trackTargets.beginner}</span>
+                            </div>
+                            <div class="target-item">
+                                <span class="target-label">Amateur</span>
+                                <span class="target-time">${trackTargets.amateur}</span>
+                            </div>
+                            <div class="target-item">
+                                <span class="target-label">Strong Amateur</span>
+                                <span class="target-time">${trackTargets.strong}</span>
+                            </div>
+                            <div class="target-item">
+                                <span class="target-label">Very Fast</span>
+                                <span class="target-time">${trackTargets.pro}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const isLocked = inst.passwordProtected || inst.isLocked || false;
+            const ambientTemp = inst.ambientTemp ?? "22";
+            const trackTemp = inst.trackTemp ?? "28";
+            const rainChance = inst.rainChance ?? "0%";
+
+            const badgesHtml = `
+                <div class="server-badges">
+                    <div class="server-badge ${isLocked ? 'badge-locked' : 'badge-open'}">
+                        <i class="fa-solid fa-${isLocked ? 'lock' : 'lock-open'}"></i> 
+                        ${isLocked ? 'LOCKED' : 'OPEN'}
+                    </div>
+                    <div class="server-badge">
+                        <i class="fa-solid fa-temperature-half"></i> 
+                        Amb: ${ambientTemp}°C
+                    </div>
+                    <div class="server-badge">
+                        <i class="fa-solid fa-road"></i> 
+                        Track: ${trackTemp}°C
+                    </div>
+                    <div class="server-badge">
+                        <i class="fa-solid fa-cloud-rain"></i> 
+                        Rain: ${rainChance}
+                    </div>
+                </div>
+            `;
+
+            html += `
+                <div class="server-card ${isOnline ? '' : 'offline'}">
+                    <div class="server-header">
+                        <div>
+                            <div class="server-title">${formattedTitle}</div>
+                            <div class="server-track"><i class="fa-solid fa-location-dot"></i> ${escapeHtml(displayName).toUpperCase()}</div>
+                        </div>
+                        <button class="copy-btn" data-name="${escapeHtml(serverName)}" onclick="copyServerName(this)">
+                            <i class="fa-regular fa-copy"></i> Copy Name
+                        </button>
+                    </div>
+                    <div class="track-map-container">
+                        <img class="track-map-img ${mapTransformClass}" src="${trackImgUrl}" alt="${escapeHtml(displayName)}" onerror="this.onerror=null; this.src='${ASSET_PATH}nurburgring.png?v=1.1';" />
+                    </div>
+
+                    ${badgesHtml}
+
+                    <div style="margin: 10px 0; background: rgba(0, 240, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between;">
+                        <span style="font-size: 0.8rem; font-family: 'Orbitron', sans-serif; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
+                            <i class="fa-solid fa-sliders" style="color: var(--accent-cyan);"></i> SETUPS
+                        </span>
+                        <select onchange="handleCarSetupSelection(this, '${trackFolder}')" style="background: var(--bg-dark); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; outline: none; max-width: 190px;">
+                            <option value="" disabled selected>Select Car Setup...</option>
+                            ${carOptionsHtml}
+                        </select>
+                    </div>
+
+                    ${targetsHtml}
+
+                    <div style="margin: 10px 0 0 0; padding-top: 8px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                        <span class="meta-label">Connected Drivers</span>
+                        <span class="meta-value" style="color: var(--accent-cyan); font-weight: 700;">
+                            ${inst.connectedCount || 0} / ${maxSlots}
+                        </span>
+                    </div>
+
+                    <div class="server-meta" style="margin-top: 10px;">
+                        <div class="meta-item">
+                            <span class="meta-label">Status</span>
+                            <span class="meta-value" style="color: ${isOnline ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                                ${isOnline ? 'RUNNING' : 'OFFLINE'}
+                            </span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Capacity</span>
+                            <span class="meta-value">${maxSlots} Slots</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    }
+
+    const GT3_CAR_MODELS = {
+        0: "Porsche 991 GT3 R", 1: "Mercedes-AMG GT3", 2: "Ferrari 488 GT3", 3: "Audi R8 LMS", 4: "Lamborghini Huracan GT3",
+        5: "McLaren 650S GT3", 6: "Nissan GT-R Nismo GT3 2018", 7: "BMW M6 GT3", 8: "Bentley Continental GT3 2018",
+        10: "Nissan GT-R Nismo GT3 2017", 11: "Bentley Continental GT3 2016", 12: "Aston Martin V12 Vantage GT3",
+        13: "Lamborghini Gallardo R-EX", 14: "Jaguar G3", 15: "Lexus RC F GT3", 16: "Lamborghini Huracan Evo (2019)",
+        17: "Honda NSX GT3", 19: "Audi R8 LMS Evo (2019)", 20: "AMR V8 Vantage (2019)", 21: "Honda NSX Evo (2019)",
+        22: "McLaren 720S GT3 (2019)", 23: "Porsche 911II GT3 R (2019)", 24: "Ferrari 488 GT3 Evo 2020", 25: "Mercedes-AMG GT3 2020",
+        30: "BMW M4 GT3", 31: "Audi R8 LMS GT3 evo II", 32: "Ferrari 296 GT3", 33: "Lamborghini Huracan Evo2",
+        34: "Porsche 992 GT3 R", 35: "McLaren 720S GT3 Evo 2023", 36: "Ford Mustang GT3"
+    };
+
+    function getCarName(modelId) {
+        if (modelId === undefined || modelId === null) return "GT3";
+        let name = GT3_CAR_MODELS[modelId] || modelId;
+        return String(name).replace(/^Car ID:\s*/i, '').trim();
+    }
+
+    function switchSessionTable(sessionType) {
+        const qualWrapper = document.getElementById('qualifying-table-wrapper');
+        const raceWrapper = document.getElementById('race-table-wrapper');
+        const btnQual = document.getElementById('btn-qualifying');
+        const btnRace = document.getElementById('btn-race');
+
+        if (sessionType === 'qualifying') {
+            qualWrapper.style.display = 'block';
+            raceWrapper.style.display = 'none';
+            btnQual.classList.add('active');
+            btnRace.classList.remove('active');
         } else {
-            initDashboard();
+            qualWrapper.style.display = 'none';
+            raceWrapper.style.display = 'block';
+            btnQual.classList.remove('active');
+            btnRace.classList.add('active');
         }
-    </script>
+    }
+
+    async function fetchLeaderboard(trackName) {
+        const qualTbody = document.getElementById("qualifying-leaderboard-body");
+        const raceTbody = document.getElementById("race-leaderboard-body");
+        if (!qualTbody || !raceTbody) return;
+
+        try {
+            const response = await fetch(`${AZURE_API_URL}?track=${encodeURIComponent(trackName)}`);
+            let drivers = await response.json();
+
+            let qualDrivers = [];
+            let raceDrivers = [];
+
+            if (Array.isArray(drivers)) {
+                qualDrivers = drivers.filter(d => d.sessionType && d.sessionType.toLowerCase().includes('qualifying')).slice(0, 10);
+                raceDrivers = drivers.filter(d => !d.sessionType || d.sessionType.toLowerCase().includes('race')).slice(0, 10);
+            }
+
+            if (qualDrivers.length === 0) {
+                qualTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--text-muted);">No recorded qualifying lap times for ${trackName} yet.</td></tr>`;
+            } else {
+                let html = "";
+                const leaderLapMs = qualDrivers[0].bestLapMs;
+                qualDrivers.forEach((driver, index) => {
+                    const rank = index + 1;
+                    const rankClass = rank === 1 ? 'rank-1' : (rank === 2 ? 'rank-2' : (rank === 3 ? 'rank-3' : ''));
+                    const gap = index === 0 ? "—" : `+${((driver.bestLapMs - leaderLapMs) / 1000).toFixed(3)}s`;
+
+                    html += `
+                        <tr>
+                            <td class="rank-column ${rankClass}">#${rank}</td>
+                            <td class="driver-name">${escapeHtml(driver.driverName) || 'Unknown'}</td>
+                            <td><span class="car-badge">${escapeHtml(getCarName(driver.carModel))}</span></td>
+                            <td class="session">${driver.sessionType || 'Qualifying'}</td>
+                            <td class="lap-time">${formatLapTime(driver.bestLapMs)}</td>
+                            <td class="gap-cell">${gap}</td>
+                            <td>${driver.lastUpdated ? new Date(driver.lastUpdated).toLocaleDateString() : '—'}</td>
+                        </tr>
+                    `;
+                });
+                qualTbody.innerHTML = html;
+            }
+
+            if (raceDrivers.length === 0) {
+                raceTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--text-muted);">No recorded race lap times for ${trackName} yet.</td></tr>`;
+            } else {
+                let html = "";
+                const leaderLapMs = raceDrivers[0].bestLapMs;
+                raceDrivers.forEach((driver, index) => {
+                    const rank = index + 1;
+                    const rankClass = rank === 1 ? 'rank-1' : (rank === 2 ? 'rank-2' : (rank === 3 ? 'rank-3' : ''));
+                    const gap = index === 0 ? "—" : `+${((driver.bestLapMs - leaderLapMs) / 1000).toFixed(3)}s`;
+
+                    html += `
+                        <tr>
+                            <td class="rank-column ${rankClass}">#${rank}</td>
+                            <td class="driver-name">${escapeHtml(driver.driverName) || 'Unknown'}</td>
+                            <td><span class="car-badge">${escapeHtml(getCarName(driver.carModel))}</span></td>
+                            <td class="session">${driver.sessionType || 'Race'}</td>
+                            <td class="lap-time">${formatLapTime(driver.bestLapMs)}</td>
+                            <td class="gap-cell">${gap}</td>
+                            <td>${driver.lastUpdated ? new Date(driver.lastUpdated).toLocaleDateString() : '—'}</td>
+                        </tr>
+                    `;
+                });
+                raceTbody.innerHTML = html;
+            }
+
+        } catch (err) {
+            qualTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--accent-red);">Failed to query Azure DB records.</td></tr>`;
+            raceTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--accent-red);">Failed to query Azure DB records.</td></tr>`;
+        }
+    }
+
+    function onTrackChange(trackName) {
+        localStorage.setItem("bchq_selected_track", trackName);
+        fetchLeaderboard(trackName);
+    }
+
+    function copyServerName(btn) {
+        const name = btn.getAttribute("data-name");
+        if (!name) return;
+        navigator.clipboard.writeText(name).then(() => {
+            const toast = document.getElementById("toast");
+            if (toast) {
+                toast.classList.add("show");
+                setTimeout(() => toast.classList.remove("show"), 2500);
+            }
+        });
+    }
+
+    function initDashboard() {
+        loadLiveServers();
+        checkStreamersLiveStatus();
+
+        const savedTrack = localStorage.getItem("bchq_selected_track") || "nurburgring";
+        const trackSelect = document.querySelector("#track-select");
+        if (trackSelect) trackSelect.value = savedTrack;
+
+        fetchLeaderboard(savedTrack);
+
+        setInterval(() => {
+            loadLiveServers(true);
+            checkStreamersLiveStatus();
+        }, 15000);
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initDashboard);
+    } else {
+        initDashboard();
+    }
+</script>
 
     <!-- Footer Legal & Report Issue Button Section -->
     <div style="margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.9rem; flex-wrap: wrap; gap: 15px;">
