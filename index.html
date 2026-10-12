@@ -523,6 +523,12 @@ async function loadLiveServers(isBackground = false) {
     } catch (err) {}
 }
 
+        function getNum(name) {
+            if (!name) return 999;
+            const match = name.match(/#(\d+)/);
+            return match ? parseInt(match[1], 10) : 1;
+        }
+
 // Move renderServerCards here (outside of loadLiveServers)
 function renderServerCards(instances, container) {
             instances.sort((a, b) => {
