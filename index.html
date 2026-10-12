@@ -338,6 +338,41 @@
 
         function updateLiveModalUI(packet) {
             // Will populate live driver positions and timing data here as packets stream in
+            // Keep track of live cars per server session
+            let sessionCars = {};
+
+        function updateLiveModalUI(packet) {
+            const tbody = document.getElementById('modal-live-tbody');
+            if (!tbody) return;
+
+            // Store or update car telemetry by carIndex
+            sessionCars[packet.carIndex] = packet;
+
+            // Convert stored objects into an array and sort by best lap time (ignoring 0/invalid)
+            const sortedCars = Object.values(sessionCars).sort((a, b) => {
+                const lapA = (a.bestLap > 0 && a.bestLap < 999999999) ? a.bestLap : Infinity;
+                const lapB = (b.bestLap > 0 && b.bestLap < 999999999) ? b.bestLap : Infinity;
+                return lapA - lapB;
+            });
+
+            let html = "";
+            sortedCars.forEach((car, index) => {
+                const rank = index + 1;
+                const formattedLap = formatLapTime(car.bestLap);
+
+                html += `
+                    <tr style="border-bottom: 1px solid var(--border-color, #1a233a);">
+                        <td style="padding: 10px; font-weight: 700; color: var(--accent-cyan);">#${rank}</td>
+                        <td style="padding: 10px;">Car #${car.carIndex}</td>
+                        <td style="padding: 10px;"><span class="car-badge">GT3</span></td>
+                        <td style="padding: 10px; font-family: 'Orbitron', sans-serif;">${formattedLap}</td>
+                        <td style="padding: 10px; color: var(--text-muted);">${car.speed} km/h</td>
+                    </tr>
+                `;
+            });
+
+    tbody.innerHTML = html || `<tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--text-muted);">Waiting for active drivers...</td></tr>`;
+}
         }
 
         function getGitHubTrackFolder(rawTrack) {
