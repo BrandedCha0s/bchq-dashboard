@@ -293,8 +293,7 @@
 
     tbody.innerHTML = html || `<tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--text-muted);">Waiting for active drivers...</td></tr>`;
 
-        }
-
+        
         function getGitHubTrackFolder(rawTrack) {
             if (!rawTrack) return "nurburgring";
             const clean = rawTrack.toLowerCase().replace(/_\d{4}$/, '').trim();
