@@ -12,7 +12,7 @@
         style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
         font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
         img-src 'self' https://cdn.jsdelivr.net data:;
-        connect-src 'self' https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net https://api.github.com https://cloudflareinsights.com wss://ws.bchqhub.com;
+        connect-src 'self' https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net https://api.github.com https://cloudflareinsights.com;
     ">
     
     <title>BCHQ HUB - Live ACC Telemetry & Leaderboards</title>
@@ -292,7 +292,7 @@
             });
 
     tbody.innerHTML = html || `<tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--text-muted);">Waiting for active drivers...</td></tr>`;
-}
+
         }
 
         function getGitHubTrackFolder(rawTrack) {
