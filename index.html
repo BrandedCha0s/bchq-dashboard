@@ -277,6 +277,13 @@
 
         let activeWebSocket = null;
 
+        function handleServerCardClick(cardEl) {
+            const id = cardEl.getAttribute('data-id');
+            const name = cardEl.getAttribute('data-name');
+            const track = cardEl.getAttribute('data-track');
+            openLiveModal(id, name, track);
+        }
+
         function openLiveModal(serverId, serverName, trackName) {
             const modal = document.getElementById('live-modal');
             const titleEl = document.getElementById('modal-server-title');
@@ -586,7 +593,7 @@ function renderServerCards(instances, container) {
                 `;
 
                 html += `
-                    <div class="server-card ${isOnline ? '' : 'offline'}" onclick="openLiveModal('${inst.id}', '${escapeHtml(serverName)}', '${escapeHtml(rawTrack)}')" style="cursor: pointer;">
+                        <div class="server-card ${isOnline ? '' : 'offline'}" data-id="${inst.id}" data-name="${escapeHtml(serverName)}" data-track="${escapeHtml(rawTrack)}" onclick="handleServerCardClick(this)" style="cursor: pointer;">
                         <div class="server-header">
                             <div>
                                 <div class="server-title">${formattedTitle}</div>
