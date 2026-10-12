@@ -283,40 +283,32 @@
             openLiveModal(port, name);
         }
 
-        function openLiveModal(serverId, serverName, trackName) {
+        function openLiveModal(serverPort, serverName) {
             const modal = document.getElementById('live-modal');
             const titleEl = document.getElementById('modal-server-title');
-            const trackImg = document.getElementById('modal-track-img');
             const tbody = document.getElementById('modal-live-tbody');
 
             if (titleEl) titleEl.textContent = serverName;
-            if (trackImg) trackImg.src = `${ASSET_PATH}${getTrackFileName(trackName)}?v=1.1`;
             if (modal) modal.style.display = 'flex';
-    
             if (tbody) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--text-muted);">Connecting to secure telemetry relay...</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 30px; color: var(--text-muted);">Listening for port ${serverPort} telemetry...</td></tr>`;
             }
 
-            // Close any existing WebSocket connection
             if (activeWebSocket) activeWebSocket.close();
-
-            // Connect securely to your Nginx SSL WebSocket proxy
             activeWebSocket = new WebSocket('wss://ws.bchqhub.com');
-
-            activeWebSocket.onopen = function() {
-                console.log("Connected to secure telemetry relay.");
-            };
 
             activeWebSocket.onmessage = function(event) {
                 try {
-                    const packet = JSON.parse(event.data);
-                    if (packet.serverId === serverId || packet.port) {
-                        updateLiveModalUI(packet);
-                    }
-                } catch (e) {
-                    console.error("Failed to parse telemetry packet:", e);
-                }
-            };
+            const packet = JSON.parse(event.data);
+            // Match the packet port against the opened server port
+            if (String(packet.port) === String(serverPort)) {
+                updateLiveModalUI(packet);
+            }
+        } catch (e) {
+            console.error("Failed to parse telemetry packet:", e);
+        }
+    };
+}
 
             activeWebSocket.onerror = function(err) {
                 console.error("WebSocket error:", err);
