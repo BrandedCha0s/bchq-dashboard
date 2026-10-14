@@ -382,7 +382,8 @@
         function getTrackDisplayName(rawTrack) {
             if (!rawTrack) return "Unknown Track";
             const clean = rawTrack.toLowerCase().replace(/_\d{4}$/, '').trim();
-            const matchedKey = Object.keys(ACC_TRACK_NAMES).find(k => clean.includes(k));
+            // Longest key first, so "nurburgring_24h" is tried before "nurburgring" (which it contains).
+            const matchedKey = Object.keys(ACC_TRACK_NAMES).sort((a, b) => b.length - a.length).find(k => clean.includes(k));
             return matchedKey ? ACC_TRACK_NAMES[matchedKey] : clean.replace(/_/g, ' ').toUpperCase();
         }
 
@@ -480,7 +481,7 @@
                 tbody.innerHTML = html;
 
             } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px; color: var(--accent-red);">Failed to retrieve records from Azure database.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px; color: var(--accent-red);">Failed to retrieve records from database.</td></tr>`;
             }
         }
     </script>
