@@ -882,6 +882,12 @@
         const sessName = SESSION_TYPES[sess.type] || "Session";
         const remaining = fmtClock(sess.remainingMs);
 
+        const hasCurrent = cars.some(c => c.currentLapMs !== null && c.currentLapMs !== undefined);
+        const hasDelta = cars.some(c => c.deltaMs !== null && c.deltaMs !== undefined);
+        const fmtGap = (c) => (c.bestLapMs > 0 && sessionBest !== Infinity)
+            ? (c.bestLapMs === sessionBest ? `<span class="dim">--</span>` : `<span class="delta-pos">+${((c.bestLapMs - sessionBest) / 1000).toFixed(3)}</span>`)
+            : `<span class="dim">--</span>`;
+
         const rows = cars.map(c => {
             const isBest = c.bestLapMs > 0 && c.bestLapMs === sessionBest;
             return `
@@ -890,10 +896,10 @@
                     <td><button class="driver-link" data-driver="${escapeHtml(c.driverName)}">${escapeHtml(c.driverName) || "Unknown"}</button>${c.inPits ? '<span class="pit-tag">PIT</span>' : ""}</td>
                     <td>${escapeHtml(getCarName(c.carModel))}</td>
                     <td class="num">${c.laps ?? "-"}</td>
-                    <td class="num">${formatLapTime(c.currentLapMs)}</td>
+                    ${hasCurrent ? `<td class="num">${formatLapTime(c.currentLapMs)}</td>` : ""}
                     <td class="num">${formatLapTime(c.lastLapMs)}</td>
                     <td class="num ${isBest ? "best-overall" : ""}">${formatLapTime(c.bestLapMs)}</td>
-                    <td class="num">${fmtDelta(c.deltaMs)}</td>
+                    <td class="num">${hasDelta ? fmtDelta(c.deltaMs) : fmtGap(c)}</td>
                 </tr>`;
         }).join("");
 
@@ -901,13 +907,14 @@
             <div class="live-status">
                 <span class="live-badge">LIVE</span>
                 <span>${escapeHtml(sessName)}${remaining ? " · " + remaining + " remaining" : ""}</span>
-                <span>${cars.length} driver${cars.length === 1 ? "" : "s"} on track</span>
+                <span>${cars.length} driver${cars.length === 1 ? "" : "s"} on server</span>
+                ${hasCurrent ? "" : '<span>Lap times update when a lap is completed</span>'}
             </div>
             <div class="live-table-wrap">
                 <table class="live-table">
                     <thead><tr>
                         <th class="num">POS</th><th>DRIVER</th><th>CAR</th><th class="num">LAPS</th>
-                        <th class="num">CURRENT</th><th class="num">LAST</th><th class="num">BEST</th><th class="num">DELTA</th>
+                        ${hasCurrent ? '<th class="num">CURRENT</th>' : ""}<th class="num">LAST</th><th class="num">BEST</th><th class="num">${hasDelta ? "DELTA" : "GAP"}</th>
                     </tr></thead>
                     <tbody>${rows}</tbody>
                 </table>
