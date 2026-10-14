@@ -627,7 +627,7 @@
                             <span class="meta-value">${maxSlots} Slots</span>
                         </div>
                     </div>
-                    ${isOnline ? '<div class="live-hint"><i class="fa-solid fa-stopwatch"></i> Click for live timing</div>' : ''}
+                    ${isOnline ? '<div class="live-hint"><i class="fa-solid fa-stopwatch"></i> Click for session timing</div>' : ''}
                 </div>
             `;
         });
@@ -809,7 +809,7 @@
         // Server names look like "BCHQ #2 | <Join Discord> ... | www.bchqhub.com"; show just the first part.
         document.getElementById("live-modal-title").innerHTML = formatBCHQText(String(serverName).split("|")[0].trim());
         document.getElementById("live-modal-sub").textContent = getTrackDisplayName(track).toUpperCase();
-        document.getElementById("live-modal-body").innerHTML = `<div class="live-empty">Connecting to live timing…</div>`;
+        document.getElementById("live-modal-body").innerHTML = `<div class="live-empty">Loading session timing…</div>`;
 
         el.classList.add("open");
         document.body.classList.add("live-modal-open");
@@ -866,13 +866,13 @@
         if (!body || live.view !== "live") return;
 
         if (!data) {
-            body.innerHTML = `<div class="live-empty">Connecting to live timing…</div>`;
+            body.innerHTML = `<div class="live-empty">Loading session timing…</div>`;
             return;
         }
         if (!data.live || !Array.isArray(data.cars) || data.cars.length === 0) {
             body.innerHTML = `<div class="live-empty">${data.error
-                ? "Couldn't reach the live timing service. Retrying…"
-                : "No live timing right now. It appears here as soon as drivers are on track."}</div>`;
+                ? "Couldn't reach the timing service. Retrying…"
+                : "No timing data yet. Laps appear here after the server logs them."}</div>`;
             return;
         }
 
@@ -905,10 +905,10 @@
 
         body.innerHTML = `
             <div class="live-status">
-                <span class="live-badge">LIVE</span>
+                <span class="live-badge">SESSION</span>
                 <span>${escapeHtml(sessName)}${remaining ? " · " + remaining + " remaining" : ""}</span>
                 <span>${cars.length} driver${cars.length === 1 ? "" : "s"} on server</span>
-                ${hasCurrent ? "" : '<span>Lap times update when a lap is completed</span>'}
+                ${hasCurrent ? "" : '<span>Read from the server log, so lap times can run a lap or two behind</span>'}
             </div>
             <div class="live-table-wrap">
                 <table class="live-table">
@@ -949,7 +949,7 @@
                 </tr>`).join("");
 
             body.innerHTML = `
-                <button class="live-back" data-back="1"><i class="fa-solid fa-arrow-left"></i> Live timing</button>
+                <button class="live-back" data-back="1"><i class="fa-solid fa-arrow-left"></i> Session timing</button>
                 <div class="profile-name">${escapeHtml(name)}</div>
                 ${records.length ? `
                     <div class="profile-stats">
@@ -964,7 +964,7 @@
                     </div>` : `<div class="live-empty">No recorded laps for this driver yet.</div>`}`;
         } catch (e) {
             if (live.view === "profile") {
-                body.innerHTML = `<button class="live-back" data-back="1"><i class="fa-solid fa-arrow-left"></i> Live timing</button>
+                body.innerHTML = `<button class="live-back" data-back="1"><i class="fa-solid fa-arrow-left"></i> Session timing</button>
                     <div class="live-empty">Couldn't load this profile. Try again in a moment.</div>`;
             }
         }
