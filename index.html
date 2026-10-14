@@ -549,8 +549,15 @@
             const trackTemp = inst.trackTemp ?? "28";
             const rainChance = inst.rainChance ?? "0%";
 
+            const sess = inst.session;
+            const sessionBadge = (isOnline && sess && typeof sess.remainingMs === "number") ? `
+                    <div class="server-badge session-badge" data-ms="${Math.round(sess.remainingMs)}" data-at="${Date.now()}" data-type="${escapeHtml(SESSION_TYPES[sess.type] || 'Session')}" data-waiting="${sess.waiting ? '1' : '0'}">
+                        <i class="fa-regular fa-clock"></i> <span class="session-text"></span>
+                    </div>` : '';
+
             const badgesHtml = `
                 <div class="server-badges">
+                    ${sessionBadge}
                     <div class="server-badge ${isLocked ? 'badge-locked' : 'badge-open'}">
                         <i class="fa-solid fa-${isLocked ? 'lock' : 'lock-open'}"></i> 
                         ${isLocked ? 'LOCKED' : 'OPEN'}
@@ -632,7 +639,23 @@
             `;
         });
         container.innerHTML = html;
+        tickSessionClocks();
     }
+
+    // Session countdown on the cards: the server sends the time left when it was fetched; count down from there
+    // between the 15 s refreshes.
+    function tickSessionClocks() {
+        document.querySelectorAll(".session-badge").forEach(el => {
+            const waiting = el.dataset.waiting === "1";   // clock isn't running until a driver joins
+            const left = waiting ? Number(el.dataset.ms) : Math.max(0, Number(el.dataset.ms) - (Date.now() - Number(el.dataset.at)));
+            const t = Math.floor(left / 1000);
+            const h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60;
+            const clock = (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(s).padStart(2, "0");
+            const txt = el.querySelector(".session-text");
+            if (txt) txt.textContent = waiting ? `${el.dataset.type} · ${clock} · waiting for drivers` : `${el.dataset.type} · ${clock} left`;
+        });
+    }
+    setInterval(tickSessionClocks, 1000);
 
     const GT3_CAR_MODELS = {
         0: "Porsche 991 GT3 R", 1: "Mercedes-AMG GT3", 2: "Ferrari 488 GT3", 3: "Audi R8 LMS", 4: "Lamborghini Huracan GT3",
@@ -738,8 +761,8 @@
             }
 
         } catch (err) {
-            qualTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--accent-red);">Failed to query DB records.</td></tr>`;
-            raceTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--accent-red);">Failed to query DB records.</td></tr>`;
+            qualTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--accent-red);">Failed to query Azure DB records.</td></tr>`;
+            raceTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--accent-red);">Failed to query Azure DB records.</td></tr>`;
         }
     }
 
