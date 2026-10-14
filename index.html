@@ -185,6 +185,12 @@
             <option value="red_bull_ring">Red Bull Ring</option>
         </select>
 
+        <select id="period-select" onchange="onCarChange()" aria-label="Time period">
+            <option value="">All time</option>
+            <option value="week">This week</option>
+            <option value="month">This month</option>
+        </select>
+
         <select id="car-select" onchange="onCarChange()" aria-label="Filter by car">
             <option value="">All cars</option>
         </select>
@@ -749,7 +755,9 @@
         try {
             const carSel = document.getElementById("car-select");
             const carFilter = carSel && carSel.value ? `&car=${encodeURIComponent(carSel.value)}` : "";
-            const response = await fetch(`${AZURE_API_URL}?track=${encodeURIComponent(trackName)}${carFilter}`);
+            const periodSel = document.getElementById("period-select");
+            const periodFilter = periodSel && periodSel.value ? `&period=${encodeURIComponent(periodSel.value)}` : "";
+            const response = await fetch(`${AZURE_API_URL}?track=${encodeURIComponent(trackName)}${carFilter}${periodFilter}`);
             let drivers = await response.json();
 
             let qualDrivers = [];
