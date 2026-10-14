@@ -32,6 +32,13 @@
         /* ---- Live timing modal, driver chips, profiles ---- */
         .server-card { pointer-events: auto; } /* style.css used to set none, which blocked every click inside cards */
         .server-card[data-online="1"] { cursor: pointer; }
+        .session-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0 0; }
+        .sess-chip { display: flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border-color, #1e293b); background: rgba(255,255,255,.03); color: var(--text-muted, #8a94a8); font-family: 'Orbitron', sans-serif; font-size: .75rem; letter-spacing: .5px; }
+        .sess-chip .sess-name { font-weight: 800; }
+        .sess-chip .sess-val { font-family: 'Rajdhani', sans-serif; font-size: .9rem; font-weight: 700; }
+        .sess-chip.active { color: var(--bg-dark, #0a0e14); background: var(--accent-cyan, #00f0ff); border-color: var(--accent-cyan, #00f0ff); box-shadow: 0 0 12px rgba(0,240,255,.35); }
+        .sess-chip.active .sess-val { font-family: 'Orbitron', sans-serif; font-size: .85rem; font-weight: 800; min-width: 3.2em; text-align: right; }
+        .sess-note { flex-basis: 100%; font-size: .8rem; color: var(--text-muted, #8a94a8); letter-spacing: .5px; }
         .live-hint { margin-top: 10px; font-family: 'Rajdhani', sans-serif; font-size: .85rem; letter-spacing: .5px; color: var(--text-muted, #8a94a8); display: flex; align-items: center; justify-content: center; gap: 6px; }
         .driver-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
         .driver-chip { font-family: 'Rajdhani', sans-serif; font-size: .85rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border-color, #223); background: rgba(0, 240, 255, .06); color: var(--text-main, #e6eaf2); }
@@ -549,15 +556,29 @@
             const trackTemp = inst.trackTemp ?? "28";
             const rainChance = inst.rainChance ?? "0%";
 
+            // Session strip: every session of the weekend (FP / Q / R), the current one highlighted and counting down.
             const sess = inst.session;
-            const sessionBadge = (isOnline && sess && typeof sess.remainingMs === "number") ? `
-                    <div class="server-badge session-badge" data-ms="${Math.round(sess.remainingMs)}" data-at="${Date.now()}" data-type="${escapeHtml(SESSION_TYPES[sess.type] || 'Session')}" data-waiting="${sess.waiting ? '1' : '0'}">
-                        <i class="fa-regular fa-clock"></i> <span class="session-text"></span>
-                    </div>` : '';
+            const SESS_LABELS = { 0: "FP", 4: "Q", 10: "R" };
+            const sessList = (Array.isArray(inst.sessions) && inst.sessions.length)
+                ? inst.sessions
+                : [{ type: 0, minutes: null }, { type: 4, minutes: null }, { type: 10, minutes: null }];
+            const fmtMins = (m) => m === null ? "" : (m >= 60 ? (m % 60 ? Math.floor(m / 60) + "h" + (m % 60) : (m / 60) + "h") : m + "m");
+            const currentType = sess ? sess.type : null;
+            let currentSeen = false;
+            const chips = sessList.map(x => {
+                const active = isOnline && sess && x.type === currentType && !currentSeen;
+                if (active) currentSeen = true;
+                return `<div class="sess-chip${active ? ' active' : ''}"><span class="sess-name">${SESS_LABELS[x.type] || '?'}</span><span class="sess-val">${active ? '' : fmtMins(x.minutes)}</span></div>`;
+            }).join('');
+            const sessionBadge = isOnline ? `
+                <div class="session-strip" ${(sess && typeof sess.remainingMs === "number") ? `data-ms="${Math.round(sess.remainingMs)}" data-at="${Date.now()}" data-waiting="${sess.waiting ? '1' : '0'}"` : ''}>
+                    ${chips}
+                    ${(sess && sess.waiting) ? '<div class="sess-note">Waiting for drivers</div>' : ''}
+                </div>` : '';
 
             const badgesHtml = `
+                ${sessionBadge}
                 <div class="server-badges">
-                    ${sessionBadge}
                     <div class="server-badge ${isLocked ? 'badge-locked' : 'badge-open'}">
                         <i class="fa-solid fa-${isLocked ? 'lock' : 'lock-open'}"></i> 
                         ${isLocked ? 'LOCKED' : 'OPEN'}
@@ -643,16 +664,17 @@
     }
 
     // Session countdown on the cards: the server sends the time left when it was fetched; count down from there
-    // between the 15 s refreshes.
+    // between the 15 s refreshes. Only the highlighted (current) session shows a clock.
     function tickSessionClocks() {
-        document.querySelectorAll(".session-badge").forEach(el => {
+        document.querySelectorAll(".session-strip").forEach(el => {
+            const val = el.querySelector(".sess-chip.active .sess-val");
+            if (!val) return;
+            if (el.dataset.ms === undefined) { val.textContent = ""; return; }
             const waiting = el.dataset.waiting === "1";   // clock isn't running until a driver joins
             const left = waiting ? Number(el.dataset.ms) : Math.max(0, Number(el.dataset.ms) - (Date.now() - Number(el.dataset.at)));
             const t = Math.floor(left / 1000);
             const h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60;
-            const clock = (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(s).padStart(2, "0");
-            const txt = el.querySelector(".session-text");
-            if (txt) txt.textContent = waiting ? `${el.dataset.type} · ${clock} · waiting for drivers` : `${el.dataset.type} · ${clock} left`;
+            val.textContent = (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(s).padStart(2, "0");
         });
     }
     setInterval(tickSessionClocks, 1000);
