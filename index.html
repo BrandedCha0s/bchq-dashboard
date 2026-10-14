@@ -39,6 +39,8 @@
         .sess-chip.active { color: var(--bg-dark, #0a0e14); background: var(--accent-cyan, #00f0ff); border-color: var(--accent-cyan, #00f0ff); box-shadow: 0 0 12px rgba(0,240,255,.35); }
         .sess-chip.active .sess-val { font-family: 'Orbitron', sans-serif; font-size: .85rem; font-weight: 800; min-width: 3.2em; text-align: right; }
         .sess-note { flex-basis: 100%; font-size: .8rem; color: var(--text-muted, #8a94a8); letter-spacing: .5px; }
+        .driver-name-link { color: inherit; text-decoration: none; }
+        .driver-name-link:hover { color: var(--accent-cyan, #00f0ff); text-decoration: underline; }
         .live-hint { margin-top: 10px; font-family: 'Rajdhani', sans-serif; font-size: .85rem; letter-spacing: .5px; color: var(--text-muted, #8a94a8); display: flex; align-items: center; justify-content: center; gap: 6px; }
         .driver-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
         .driver-chip { font-family: 'Rajdhani', sans-serif; font-size: .85rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border-color, #223); background: rgba(0, 240, 255, .06); color: var(--text-main, #e6eaf2); }
@@ -161,6 +163,10 @@
             <option value="watkins_glen">Watkins Glen</option>
             <option value="valencia">Valencia</option>
             <option value="red_bull_ring">Red Bull Ring</option>
+        </select>
+
+        <select id="car-select" onchange="onCarChange()" aria-label="Filter by car">
+            <option value="">All cars</option>
         </select>
 
         <!-- Session Switch Buttons (Race on Left, Qualifying on Right) -->
@@ -721,7 +727,9 @@
         if (!qualTbody || !raceTbody) return;
 
         try {
-            const response = await fetch(`${AZURE_API_URL}?track=${encodeURIComponent(trackName)}`);
+            const carSel = document.getElementById("car-select");
+            const carFilter = carSel && carSel.value ? `&car=${encodeURIComponent(carSel.value)}` : "";
+            const response = await fetch(`${AZURE_API_URL}?track=${encodeURIComponent(trackName)}${carFilter}`);
             let drivers = await response.json();
 
             let qualDrivers = [];
@@ -745,7 +753,7 @@
                     html += `
                         <tr>
                             <td class="rank-column ${rankClass}">#${rank}</td>
-                            <td class="driver-name">${escapeHtml(driver.driverName) || 'Unknown'}</td>
+                            <td class="driver-name">${driver.driverName ? `<a class="driver-name-link" href="driver.html?name=${encodeURIComponent(driver.driverName)}">${escapeHtml(driver.driverName)}</a>` : 'Unknown'}</td>
                             <td><span class="car-badge">${escapeHtml(getCarName(driver.carModel))}</span></td>
                             <td class="session">${driver.sessionType || 'Qualifying'}</td>
                             <td class="lap-time">${formatLapTime(driver.bestLapMs)}</td>
@@ -770,7 +778,7 @@
                     html += `
                         <tr>
                             <td class="rank-column ${rankClass}">#${rank}</td>
-                            <td class="driver-name">${escapeHtml(driver.driverName) || 'Unknown'}</td>
+                            <td class="driver-name">${driver.driverName ? `<a class="driver-name-link" href="driver.html?name=${encodeURIComponent(driver.driverName)}">${escapeHtml(driver.driverName)}</a>` : 'Unknown'}</td>
                             <td><span class="car-badge">${escapeHtml(getCarName(driver.carModel))}</span></td>
                             <td class="session">${driver.sessionType || 'Race'}</td>
                             <td class="lap-time">${formatLapTime(driver.bestLapMs)}</td>
@@ -786,6 +794,18 @@
             qualTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--accent-red);">Failed to query Azure DB records.</td></tr>`;
             raceTbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px; color: var(--accent-red);">Failed to query Azure DB records.</td></tr>`;
         }
+    }
+
+    function buildCarFilter() {
+        const sel = document.getElementById("car-select");
+        if (!sel || sel.options.length > 1) return;
+        const names = [...new Set(Object.values(GT3_CAR_MODELS))].sort((a, b) => a.localeCompare(b));
+        sel.innerHTML = '<option value="">All cars</option>' + names.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+    }
+
+    function onCarChange() {
+        const trackSel = document.getElementById("track-select");
+        fetchLeaderboard(trackSel ? trackSel.value : "nurburgring");
     }
 
     function onTrackChange(trackName) {
@@ -1036,6 +1056,7 @@
         const trackSelect = document.querySelector("#track-select");
         if (trackSelect) trackSelect.value = savedTrack;
 
+        buildCarFilter();
         fetchLeaderboard(savedTrack);
 
         setInterval(() => {
