@@ -254,6 +254,11 @@
         tr:last-child td { border-bottom: none; }
         tr:hover td { background-color: rgba(0, 240, 255, 0.03); }
 
+        .summary-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; }
+        .summary-item { flex: 1; min-width: 160px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 18px; }
+        .summary-item strong { display: block; font-family: 'Orbitron', sans-serif; font-size: 1.15rem; color: var(--accent-cyan); margin-bottom: 4px; }
+        .summary-item span { font-size: .85rem; color: var(--text-muted); letter-spacing: .5px; }
+
         .car-badge {
             background: rgba(255, 255, 255, 0.05);
             padding: 4px 8px;
@@ -305,6 +310,8 @@
     <div class="section-title">
         <i class="fa-solid fa-trophy"></i> ALL-TRACK PERSONAL BEST RECORDS
     </div>
+
+    <div id="driver-summary" class="summary-row" style="display:none;"></div>
 
     <div class="table-container">
         <table>
@@ -398,6 +405,15 @@
             return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
+        // Arriving from a leaderboard link (driver.html?name=...): search straight away
+        (function () {
+            const name = new URLSearchParams(location.search).get("name");
+            if (name) {
+                document.getElementById("driver-search-input").value = name;
+                searchDriverRecords();
+            }
+        })();
+
         // Handle Typing with Debounce for Autocomplete
         function onDriverInput(val) {
             clearTimeout(debounceTimer);
@@ -463,6 +479,10 @@
                     return;
                 }
 
+                // The API does a "contains" search; if someone's name matches exactly, show only them.
+                const exact = records.filter(r => String(r.driverName || "").toLowerCase() === queryInput.toLowerCase());
+                if (exact.length) records.splice(0, records.length, ...exact);
+
                 records.sort((a, b) => getTrackDisplayName(a.track).localeCompare(getTrackDisplayName(b.track)));
 
                 let html = "";
@@ -480,8 +500,22 @@
                 });
                 tbody.innerHTML = html;
 
+                // Summary: tracks, favourite car (most records), latest record
+                const trackSet = new Set(records.map(r => getTrackDisplayName(r.track)));
+                const carCounts = {};
+                records.forEach(r => { const c = getCarName(r.carModel); carCounts[c] = (carCounts[c] || 0) + 1; });
+                const favCar = Object.entries(carCounts).sort((a, b) => b[1] - a[1])[0][0];
+                const latest = records.map(r => r.lastUpdated).filter(Boolean).sort().pop();
+                const summary = document.getElementById("driver-summary");
+                summary.innerHTML = `
+                    <div class="summary-item"><strong>${escapeHtml(records[0].driverName || queryInput)}</strong><span>DRIVER</span></div>
+                    <div class="summary-item"><strong>${trackSet.size}</strong><span>TRACKS WITH A RECORD</span></div>
+                    <div class="summary-item"><strong>${escapeHtml(favCar)}</strong><span>MOST USED CAR</span></div>
+                    <div class="summary-item"><strong>${latest ? new Date(latest).toLocaleDateString() : '—'}</strong><span>LATEST RECORD</span></div>`;
+                summary.style.display = "flex";
+
             } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px; color: var(--accent-red);">Failed to retrieve records from database.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px; color: var(--accent-red);">Failed to retrieve records from Azure database.</td></tr>`;
             }
         }
     </script>
