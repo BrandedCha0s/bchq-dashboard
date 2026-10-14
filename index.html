@@ -39,6 +39,17 @@
         .sess-chip.active { color: var(--bg-dark, #0a0e14); background: var(--accent-cyan, #00f0ff); border-color: var(--accent-cyan, #00f0ff); box-shadow: 0 0 12px rgba(0,240,255,.35); }
         .sess-chip.active .sess-val { font-family: 'Orbitron', sans-serif; font-size: .85rem; font-weight: 800; min-width: 3.2em; text-align: right; }
         .sess-note { flex-basis: 100%; font-size: .8rem; color: var(--text-muted, #8a94a8); letter-spacing: .5px; }
+        @media (max-width: 600px) {
+            /* Phones: leaderboards keep POS, DRIVER, BEST LAP and GAP; car, session and date are hidden so nothing scrolls sideways */
+            #race-table-wrapper th:nth-child(3), #race-table-wrapper td:nth-child(3),
+            #race-table-wrapper th:nth-child(4), #race-table-wrapper td:nth-child(4),
+            #race-table-wrapper th:nth-child(7), #race-table-wrapper td:nth-child(7),
+            #qualifying-table-wrapper th:nth-child(3), #qualifying-table-wrapper td:nth-child(3),
+            #qualifying-table-wrapper th:nth-child(4), #qualifying-table-wrapper td:nth-child(4),
+            #qualifying-table-wrapper th:nth-child(7), #qualifying-table-wrapper td:nth-child(7) { display: none; }
+            #race-table-wrapper table, #qualifying-table-wrapper table { white-space: normal; }
+            #race-table-wrapper th, #race-table-wrapper td, #qualifying-table-wrapper th, #qualifying-table-wrapper td { padding: 12px 8px; }
+        }
         .driver-name-link { color: inherit; text-decoration: none; }
         .driver-name-link:hover { color: var(--accent-cyan, #00f0ff); text-decoration: underline; }
         .live-hint { margin-top: 10px; font-family: 'Rajdhani', sans-serif; font-size: .85rem; letter-spacing: .5px; color: var(--text-muted, #8a94a8); display: flex; align-items: center; justify-content: center; gap: 6px; }
@@ -68,6 +79,15 @@
         .live-table th { text-align: left; padding: 6px 10px; font-family: 'Orbitron', sans-serif; font-size: .65rem; letter-spacing: 1px; color: var(--text-muted, #8a94a8); border-bottom: 1px solid var(--border-color, #223); }
         .live-table td { padding: 7px 10px; border-bottom: 1px solid rgba(255, 255, 255, .04); }
         .live-table td.num, .live-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+        @media (max-width: 600px) {
+            /* Phones: drop the car column and tighten up so LAPS / LAST / BEST stay on screen */
+            .live-table .col-car { display: none; }
+            .live-table { font-size: .85rem; }
+            .live-table th, .live-table td { padding: 6px 5px; }
+            .live-table th:last-child, .live-table td:last-child { display: none; }   /* GAP / DELTA */
+            .live-table td:nth-child(2) { white-space: normal; word-break: break-word; }
+            .live-modal-body { padding: 12px 12px 16px; }
+        }
         .live-table .best-overall { color: #c77dff; font-weight: 700; }
         .delta-pos { color: var(--accent-red, #ff4d6d); }
         .delta-neg { color: var(--accent-green, #00ff9d); }
@@ -959,7 +979,7 @@
                 <tr>
                     <td class="num">${c.position || "-"}</td>
                     <td><button class="driver-link" data-driver="${escapeHtml(c.driverName)}">${escapeHtml(c.driverName) || "Unknown"}</button>${c.inPits ? '<span class="pit-tag">PIT</span>' : ""}</td>
-                    <td>${escapeHtml(getCarName(c.carModel))}</td>
+                    <td class="col-car">${escapeHtml(getCarName(c.carModel))}</td>
                     <td class="num">${c.laps ?? "-"}</td>
                     ${hasCurrent ? `<td class="num">${formatLapTime(c.currentLapMs)}</td>` : ""}
                     <td class="num">${formatLapTime(c.lastLapMs)}</td>
@@ -978,7 +998,7 @@
             <div class="live-table-wrap">
                 <table class="live-table">
                     <thead><tr>
-                        <th class="num">POS</th><th>DRIVER</th><th>CAR</th><th class="num">LAPS</th>
+                        <th class="num">POS</th><th>DRIVER</th><th class="col-car">CAR</th><th class="num">LAPS</th>
                         ${hasCurrent ? '<th class="num">CURRENT</th>' : ""}<th class="num">LAST</th><th class="num">BEST</th><th class="num">${hasDelta ? "DELTA" : "GAP"}</th>
                     </tr></thead>
                     <tbody>${rows}</tbody>
