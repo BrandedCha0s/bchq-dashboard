@@ -57,6 +57,10 @@
         .presence-bar { flex: 1; min-height: 3px; border-radius: 3px 3px 0 0; background: rgba(0, 240, 255, .35); }
         .presence-bar.now { background: var(--accent-cyan, #00f0ff); }
         .presence-axis { display: flex; justify-content: space-between; font-size: .7rem; color: var(--text-muted, #8a94a8); margin-top: 4px; }
+        .presence-card { margin-top: 10px; padding-top: 10px; }
+        .presence-card:empty { display: none; }
+        .presence-card .presence-sub { font-size: .85rem; margin-bottom: 8px; }
+        .presence-card .presence-bars { height: 38px; gap: 2px; }
         .driver-name-link { color: inherit; text-decoration: none; }
         .driver-name-link:hover { color: var(--accent-cyan, #00f0ff); text-decoration: underline; }
         .live-hint { margin-top: 10px; font-family: 'Rajdhani', sans-serif; font-size: .85rem; letter-spacing: .5px; color: var(--text-muted, #8a94a8); display: flex; align-items: center; justify-content: center; gap: 6px; }
@@ -681,6 +685,7 @@
                         </span>
                     </div>
                     ${chipsHtml}
+                    <div class="presence presence-card" data-presence="${escapeHtml(String(inst.id))}">${(presenceCache[inst.id] && presenceCache[inst.id].html) || ""}</div>
 
                     <div class="server-meta" style="margin-top: 10px;">
                         <div class="meta-item">
@@ -700,6 +705,7 @@
         });
         container.innerHTML = html;
         tickSessionClocks();
+        container.querySelectorAll("[data-presence]").forEach(el => ensurePresence(el.dataset.presence));
     }
 
     // Session countdown on the cards: the server sends the time left when it was fetched; count down from there
@@ -905,8 +911,6 @@
         live.serverId = serverId;
         live.view = "live";
         live.lastData = null;
-        live.presence = "";
-        loadPresence(serverId);
 
         // Server names look like "BCHQ #2 | <Join Discord> ... | www.bchqhub.com"; show just the first part.
         document.getElementById("live-modal-title").innerHTML = formatBCHQText(String(serverName).split("|")[0].trim());
@@ -921,22 +925,29 @@
         live.timer = setInterval(pollLive, LIVE_POLL_MS);
     }
 
-    // ---- Busy times: last 7 days of driver counts, folded into an hour-of-day chart in the viewer's own time ----
-    async function loadPresence(serverId) {
+    // ---- Busy times on the server cards: last 7 days of driver counts as an hour-of-day chart in the viewer's own time ----
+    const presenceCache = {};     // serverId -> { html, at, loading }
+    const PRESENCE_REFRESH_MS = 10 * 60 * 1000;
+
+    async function ensurePresence(serverId) {
+        const c = presenceCache[serverId] || (presenceCache[serverId] = { html: "", at: 0, loading: false });
+        if (c.loading || (c.at && Date.now() - c.at < PRESENCE_REFRESH_MS)) return;
+        c.loading = true;
         try {
             const res = await fetch(`${AZURE_API_URL}?type=presence&server=${encodeURIComponent(serverId)}`, { signal: AbortSignal.timeout(6000) });
             const data = await res.json();
-            if (live.serverId !== serverId) return;   // modal closed or switched meanwhile
-            live.presence = presenceHtml(data && data.days);
-            if (live.view === "live") renderLive(live.lastData);
+            c.html = presenceHtml(data && data.days);
+            c.at = Date.now();
+            document.querySelectorAll(`[data-presence="${CSS.escape(String(serverId))}"]`).forEach(el => { el.innerHTML = c.html; });
         } catch (e) { /* the chart is optional */ }
+        c.loading = false;
     }
 
     function presenceHtml(days) {
         if (!Array.isArray(days) || !days.length) {
-            return `<div class="presence"><div class="presence-title">WHEN IT'S BUSY</div><div class="presence-sub">Collecting data. The busy-time chart fills in over the next few days.</div></div>`;
+            return `<div class="presence-title">BUSY TIMES</div><div class="presence-sub">Collecting data, check back in a few days</div>`;
         }
-        // peak[day][hour] = most drivers seen in that local hour that day
+        // peak[day|hour] = most drivers seen in that local hour that day
         const peak = {};
         days.forEach(d => {
             const [y, m, dd] = d.date.split("-").map(Number);
@@ -952,17 +963,16 @@
         const max = Math.max(...avg);
         const nowH = new Date().getHours();
         const bars = avg.map((v, h) => {
-            const pct = max > 0 ? Math.max(5, Math.round(v / max * 100)) : 5;
-            const label = `${String(h).padStart(2, "0")}:00, about ${v.toFixed(1)} drivers`;
-            return `<div class="presence-bar${h === nowH ? " now" : ""}" style="height:${pct}%" title="${label}"></div>`;
+            const pct = max > 0 ? Math.max(6, Math.round(v / max * 100)) : 6;
+            return `<div class="presence-bar${h === nowH ? " now" : ""}" style="height:${pct}%" title="${String(h).padStart(2, "0")}:00, about ${v.toFixed(1)} drivers"></div>`;
         }).join("");
         const busiest = max > 0 ? avg.indexOf(max) : -1;
         const summary = busiest >= 0
-            ? `Busiest around ${String(busiest).padStart(2, "0")}:00 (your time), about ${max.toFixed(1)} drivers`
-            : "Quiet so far, nobody seen on this server in the last 7 days";
-        return `<div class="presence"><div class="presence-title">WHEN IT'S BUSY · LAST 7 DAYS · YOUR TIME</div><div class="presence-sub">${summary}</div>
+            ? `Busiest around ${String(busiest).padStart(2, "0")}:00 (your time)`
+            : "Quiet this week";
+        return `<div class="presence-title">BUSY TIMES · LAST 7 DAYS</div><div class="presence-sub">${summary}</div>
             <div class="presence-bars">${bars}</div>
-            <div class="presence-axis"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div></div>`;
+            <div class="presence-axis"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div>`;
     }
 
     function closeLiveModal() {
@@ -1018,7 +1028,7 @@
         if (!data.live || !Array.isArray(data.cars) || data.cars.length === 0) {
             body.innerHTML = `<div class="live-empty">${data.error
                 ? "Couldn't reach the timing service. Retrying…"
-                : "No timing data yet. Laps appear here after the server logs them."}</div>${live.presence || ""}`;
+                : "No timing data yet. Laps appear here after the server logs them."}</div>`;
             return;
         }
 
@@ -1064,8 +1074,7 @@
                     </tr></thead>
                     <tbody>${rows}</tbody>
                 </table>
-            </div>
-            ${live.presence || ""}`;
+            </div>`;
     }
 
     async function showDriverProfile(name) {
