@@ -50,6 +50,13 @@
             #race-table-wrapper table, #qualifying-table-wrapper table { white-space: normal; }
             #race-table-wrapper th, #race-table-wrapper td, #qualifying-table-wrapper th, #qualifying-table-wrapper td { padding: 12px 8px; }
         }
+        .presence { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-color, #1e293b); }
+        .presence-title { font-family: 'Orbitron', sans-serif; font-size: .7rem; letter-spacing: 1px; color: var(--text-muted, #8a94a8); margin-bottom: 4px; }
+        .presence-sub { font-size: .9rem; color: var(--text-main, #e2e8f0); margin-bottom: 10px; }
+        .presence-bars { display: flex; align-items: flex-end; gap: 3px; height: 64px; }
+        .presence-bar { flex: 1; min-height: 3px; border-radius: 3px 3px 0 0; background: rgba(0, 240, 255, .35); }
+        .presence-bar.now { background: var(--accent-cyan, #00f0ff); }
+        .presence-axis { display: flex; justify-content: space-between; font-size: .7rem; color: var(--text-muted, #8a94a8); margin-top: 4px; }
         .driver-name-link { color: inherit; text-decoration: none; }
         .driver-name-link:hover { color: var(--accent-cyan, #00f0ff); text-decoration: underline; }
         .live-hint { margin-top: 10px; font-family: 'Rajdhani', sans-serif; font-size: .85rem; letter-spacing: .5px; color: var(--text-muted, #8a94a8); display: flex; align-items: center; justify-content: center; gap: 6px; }
@@ -898,6 +905,8 @@
         live.serverId = serverId;
         live.view = "live";
         live.lastData = null;
+        live.presence = "";
+        loadPresence(serverId);
 
         // Server names look like "BCHQ #2 | <Join Discord> ... | www.bchqhub.com"; show just the first part.
         document.getElementById("live-modal-title").innerHTML = formatBCHQText(String(serverName).split("|")[0].trim());
@@ -910,6 +919,50 @@
         clearInterval(live.timer);
         pollLive();
         live.timer = setInterval(pollLive, LIVE_POLL_MS);
+    }
+
+    // ---- Busy times: last 7 days of driver counts, folded into an hour-of-day chart in the viewer's own time ----
+    async function loadPresence(serverId) {
+        try {
+            const res = await fetch(`${AZURE_API_URL}?type=presence&server=${encodeURIComponent(serverId)}`, { signal: AbortSignal.timeout(6000) });
+            const data = await res.json();
+            if (live.serverId !== serverId) return;   // modal closed or switched meanwhile
+            live.presence = presenceHtml(data && data.days);
+            if (live.view === "live") renderLive(live.lastData);
+        } catch (e) { /* the chart is optional */ }
+    }
+
+    function presenceHtml(days) {
+        if (!Array.isArray(days) || !days.length) {
+            return `<div class="presence"><div class="presence-title">WHEN IT'S BUSY</div><div class="presence-sub">Collecting data. The busy-time chart fills in over the next few days.</div></div>`;
+        }
+        // peak[day][hour] = most drivers seen in that local hour that day
+        const peak = {};
+        days.forEach(d => {
+            const [y, m, dd] = d.date.split("-").map(Number);
+            Object.entries(d.buckets || {}).forEach(([slot, n]) => {
+                const t = new Date(Date.UTC(y, m - 1, dd, 0, Number(slot) * 15));
+                const key = d.date + "|" + t.getHours();
+                peak[key] = Math.max(peak[key] ?? 0, Number(n) || 0);
+            });
+        });
+        const sum = Array(24).fill(0), cnt = Array(24).fill(0);
+        Object.entries(peak).forEach(([key, n]) => { const h = Number(key.split("|")[1]); sum[h] += n; cnt[h] += 1; });
+        const avg = sum.map((s, h) => cnt[h] ? s / cnt[h] : 0);
+        const max = Math.max(...avg);
+        const nowH = new Date().getHours();
+        const bars = avg.map((v, h) => {
+            const pct = max > 0 ? Math.max(5, Math.round(v / max * 100)) : 5;
+            const label = `${String(h).padStart(2, "0")}:00, about ${v.toFixed(1)} drivers`;
+            return `<div class="presence-bar${h === nowH ? " now" : ""}" style="height:${pct}%" title="${label}"></div>`;
+        }).join("");
+        const busiest = max > 0 ? avg.indexOf(max) : -1;
+        const summary = busiest >= 0
+            ? `Busiest around ${String(busiest).padStart(2, "0")}:00 (your time), about ${max.toFixed(1)} drivers`
+            : "Quiet so far, nobody seen on this server in the last 7 days";
+        return `<div class="presence"><div class="presence-title">WHEN IT'S BUSY · LAST 7 DAYS · YOUR TIME</div><div class="presence-sub">${summary}</div>
+            <div class="presence-bars">${bars}</div>
+            <div class="presence-axis"><span>00</span><span>06</span><span>12</span><span>18</span><span>23</span></div></div>`;
     }
 
     function closeLiveModal() {
@@ -965,7 +1018,7 @@
         if (!data.live || !Array.isArray(data.cars) || data.cars.length === 0) {
             body.innerHTML = `<div class="live-empty">${data.error
                 ? "Couldn't reach the timing service. Retrying…"
-                : "No timing data yet. Laps appear here after the server logs them."}</div>`;
+                : "No timing data yet. Laps appear here after the server logs them."}</div>${live.presence || ""}`;
             return;
         }
 
@@ -1011,7 +1064,8 @@
                     </tr></thead>
                     <tbody>${rows}</tbody>
                 </table>
-            </div>`;
+            </div>
+            ${live.presence || ""}`;
     }
 
     async function showDriverProfile(name) {
