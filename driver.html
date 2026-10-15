@@ -272,8 +272,22 @@
             color: var(--accent-green);
         }
 
+
+        .header-nav { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+        .race-panel { margin-bottom: 30px; display: none; }
+        .race-panel .section-title { margin-bottom: 16px; }
+        .rs-note { font-family: 'Rajdhani', sans-serif; font-size: .9rem; color: var(--text-muted); letter-spacing: 0; font-weight: 600; }
+        .pos-badge { font-family: 'Orbitron', sans-serif; font-size: .9rem; color: #fff; }
+        .pos-badge.p1 { color: #f5a524; } .pos-badge.p2 { color: #cbd5e1; } .pos-badge.p3 { color: #cd7f32; }
+        .rs-link { color: var(--accent-cyan); text-decoration: none; font-weight: 700; }
+        .rs-link:hover { text-decoration: underline; }
+
         @media (max-width: 768px) {
             body { padding: 15px 12px; }
+            .header-nav { width: 100%; display: grid; grid-template-columns: 1fr 1fr 1fr; }
+            .header-nav .back-btn { justify-content: center; padding: 10px 6px; font-size: .72rem; gap: 6px; }
+            .rs-hide { display: none; }
+            .race-table th:last-child, .race-table td:last-child { display: table-cell; }
             .header { flex-direction: column; align-items: flex-start; gap: 15px; }
             .search-container { flex-direction: column; align-items: stretch; }
             /* Phones: let the table wrap instead of scrolling sideways, and drop the date column */
@@ -294,9 +308,13 @@
                 <div class="header-subtitle">GLOBAL ACC LAP TIME SEARCH</div>
             </div>
         </div>
-        <a href="index.html" class="back-btn">
-            <i class="fa-solid fa-arrow-left"></i> BACK TO HUB
-        </a>
+        <div class="header-nav">
+            <a href="races.html" class="back-btn"><i class="fa-solid fa-flag-checkered"></i> RACES</a>
+            <a href="stats.html" class="back-btn"><i class="fa-solid fa-chart-line"></i> STATS</a>
+            <a href="index.html" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> BACK TO HUB
+            </a>
+        </div>
     </div>
 
     <!-- Search Input Bar with Autocomplete Dropdown -->
@@ -308,6 +326,18 @@
         <button class="search-btn" onclick="hideSuggestions(); searchDriverRecords()">
             <i class="fa-solid fa-magnifying-glass"></i> SEARCH DRIVER
         </button>
+    </div>
+
+    <!-- Race stats (filled in from saved race results) -->
+    <div id="race-panel" class="race-panel">
+        <div class="section-title"><i class="fa-solid fa-flag-checkered"></i> RACE STATS <span class="rs-note" id="rs-note"></span></div>
+        <div id="race-summary" class="summary-row"></div>
+        <div class="table-container" id="race-recent-wrap">
+            <table class="race-table">
+                <thead><tr><th>DATE</th><th>TRACK</th><th>FINISH</th><th class="rs-hide">CAR</th><th class="rs-hide">BEST LAP</th><th></th></tr></thead>
+                <tbody id="race-recent"></tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Results Section -->
@@ -467,11 +497,48 @@
             }
         });
 
+
+        // Race stats for this driver (from saved race results); the panel stays hidden when there are none.
+        async function loadRaceStats(name) {
+            const panel = document.getElementById("race-panel");
+            panel.style.display = "none";
+            try {
+                const res = await fetch(`${AZURE_API_URL}?type=driverstats&name=${encodeURIComponent(name)}`);
+                const d = await res.json();
+                if (!d || !d.found || !d.races) return;
+                const tile = (v, l) => `<div class="summary-item"><strong>${escapeHtml(v)}</strong><span>${l}</span></div>`;
+                document.getElementById("race-summary").innerHTML = [
+                    tile(d.races, "RACES"), tile(d.wins, "WINS"), tile(d.podiums, "PODIUMS"),
+                    tile(d.avgPos ?? "—", "AVG FINISH"), tile(d.bestPos ? "P" + d.bestPos : "—", "BEST FINISH"),
+                    tile(d.points, "CHAMPIONSHIP POINTS"),
+                    tile(d.invalidPct === null || d.invalidPct === undefined ? "—" : d.invalidPct + "%", "INVALID LAPS"),
+                    tile(d.penaltiesPerRace, "PENALTIES PER RACE"),
+                    tile(d.streak > 1 ? d.streak + " days" : "—", "RACING STREAK")
+                ].join("");
+                document.getElementById("rs-note").textContent = d.cars && d.cars[0] ? "Most raced car: " + d.cars[0].car : "";
+                const rows = (d.recentRaces || []).map(r => {
+                    const p = r.pos ? `<span class="pos-badge ${r.pos <= 3 ? "p" + r.pos : ""}">P${r.pos}</span> <span style="color:var(--text-muted)">of ${escapeHtml(r.entries)}</span>` : "—";
+                    return `<tr>
+                        <td>${escapeHtml(new Date(r.date).toLocaleDateString())}</td>
+                        <td style="font-family:'Orbitron',sans-serif;color:#fff;">${escapeHtml(getTrackDisplayName(r.track))}</td>
+                        <td>${p}</td>
+                        <td class="rs-hide"><span class="car-badge">${escapeHtml(r.car || "GT3")}</span></td>
+                        <td class="rs-hide lap-time">${formatLapTime(r.bestMs)}</td>
+                        <td><a class="rs-link" href="races.html?race=${encodeURIComponent(r.id)}">RESULTS</a></td>
+                    </tr>`;
+                });
+                document.getElementById("race-recent").innerHTML = rows.join("");
+                document.getElementById("race-recent-wrap").style.display = rows.length ? "" : "none";
+                panel.style.display = "block";
+            } catch (e) { /* race stats are optional */ }
+        }
+
         async function searchDriverRecords() {
             const queryInput = document.getElementById("driver-search-input").value.trim();
             const tbody = document.getElementById("driver-results-body");
             if (!queryInput) return;
 
+            document.getElementById("race-panel").style.display = "none";
             tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px; color: var(--accent-cyan);"><i class="fa-solid fa-circle-notch fa-spin"></i> Searching database for driver "${escapeHtml(queryInput)}"...</td></tr>`;
 
             try {
@@ -517,6 +584,7 @@
                     <div class="summary-item"><strong>${escapeHtml(favCar)}</strong><span>MOST USED CAR</span></div>
                     <div class="summary-item"><strong>${latest ? new Date(latest).toLocaleDateString() : '—'}</strong><span>LATEST RECORD</span></div>`;
                 summary.style.display = "flex";
+                loadRaceStats(records[0].driverName || queryInput);
 
             } catch (err) {
                 tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px; color: var(--accent-red);">Failed to retrieve records from Azure database.</td></tr>`;
