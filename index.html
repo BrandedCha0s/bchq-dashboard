@@ -171,7 +171,7 @@
     </div>
 
     <!-- Community totals (hidden until the first race has been saved) -->
-    <a id="site-totals" class="site-totals" href="stats.html" style="display:none;"></a>
+    <a id="site-totals" class="site-totals" href="stats.html" style="visibility:hidden;"></a>
 
     <!-- Live Server Instances Section -->
     <div class="section-title">
@@ -517,6 +517,25 @@
             window.open(fileUrl, '_blank');
         }
     }
+
+    /* Reserve the server grid's last known height up front so the sections below don't jump when the cards load. */
+    (function reserveServerHeight() {
+        const c = document.getElementById("servers-container");
+        if (!c) return;
+        let h = 0;
+        try { h = parseInt(localStorage.getItem("bchq_servers_h") || "0", 10); } catch (e) {}
+        c.style.minHeight = (h > 200 ? h : 700) + "px";
+        if ("ResizeObserver" in window) {
+            let t = null;
+            new ResizeObserver(() => {
+                clearTimeout(t);
+                t = setTimeout(() => {
+                    const cards = c.querySelectorAll(".server-card");
+                    if (cards.length) { const last = cards[cards.length - 1]; const hh = Math.round(last.offsetTop + last.offsetHeight - cards[0].offsetTop); if (hh > 200) { try { localStorage.setItem("bchq_servers_h", String(hh)); } catch (e) {} } }
+                }, 1500);
+            }).observe(c);
+        }
+    })();
 
     async function loadLiveServers(isBackground = false) {
         const container = document.getElementById("servers-container");
@@ -1186,20 +1205,29 @@
 
     // Community totals strip (from saved race results). Stays hidden if there are none or the service is unreachable.
     (async function loadSiteTotals() {
-        try {
-            const res = await fetch(`${AZURE_API_URL}?type=community`, { signal: AbortSignal.timeout(8000) });
-            const d = await res.json();
-            const t = d && d.totals;
-            if (!t || !t.races) return;
-            const el = document.getElementById("site-totals");
-            const n = (v) => Number(v || 0).toLocaleString();
+        const el = document.getElementById("site-totals");
+        if (!el) return;
+        const n = (v) => Number(v || 0).toLocaleString();
+        const paint = (t) => {
             el.innerHTML = `<span><i class="fa-solid fa-flag-checkered"></i> <b>${n(t.races)}</b> races</span>` +
                 `<span><i class="fa-solid fa-rotate"></i> <b>${n(t.laps)}</b> race laps</span>` +
                 `<span><i class="fa-solid fa-stopwatch"></i> <b>${n(t.hours)}</b> hours raced</span>` +
                 `<span><i class="fa-solid fa-users"></i> <b>${n(t.drivers)}</b> race drivers</span>` +
                 `<span class="site-totals-more">CHAMPIONSHIP & STATS <i class="fa-solid fa-arrow-right"></i></span>`;
-            el.style.display = "flex";
-        } catch (e) { /* optional */ }
+            el.style.visibility = "visible";
+        };
+        const hide = () => { el.style.display = "none"; };
+        /* The strip's space is reserved in CSS and the last totals are cached, so it never pushes the page down when it loads. */
+        let hadCache = false;
+        try { const c = JSON.parse(localStorage.getItem("bchq_cached_totals") || "null"); if (c && c.races) { paint(c); hadCache = true; } } catch (e) {}
+        try {
+            const res = await fetch(`${AZURE_API_URL}?type=community`, { signal: AbortSignal.timeout(8000) });
+            const d = await res.json();
+            const t = d && d.totals;
+            if (!t || !t.races) { hide(); try { localStorage.removeItem("bchq_cached_totals"); } catch (e) {} return; }
+            try { localStorage.setItem("bchq_cached_totals", JSON.stringify(t)); } catch (e) {}
+            paint(t);
+        } catch (e) { if (!hadCache) hide(); }
     })();
 </script>
 
