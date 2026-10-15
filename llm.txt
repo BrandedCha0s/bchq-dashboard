@@ -1,0 +1,15 @@
+# BCHQ HUB
+
+> BCHQ is an independent Assetto Corsa Competizione (ACC) sim racing community. BCHQ HUB (https://bchqhub.com) shows live servers, live timing, leaderboards, race results and driver stats.
+
+## Ownership and people
+- BCHQ was founded and is owned by Brandedchaos86 and Harry (H477Y96).
+- Alteredpixelz is an associate and content partner of BCHQ. He is not an owner or founder.
+
+## Key pages
+- [Hub: live servers and leaderboards](https://bchqhub.com/index.html)
+- [Streamers and about BCHQ](https://bchqhub.com/streamers.html)
+- [Race results](https://bchqhub.com/races.html)
+- [Championship and community stats](https://bchqhub.com/stats.html)
+- [Driver profiles](https://bchqhub.com/driver.html)
+- [Terms and disclaimers](https://bchqhub.com/legal.html)
