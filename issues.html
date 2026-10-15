@@ -222,34 +222,55 @@
                 min-width: 100%;
             }
         }
+
+        /* ---- Shared site navigation ---- */
+        a.header-title { text-decoration: none; }
+        .header { flex-wrap: wrap; gap: 16px 24px; }
+        .header-title h1 { font-size: 1.8rem; white-space: nowrap; }
+        .nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+        .nav-btn { background: rgba(0,240,255,.08); border: 1px solid var(--border-color); color: var(--text-main); padding: 9px 16px; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-size: .78rem; font-weight: 700; display: flex; align-items: center; gap: 8px; text-decoration: none; transition: all .2s ease; }
+        .nav-btn i { color: var(--accent-cyan); }
+        .nav-btn:hover, .nav-btn.active { border-color: var(--accent-cyan); background: rgba(0,240,255,.15); box-shadow: 0 0 12px rgba(0,240,255,.25); }
+        @media (max-width: 768px) {
+            .header .nav { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+            .nav-btn { justify-content: center; padding: 10px 8px; }
+            .header-title h1 { font-size: 1.4rem; white-space: normal; }
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
         <a href="index.html" class="header-title">
-            <i class="fa-solid fa-gauge-high" style="font-size: 2.2rem; color: var(--accent-cyan);"></i>
+            <i class="fa-solid fa-bug" style="font-size: 2.2rem; color: var(--accent-cyan);"></i>
             <div>
                 <h1><span class="brand-bc">BC</span><span class="brand-hq">HQ</span> HUB</h1>
                 <div style="font-size: 0.9rem; color: var(--accent-cyan); letter-spacing: 1px; font-weight: 600;">ISSUE TRACKER</div>
             </div>
         </a>
-        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> BACK TO HUB</a>
+        <div class="nav">
+            <a href="index.html" class="nav-btn"><i class="fa-solid fa-gauge-high"></i> HUB</a>
+            <a href="driver.html" class="nav-btn"><i class="fa-solid fa-magnifying-glass"></i> DRIVERS</a>
+            <a href="races.html" class="nav-btn"><i class="fa-solid fa-flag-checkered"></i> RACES</a>
+            <a href="stats.html" class="nav-btn"><i class="fa-solid fa-chart-line"></i> STATS</a>
+            <a href="overlay.html" class="nav-btn"><i class="fa-solid fa-tv"></i> OVERLAYS</a>
+            <a href="streamers.html" class="nav-btn"><i class="fa-solid fa-users"></i> STREAMERS</a>
+        </div>
     </div>
 
     <div class="content-card">
         <h2><i class="fa-solid fa-bug"></i> Report a Bug or Issue</h2>
-        <p>Found a problem with telemetry polling, server cards, or leaderboards? Fill out the form below, and it will be logged directly to our GitHub issue tracker.</p>
+        <p>Found a problem with telemetry polling, server cards, or leaderboards? Fill out the form below, and it will be logged directly to our public GitHub issue tracker, so please do not include personal details.</p>
         
         <form id="issue-form" onsubmit="submitIssue(event)">
             <div class="form-group">
                 <label for="issue-title">ISSUE TITLE</label>
-                <input type="text" id="issue-title" placeholder="e.g., Leaderboard gap calculation incorrect for Monza" required>
+                <input type="text" id="issue-title" maxlength="120" placeholder="e.g., Leaderboard gap calculation incorrect for Monza" required>
             </div>
 
             <div class="form-group">
                 <label for="issue-desc">DESCRIPTION & STEPS TO REPRODUCE</label>
-                <textarea id="issue-desc" placeholder="Describe what went wrong, what you expected to happen, and how we can reproduce it..." required></textarea>
+                <textarea id="issue-desc" maxlength="4000" placeholder="Describe what went wrong, what you expected to happen, and how we can reproduce it..." required></textarea>
             </div>
 
             <button type="submit" id="submit-btn" class="submit-btn">
@@ -302,7 +323,14 @@
                 if (response.ok && data.success) {
                     lastSubmissionTime = Date.now(); // Set cooldown timestamp on success
                     alertContainer.className = "alert-box success";
-                    alertContainer.innerHTML = `<i class="fa-solid fa-check-circle"></i> Issue successfully created on GitHub! <a href="${data.issueUrl}" target="_blank" style="color: #fff; text-decoration: underline; margin-left: 5px;">View Issue #${data.issueUrl.split('/').pop()}</a>`;
+                    alertContainer.innerHTML = `<i class="fa-solid fa-check-circle"></i> Issue successfully created on GitHub! `;
+                    if (/^https:\/\/github\.com\//.test(String(data.issueUrl))) {
+                        const a = document.createElement("a");
+                        a.href = data.issueUrl; a.target = "_blank"; a.rel = "noopener noreferrer";
+                        a.style.cssText = "color: #fff; text-decoration: underline; margin-left: 5px;";
+                        a.textContent = "View Issue #" + data.issueUrl.split("/").pop();
+                        alertContainer.appendChild(a);
+                    }
                     titleInput.value = "";
                     descInput.value = "";
                 } else {
@@ -310,7 +338,8 @@
                 }
             } catch (err) {
                 alertContainer.className = "alert-box error";
-                alertContainer.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Error: ${err.message}`;
+                alertContainer.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> `;
+                alertContainer.appendChild(document.createTextNode("Error: " + err.message));
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> SUBMIT TO GITHUB`;
