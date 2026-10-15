@@ -42,6 +42,8 @@
             margin-bottom: 40px;
             padding-bottom: 20px;
             border-bottom: 1px solid var(--border-color);
+            gap: 16px 24px;
+            flex-wrap: wrap;
         }
 
         .header-title {
@@ -57,13 +59,14 @@
 
         .header-title h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 2rem;
+            font-size: 1.8rem;
             letter-spacing: 2px;
             color: #fff;
+            white-space: nowrap;
         }
 
         .header-subtitle {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--accent-cyan);
             letter-spacing: 1px;
             font-weight: 600;
@@ -74,10 +77,10 @@
             background: rgba(88, 101, 242, 0.15);
             border: 1px solid var(--discord-blurple);
             color: #fff;
-            padding: 10px 20px;
+            padding: 9px 16px;
             border-radius: 20px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.85rem;
+            font-size: 0.78rem;
             font-weight: 700;
             display: flex;
             align-items: center;
@@ -599,10 +602,8 @@
                 gap: 10px !important;
             }
 
-            /* Make the Discord button span full width at the bottom of the grid */
-            .header > div:last-child > a:last-child {
-                grid-column: span 2;
-            }
+            /* six header buttons = three tidy rows of two, so nothing needs to span */
+            .header > div:last-child > div { align-items: stretch !important; }
 
             .discord-btn-header {
                 justify-content: center;
@@ -646,7 +647,7 @@
         /* Community totals strip under the header */
         .site-totals {
             display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center;
-            margin: -10px 0 26px; padding: 12px 18px;
+            margin: -10px 0 26px; padding: 12px 18px; min-height: 52px; box-sizing: border-box;
             background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;
             text-decoration: none; color: var(--text-muted); font-weight: 600; font-size: 1rem;
             transition: border-color .2s ease;
@@ -656,7 +657,7 @@
         .site-totals b { color: #fff; font-family: 'Orbitron', sans-serif; font-size: .95rem; }
         .site-totals-more { margin-left: auto; color: var(--accent-cyan); font-family: 'Orbitron', sans-serif; font-size: .72rem; letter-spacing: 1px; }
         @media (max-width: 768px) {
-            .site-totals { gap: 6px 14px; padding: 10px 12px; font-size: .9rem; }
+            .site-totals { gap: 6px 14px; padding: 10px 12px; font-size: .9rem; min-height: 112px; }
             .site-totals-more { margin-left: 0; width: 100%; }
             /* header now has 5 buttons: keep the 2-column grid, Discord still spans the bottom row */
         }
