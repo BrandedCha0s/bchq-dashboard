@@ -109,16 +109,40 @@
             background: var(--accent-cyan);
             color: var(--bg-dark);
         }
+
+        /* ---- Shared site navigation ---- */
+        a.header-title { text-decoration: none; }
+        .header { flex-wrap: wrap; gap: 16px 24px; }
+        .header-title h1 { font-size: 1.8rem; white-space: nowrap; }
+        .nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+        .nav-btn { background: rgba(0,240,255,.08); border: 1px solid var(--border-color); color: var(--text-main); padding: 9px 16px; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-size: .78rem; font-weight: 700; display: flex; align-items: center; gap: 8px; text-decoration: none; transition: all .2s ease; }
+        .nav-btn i { color: var(--accent-cyan); }
+        .nav-btn:hover, .nav-btn.active { border-color: var(--accent-cyan); background: rgba(0,240,255,.15); box-shadow: 0 0 12px rgba(0,240,255,.25); }
+        @media (max-width: 768px) {
+            .header .nav { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+            .nav-btn { justify-content: center; padding: 10px 8px; }
+            .header-title h1 { font-size: 1.4rem; white-space: normal; }
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
         <a href="index.html" class="header-title">
-            <i class="fa-solid fa-gauge-high" style="font-size: 2rem; color: var(--accent-cyan);"></i>
-            <h1><span class="brand-bc">BC</span><span class="brand-hq">HQ</span> HUB</h1>
+            <i class="fa-solid fa-scale-balanced" style="font-size: 2.2rem; color: var(--accent-cyan);"></i>
+            <div>
+                <h1><span class="brand-bc">BC</span><span class="brand-hq">HQ</span> HUB</h1>
+                <div style="font-size: 0.9rem; color: var(--accent-cyan); letter-spacing: 1px; font-weight: 600;">TERMS &amp; DISCLAIMERS</div>
+            </div>
         </a>
-        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> BACK TO HUB</a>
+        <div class="nav">
+            <a href="index.html" class="nav-btn"><i class="fa-solid fa-gauge-high"></i> HUB</a>
+            <a href="driver.html" class="nav-btn"><i class="fa-solid fa-magnifying-glass"></i> DRIVERS</a>
+            <a href="races.html" class="nav-btn"><i class="fa-solid fa-flag-checkered"></i> RACES</a>
+            <a href="stats.html" class="nav-btn"><i class="fa-solid fa-chart-line"></i> STATS</a>
+            <a href="overlay.html" class="nav-btn"><i class="fa-solid fa-tv"></i> OVERLAYS</a>
+            <a href="streamers.html" class="nav-btn"><i class="fa-solid fa-users"></i> STREAMERS</a>
+        </div>
     </div>
 
     <div class="content-card">
@@ -138,8 +162,25 @@
     </div>
 
     <div class="content-card">
+        <h2><i class="fa-solid fa-id-card"></i> Driver Data & Public Results</h2>
+        <p>When you drive on a BCHQ server, the server records your Steam display name, your Steam ID, your car, your lap times, race finishing positions, and counts of invalid laps and penalties. This data is used to build the leaderboards, driver profiles, race results, championship and community statistics, Discord posts, and live timing and stream overlays on this site.</p>
+        <ul>
+            <li>Your Steam display name, car, lap times, race results and the statistics calculated from them are <strong>shown publicly</strong>.</li>
+            <li>Your Steam ID is stored to match your results together and is <strong>not shown</strong> on the site.</li>
+            <li>We also count how many drivers are on each server over time (no names) to show busy times.</li>
+        </ul>
+        <p>If you would like your name and results removed from the site, ask in the BCHQ Discord and we will remove them.</p>
+    </div>
+
+    <div class="content-card">
         <h2><i class="fa-solid fa-cookie-bite"></i> Data & Storage Notice</h2>
-        <p>BCHQ Hub uses browser <code>localStorage</code> purely to remember your preferred track selection for convenience. Telemetry lap times ingested from server instances are stored securely in backend cloud databases to power community leaderboards.</p>
+        <p>BCHQ Hub uses browser <code>localStorage</code> purely to remember your preferred track selection for convenience. Lap times and race results from server instances are stored in backend cloud databases to power community leaderboards and statistics.</p>
+        <p>We use Cloudflare Web Analytics to count visits to the site. It does not use cookies. Issue reports you submit are posted to a public GitHub repository, so please do not include personal information in them.</p>
+    </div>
+
+    <div class="content-card">
+        <h2><i class="fa-solid fa-chart-simple"></i> Statistics & Ratings</h2>
+        <p>Championship points, safety ratings, streaks and other statistics are calculated automatically from server data for fun. They may contain errors, depend on how the game server reports results, and have no official standing.</p>
     </div>
     <!-- Footer Legal Section -->
     <div style="margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.9rem; flex-wrap: wrap; gap: 15px;">
