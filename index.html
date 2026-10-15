@@ -1209,6 +1209,7 @@
             &copy; 2026 <span class="brand-bc">BC</span><span class="brand-hq">HQ</span> HUB. Independent community platform.
         </div>
         <div style="display: flex; gap: 25px; align-items: center;">
+            <a href="#" id="get-app-link" onclick="if(window.bchqInstall){bchqInstall();}return false;" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'"><i class="fa-solid fa-mobile-screen"></i> Get the app</a>
             <a href="legal.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'">Terms & Disclaimers</a>
             <a href="issues.html" class="report-issue-btn">
                 <i class="fa-solid fa-bug"></i> REPORT ISSUE
@@ -1217,6 +1218,7 @@
     </div>
     <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "02a093a4e8134646a50f03a68676c5c8"}'></script><!-- End Cloudflare Web Analytics -->
    <script src="ptr.js"></script>
+<script src="install.js"></script>
 <script>if("serviceWorker"in navigator)window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){})});</script>
 </body>
 </html>
