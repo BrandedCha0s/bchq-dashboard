@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
+        img-src 'self' https://cdn.jsdelivr.net data:;
+        connect-src 'self' https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net https://api.github.com;
+    ">
+
+    <title>BCHQ HUB - Race Results</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0a0e14; --card-bg: #111823; --accent-cyan: #00f0ff; --accent-green: #00ff88;
+            --accent-red: #ff3366; --accent-gold: #f5a524; --accent-purple: #b388ff;
+            --text-main: #e2e8f0; --text-muted: #64748b; --border-color: #1e293b;
+            --brand-bc: #3bb54a; --brand-hq: #7f52c8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Rajdhani', sans-serif; padding: 30px 20px; max-width: 1400px; margin: 0 auto; }
+        a { color: inherit; }
+        .brand-bc { color: var(--brand-bc); } .brand-hq { color: var(--brand-hq); }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); gap: 16px; flex-wrap: wrap; }
+        .header-title { display: flex; align-items: center; gap: 15px; }
+        .header-title i { font-size: 2.2rem; color: var(--accent-cyan); }
+        .header-title h1 { font-family: 'Orbitron', sans-serif; font-size: 2rem; letter-spacing: 2px; color: #fff; }
+        .header-subtitle { font-size: .9rem; color: var(--accent-cyan); letter-spacing: 1px; font-weight: 600; }
+        .nav { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+        .nav-btn { background: rgba(0,240,255,.08); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 18px; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-size: .8rem; font-weight: 700; display: flex; align-items: center; gap: 8px; text-decoration: none; transition: all .2s ease; }
+        .nav-btn i { color: var(--accent-cyan); }
+        .nav-btn:hover, .nav-btn.active { border-color: var(--accent-cyan); background: rgba(0,240,255,.15); box-shadow: 0 0 12px rgba(0,240,255,.25); }
+
+        .section-title { font-family: 'Orbitron', sans-serif; font-size: 1.25rem; color: #fff; margin: 30px 0 16px; display: flex; align-items: center; gap: 12px; letter-spacing: 1px; flex-wrap: wrap; }
+        .section-title i { color: var(--accent-cyan); }
+        .section-title .note { font-family: 'Rajdhani', sans-serif; font-size: .9rem; color: var(--text-muted); letter-spacing: 0; font-weight: 600; }
+
+        .summary-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 10px; }
+        .summary-item { flex: 1; min-width: 150px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 18px; }
+        .summary-item strong { display: block; font-family: 'Orbitron', sans-serif; font-size: 1.25rem; color: var(--accent-cyan); margin-bottom: 4px; }
+        .summary-item span { font-size: .85rem; color: var(--text-muted); letter-spacing: .5px; }
+
+        .panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; }
+        .panel-head { font-family: 'Orbitron', sans-serif; font-size: .95rem; color: #fff; padding: 14px 18px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,.2); }
+        .panel-head i { color: var(--accent-cyan); }
+        .panel-head .sub { margin-left: auto; font-family: 'Rajdhani', sans-serif; font-size: .8rem; color: var(--text-muted); font-weight: 600; }
+        .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: rgba(0,0,0,.25); color: var(--text-muted); font-family: 'Orbitron', sans-serif; font-size: .72rem; padding: 12px 14px; border-bottom: 1px solid var(--border-color); white-space: nowrap; letter-spacing: .5px; }
+        td { padding: 12px 14px; border-bottom: 1px solid var(--border-color); font-size: 1rem; font-weight: 600; }
+        tr:last-child td { border-bottom: none; }
+        .num { text-align: right; font-variant-numeric: tabular-nums; } th.num { text-align: right; }
+        .rank { font-family: 'Orbitron', sans-serif; color: var(--text-muted); width: 38px; }
+        .rank.r1 { color: var(--accent-gold); } .rank.r2 { color: #cbd5e1; } .rank.r3 { color: #cd7f32; }
+        .lap-time { font-family: 'Orbitron', sans-serif; color: var(--accent-green); font-size: .9rem; white-space: nowrap; }
+        .lap-time.fl { color: var(--accent-purple); }
+        .muted { color: var(--text-muted); font-weight: 600; }
+        .strong { color: #fff; }
+        .name-link { color: #fff; text-decoration: none; border-bottom: 1px dotted rgba(255,255,255,.3); }
+        .name-link:hover { color: var(--accent-cyan); border-bottom-color: var(--accent-cyan); }
+        .car-badge { background: rgba(255,255,255,.05); padding: 3px 8px; border-radius: 4px; font-size: .85rem; color: var(--text-muted); white-space: nowrap; }
+        .empty { padding: 26px 18px; color: var(--text-muted); text-align: center; font-weight: 600; }
+
+        .controls { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+        .controls select, .controls input { background: var(--bg-dark); color: #fff; border: 1px solid var(--accent-cyan); padding: 10px 14px; border-radius: 8px; font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 600; outline: none; min-width: 200px; }
+        .btn { background: var(--accent-cyan); color: var(--bg-dark); border: none; padding: 10px 20px; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-size: .8rem; font-weight: 800; cursor: pointer; }
+        .btn.ghost { background: transparent; color: var(--accent-cyan); border: 1px solid var(--accent-cyan); }
+        .btn:hover { opacity: .9; }
+        .tabs { display: inline-flex; gap: 0; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; margin-left: auto; }
+        .tab { background: transparent; color: var(--text-muted); border: none; padding: 7px 14px; font-family: 'Orbitron', sans-serif; font-size: .7rem; font-weight: 700; cursor: pointer; }
+        .tab.on { background: rgba(0,240,255,.15); color: var(--accent-cyan); }
+
+        .race-row { cursor: pointer; }
+        .race-row:hover td { background: rgba(0,240,255,.04); }
+        .race-row .chev { color: var(--accent-cyan); transition: transform .2s; display: inline-block; }
+        .race-row.open .chev { transform: rotate(90deg); }
+        .detail-row > td { background: rgba(0,0,0,.25); padding: 0; }
+        .detail-inner { padding: 10px 14px 16px; }
+        .detail-inner table th, .detail-inner table td { padding: 9px 10px; font-size: .95rem; }
+        .detail-meta { color: var(--text-muted); font-size: .9rem; margin: 6px 4px 10px; font-weight: 600; }
+        .pts { font-family: 'Orbitron', sans-serif; font-size: .85rem; color: var(--accent-gold); }
+        .more-wrap { text-align: center; margin: 18px 0 6px; }
+        .pinned { margin-bottom: 18px; }
+
+        @media (max-width: 768px) {
+            body { padding: 15px 10px; }
+            .header-title h1 { font-size: 1.4rem; } .header-title i { font-size: 1.7rem; }
+            .nav { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+            .nav-btn { justify-content: center; padding: 10px 8px; }
+            th, td { padding: 10px 8px; font-size: .9rem; }
+            .controls select, .controls input { width: 100%; min-width: 0; }
+            .hide-sm { display: none; }
+            .summary-item { min-width: calc(50% - 8px); padding: 12px 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-title">
+            <i class="fa-solid fa-flag-checkered"></i>
+            <div>
+                <h1><span class="brand-bc">BC</span><span class="brand-hq">HQ</span> RACES</h1>
+                <div class="header-subtitle">RACE RESULTS & HISTORY</div>
+            </div>
+        </div>
+        <div class="nav">
+            <a href="index.html" class="nav-btn"><i class="fa-solid fa-gauge-high"></i> HUB</a>
+            <a href="races.html" class="nav-btn active"><i class="fa-solid fa-flag-checkered"></i> RACES</a>
+            <a href="stats.html" class="nav-btn"><i class="fa-solid fa-chart-line"></i> STATS</a>
+            <a href="driver.html" class="nav-btn"><i class="fa-solid fa-user-astronaut"></i> DRIVERS</a>
+        </div>
+    </div>
+
+    <div class="controls">
+        <select id="track-filter" onchange="reload()"><option value="">All tracks</option></select>
+        <input type="text" id="name-filter" placeholder="Filter by driver name..." onkeypress="if(event.key==='Enter') reload()">
+        <button class="btn" onclick="reload()"><i class="fa-solid fa-magnifying-glass"></i> FILTER</button>
+        <button class="btn ghost" onclick="clearFilters()">CLEAR</button>
+    </div>
+
+    <div id="pinned" class="pinned"></div>
+
+    <div class="panel">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th></th><th>DATE</th><th>TRACK</th><th>WINNER</th>
+                        <th class="hide-sm">CAR</th><th class="num">DRIVERS</th><th class="num hide-sm">LAPS</th><th class="hide-sm">FASTEST LAP</th>
+                    </tr>
+                </thead>
+                <tbody id="race-body"><tr><td colspan="8" class="empty"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading races...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+    <div class="more-wrap"><button class="btn ghost" id="more-btn" style="display:none" onclick="loadMore()">LOAD OLDER RACES</button></div>
+
+    <script>
+
+        const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1";
+        const TRACK_NAMES = {
+            monza: "Monza", zolder: "Zolder", brands_hatch: "Brands Hatch", silverstone: "Silverstone", paul_ricard: "Paul Ricard",
+            misano: "Misano", spa: "Circuit de Spa-Francorchamps", nurburgring: "Nürburgring GP", nurburgring_24h: "Nürburgring 24h (Nordschleife)",
+            barcelona: "Barcelona", hungaroring: "Hungaroring", zandvoort: "Zandvoort", kyalami: "Kyalami", mount_panorama: "Mount Panorama (Bathurst)",
+            suzuka: "Suzuka", laguna_seca: "Laguna Seca", imola: "Imola", donington: "Donington Park", oulton_park: "Oulton Park",
+            snetterton: "Snetterton", cota: "Circuit of the Americas (COTA)", indianapolis: "Indianapolis", watkins_glen: "Watkins Glen",
+            valencia: "Valencia", red_bull_ring: "Red Bull Ring"
+        };
+        function trackName(raw) {
+            const clean = String(raw || "").toLowerCase().replace(/_\d{4}$/, "").trim();
+            const key = Object.keys(TRACK_NAMES).sort((a, b) => b.length - a.length).find(k => clean.includes(k));
+            return key ? TRACK_NAMES[key] : (clean.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()) || "Unknown track");
+        }
+        function esc(v) {
+            return String(v === undefined || v === null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+        }
+        function fmtLap(ms) {
+            if (!ms || ms <= 0 || ms >= 2147483647) return "—";
+            const m = Math.floor(ms / 60000), s = Math.floor((ms % 60000) / 1000), t = ms % 1000;
+            return `${m}:${String(s).padStart(2, "0")}.${String(t).padStart(3, "0")}`;
+        }
+        function fmtRaceTime(ms) {
+            const h = Math.floor(ms / 3600000), m = Math.floor((ms % 3600000) / 60000), s = Math.floor((ms % 60000) / 1000), t = ms % 1000;
+            return (h ? `${h}:${String(m).padStart(2, "0")}` : `${m}`) + `:${String(s).padStart(2, "0")}.${String(t).padStart(3, "0")}`;
+        }
+        function nameLink(name) {
+            return `<a class="name-link" href="driver.html?name=${encodeURIComponent(name)}">${esc(name)}</a>`;
+        }
+        function rankCell(i) { return `<td class="rank ${i < 3 ? "r" + (i + 1) : ""}">${i + 1}</td>`; }
+        async function api(query) {
+            const res = await fetch(`${AZURE_API_URL}?${query}`);
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            return await res.json();
+        }
+
+        const PAGE = 20;
+        let oldest = null, loading = false;
+
+        function fillTracks() {
+            const sel = document.getElementById("track-filter");
+            Object.entries(TRACK_NAMES).sort((a, b) => a[1].localeCompare(b[1])).forEach(([k, v]) => {
+                const o = document.createElement("option"); o.value = k; o.textContent = v; sel.appendChild(o);
+            });
+        }
+
+        function filters() {
+            const track = document.getElementById("track-filter").value;
+            const name = document.getElementById("name-filter").value.trim();
+            return (track ? `&track=${encodeURIComponent(track)}` : "") + (name ? `&name=${encodeURIComponent(name)}` : "");
+        }
+
+        function raceRow(r) {
+            const d = new Date(r.date);
+            return `<tr class="race-row" data-id="${esc(r.id)}">
+                <td><i class="fa-solid fa-chevron-right chev"></i></td>
+                <td class="muted">${esc(d.toLocaleDateString([], { day: "numeric", month: "short" }))} <span class="hide-sm">${esc(d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }))}</span></td>
+                <td class="strong">${esc(trackName(r.track))}${r.serverName ? `<div class="muted" style="font-size:.8rem">${esc(r.serverName)}</div>` : ""}</td>
+                <td>${nameLink(r.winner)}</td>
+                <td class="hide-sm"><span class="car-badge">${esc(r.winnerCar || "GT3")}</span></td>
+                <td class="num">${esc(r.entries)}</td>
+                <td class="num hide-sm">${esc(r.laps)}</td>
+                <td class="hide-sm">${r.fastest ? `<span class="lap-time fl">${fmtLap(r.fastest.ms)}</span> <span class="muted">${esc(r.fastest.name)}</span>` : "—"}</td>
+            </tr>`;
+        }
+
+        function classification(r) {
+            const lead = r.results[0];
+            const fl = r.fastest ? r.fastest.ms : null;
+            const rows = r.results.map((x, i) => {
+                const gap = i === 0 ? fmtRaceTime(x.totalMs)
+                    : x.laps < lead.laps ? `+${lead.laps - x.laps} lap${lead.laps - x.laps > 1 ? "s" : ""}`
+                    : `+${((x.totalMs - lead.totalMs) / 1000).toFixed(3)}`;
+                return `<tr>
+                    ${rankCell(i)}
+                    <td>${nameLink(x.name)}</td>
+                    <td class="hide-sm"><span class="car-badge">${esc(x.car)}</span></td>
+                    <td class="num">${esc(x.laps)}</td>
+                    <td class="num muted">${esc(gap)}</td>
+                    <td class="num"><span class="lap-time ${fl && x.bestMs === fl ? "fl" : ""}">${fmtLap(x.bestMs)}</span></td>
+                    <td class="num hide-sm muted">${esc(x.invalid || 0)}</td>
+                    <td class="num hide-sm muted">${esc(x.penalties || 0)}</td>
+                    <td class="num"><span class="pts">${x.points ? "+" + esc(x.points) : ""}</span></td>
+                </tr>`;
+            }).join("");
+            return `<div class="detail-meta">${esc(trackName(r.track))} · ${esc(new Date(r.date).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }))}${r.serverName ? " · " + esc(r.serverName) : ""}</div>
+                <div class="table-container"><table>
+                <thead><tr><th>P</th><th>DRIVER</th><th class="hide-sm">CAR</th><th class="num">LAPS</th><th class="num">GAP</th><th class="num">BEST</th><th class="num hide-sm">INV</th><th class="num hide-sm">PEN</th><th class="num">PTS</th></tr></thead>
+                <tbody>${rows}</tbody></table></div>`;
+        }
+
+        async function toggleRace(tr) {
+            const next = tr.nextElementSibling;
+            if (next && next.classList.contains("detail-row")) { next.remove(); tr.classList.remove("open"); return; }
+            tr.classList.add("open");
+            const row = document.createElement("tr");
+            row.className = "detail-row";
+            row.innerHTML = `<td colspan="8"><div class="detail-inner"><span class="muted"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading results...</span></div></td>`;
+            tr.after(row);
+            try {
+                const r = await api(`type=race&id=${encodeURIComponent(tr.dataset.id)}`);
+                row.querySelector(".detail-inner").innerHTML = r.results ? classification(r) : `<span class="muted">Results not available.</span>`;
+            } catch (e) {
+                row.querySelector(".detail-inner").innerHTML = `<span style="color:var(--accent-red)">Couldn't load this race.</span>`;
+            }
+        }
+
+        async function loadPage(reset) {
+            if (loading) return;
+            loading = true;
+            const body = document.getElementById("race-body");
+            const more = document.getElementById("more-btn");
+            try {
+                const data = await api(`type=races&limit=${PAGE}${filters()}${!reset && oldest ? "&before=" + encodeURIComponent(oldest) : ""}`);
+                const list = Array.isArray(data.races) ? data.races : [];
+                if (reset) body.innerHTML = "";
+                if (reset && !list.length) {
+                    body.innerHTML = `<tr><td colspan="8" class="empty">No races recorded yet. Results appear here after the next race finishes.</td></tr>`;
+                } else {
+                    body.insertAdjacentHTML("beforeend", list.map(raceRow).join(""));
+                }
+                if (list.length) oldest = list[list.length - 1].date;
+                more.style.display = list.length >= PAGE ? "inline-block" : "none";
+            } catch (e) {
+                if (reset) body.innerHTML = `<tr><td colspan="8" class="empty" style="color:var(--accent-red)">Couldn't reach the results service. Try again in a moment.</td></tr>`;
+            } finally { loading = false; }
+        }
+        function reload() { oldest = null; loadPage(true); }
+        function loadMore() { loadPage(false); }
+        function clearFilters() { document.getElementById("track-filter").value = ""; document.getElementById("name-filter").value = ""; reload(); }
+
+        document.getElementById("race-body").addEventListener("click", (e) => {
+            if (e.target.closest("a")) return;
+            const tr = e.target.closest("tr.race-row");
+            if (tr) toggleRace(tr);
+        });
+
+        // Arriving from a driver profile: races.html?name=... filters to that driver; ?race=<id> pins one race at the top.
+        (async function init() {
+            fillTracks();
+            const params = new URLSearchParams(location.search);
+            if (params.get("name")) document.getElementById("name-filter").value = params.get("name");
+            const pin = params.get("race");
+            if (pin && /^race:[0-9a-f]{24}$/.test(pin)) {
+                try {
+                    const r = await api(`type=race&id=${encodeURIComponent(pin)}`);
+                    if (r.results) document.getElementById("pinned").innerHTML = `<div class="panel"><div class="panel-head"><i class="fa-solid fa-flag-checkered"></i> RACE RESULT</div><div class="detail-inner">${classification(r)}</div></div>`;
+                } catch (e) { /* the list below still works */ }
+            }
+            loadPage(true);
+        })();
+    </script>
+    <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "02a093a4e8134646a50f03a68676c5c8"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
