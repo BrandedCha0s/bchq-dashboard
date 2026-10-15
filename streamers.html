@@ -171,6 +171,7 @@
         }
 
         .streamer-avatar {
+            flex-shrink: 0;
             width: 65px;
             height: 65px;
             border-radius: 50%;
@@ -279,6 +280,15 @@
         .social-btn.tiktok:hover { background: rgba(254, 44, 85, 0.2); border-color: var(--tiktok-pink); color: #fff; }
         .social-btn.tiktok i { color: var(--tiktok-pink); }
 
+
+        .overlay-promo { display: flex; align-items: center; gap: 16px; background: linear-gradient(90deg, rgba(145,70,255,.15), rgba(0,240,255,.08)); border: 1px solid var(--twitch-purple); border-radius: 12px; padding: 16px 20px; margin-bottom: 25px; text-decoration: none; color: var(--text-main); transition: border-color .2s ease, transform .2s ease; }
+        .overlay-promo:hover { border-color: var(--accent-cyan); transform: translateY(-2px); }
+        .overlay-promo > i { font-size: 1.8rem; color: var(--accent-cyan); }
+        .overlay-promo strong { display: block; font-family: 'Orbitron', sans-serif; color: #fff; font-size: 1rem; margin-bottom: 2px; }
+        .overlay-promo span { color: var(--text-muted); font-weight: 600; }
+        .overlay-promo em { margin-left: auto; font-style: normal; font-family: 'Orbitron', sans-serif; font-size: .75rem; font-weight: 700; color: var(--accent-cyan); white-space: nowrap; }
+        @media (max-width: 768px) { .overlay-promo { flex-wrap: wrap; } .overlay-promo em { margin-left: 0; } }
+
         /* --- MOBILE MEDIA QUERY --- */
         @media (max-width: 768px) {
             body {
@@ -296,31 +306,58 @@
                 justify-content: space-between;
             }
         }
+
+        /* ---- Shared site navigation ---- */
+        a.header-title { text-decoration: none; }
+        .header { flex-wrap: wrap; gap: 16px 24px; }
+        .header-title h1 { font-size: 1.8rem; white-space: nowrap; }
+        .nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+        .nav-btn { background: rgba(0,240,255,.08); border: 1px solid var(--border-color); color: var(--text-main); padding: 9px 16px; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-size: .78rem; font-weight: 700; display: flex; align-items: center; gap: 8px; text-decoration: none; transition: all .2s ease; }
+        .nav-btn i { color: var(--accent-cyan); }
+        .nav-btn:hover, .nav-btn.active { border-color: var(--accent-cyan); background: rgba(0,240,255,.15); box-shadow: 0 0 12px rgba(0,240,255,.25); }
+        @media (max-width: 768px) {
+            .header .nav { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+            .nav-btn { justify-content: center; padding: 10px 8px; }
+            .header-title h1 { font-size: 1.4rem; white-space: normal; }
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
         <a href="index.html" class="header-title">
-            <i class="fa-solid fa-gauge-high" style="font-size: 2.2rem; color: var(--accent-cyan);"></i>
+            <i class="fa-solid fa-users" style="font-size: 2.2rem; color: var(--accent-cyan);"></i>
             <div>
-                <h1><span class="brand-bc">BC</span><span class="brand-hq">HQ</span> HUB</h1>
+                <h1><span class="brand-bc">BC</span><span class="brand-hq">HQ</span> STREAMERS</h1>
                 <div style="font-size: 0.9rem; color: var(--accent-cyan); letter-spacing: 1px; font-weight: 600;">COMMUNITY BROADCASTERS</div>
             </div>
         </a>
-        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> BACK TO HUB</a>
+        <div class="nav">
+            <a href="index.html" class="nav-btn"><i class="fa-solid fa-gauge-high"></i> HUB</a>
+            <a href="driver.html" class="nav-btn"><i class="fa-solid fa-magnifying-glass"></i> DRIVERS</a>
+            <a href="races.html" class="nav-btn"><i class="fa-solid fa-flag-checkered"></i> RACES</a>
+            <a href="stats.html" class="nav-btn"><i class="fa-solid fa-chart-line"></i> STATS</a>
+            <a href="overlay.html" class="nav-btn"><i class="fa-solid fa-tv"></i> OVERLAYS</a>
+            <a href="streamers.html" class="nav-btn active"><i class="fa-solid fa-users"></i> STREAMERS</a>
+        </div>
     </div>
 
     <div class="section-title">
         <i class="fa-solid fa-users"></i> RESIDENT STREAMERS & SOCIALS
     </div>
 
+    <a href="overlay.html" class="overlay-promo">
+        <i class="fa-solid fa-tv"></i>
+        <div><strong>Streaming on our servers?</strong><span>Grab a free live timing overlay for OBS: pick a server, copy the link, done.</span></div>
+        <em>GET AN OVERLAY <i class="fa-solid fa-arrow-right"></i></em>
+    </a>
+
     <div class="streamers-grid">
         <!-- Brandedchaos86 -->
         <div class="streamer-card">
             <div>
                 <div class="streamer-header">
-                    <img id="avatar-brandedchaos86" alt="Brandedchaos86" class="streamer-avatar">
+                    <img id="avatar-brandedchaos86" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Brandedchaos86" class="streamer-avatar">
                     <div>
                         <div class="streamer-name">Brandedchaos86</div>
                         <div id="status-brandedchaos86" class="streamer-handle">@brandedchaos86 <span class="offline-badge">Offline</span></div>
@@ -351,7 +388,7 @@
         <div class="streamer-card">
             <div>
                 <div class="streamer-header">
-                    <img id="avatar-h477y96" alt="Harry" class="streamer-avatar">
+                    <img id="avatar-h477y96" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Harry" class="streamer-avatar">
                     <div>
                         <div class="streamer-name">Harry</div>
                         <div id="status-h477y96" class="streamer-handle">@H477Y96 <span class="offline-badge">Offline</span></div>
@@ -376,7 +413,7 @@
         <div class="streamer-card">
             <div>
                 <div class="streamer-header">
-                    <img id="avatar-alteredpixelz" alt="Alteredpixelz" class="streamer-avatar">
+                    <img id="avatar-alteredpixelz" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Alteredpixelz" class="streamer-avatar">
                     <div>
                         <div class="streamer-name">Alteredpixelz</div>
                         <div id="status-alteredpixelz" class="streamer-handle">@alteredpixelz <span class="offline-badge">Offline</span></div>
@@ -452,8 +489,8 @@
         </div>
         <div style="display: flex; gap: 25px; align-items: center;">
             <a href="legal.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'">Terms & Disclaimers</a>
-            <a href="issues.html" class="discord-btn-header" style="background: rgba(255, 51, 102, 0.15); border-color: var(--accent-red); color: var(--accent-red); padding: 8px 16px; font-size: 0.75rem;">
-                <i class="fa-solid fa-bug" style="color: var(--accent-red); font-size: 0.9rem;"></i> REPORT ISSUE
+            <a href="issues.html" class="report-issue-btn">
+                <i class="fa-solid fa-bug"></i> REPORT ISSUE
             </a>
         </div>
     </div>
