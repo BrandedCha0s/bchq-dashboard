@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
+        img-src 'self' https://cdn.jsdelivr.net data:;
+        connect-src 'self' https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net;
+    ">
+
+    <title>BCHQ HUB - Stream Overlay</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0a0e14; --card-bg: #111823; --accent-cyan: #00f0ff; --accent-green: #00ff88;
+            --accent-purple: #b388ff; --accent-gold: #f5a524; --text-main: #e2e8f0; --text-muted: #64748b;
+            --border-color: #1e293b; --brand-bc: #3bb54a; --brand-hq: #7f52c8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { background: transparent; }
+        body { background: transparent; color: var(--text-main); font-family: 'Rajdhani', sans-serif; }
+        .brand-bc { color: var(--brand-bc); } .brand-hq { color: var(--brand-hq); }
+
+        /* ---------- The overlay itself (transparent so OBS shows the game behind it) ---------- */
+        #overlay { display: none; width: 100%; transform-origin: top left; }
+        .ov-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 14px; background: rgba(10,14,20,.88); border-left: 4px solid var(--accent-cyan); border-radius: 6px 6px 0 0; }
+        .ov-brand { font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 15px; letter-spacing: 2px; }
+        .ov-sess { display: flex; align-items: center; gap: 10px; font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 1px; white-space: nowrap; }
+        .ov-sess .name { color: var(--accent-cyan); }
+        .ov-sess .clock { color: #fff; font-size: 17px; min-width: 56px; text-align: right; font-variant-numeric: tabular-nums; }
+        .ov-sess .wait { color: var(--text-muted); font-family: 'Rajdhani', sans-serif; font-size: 14px; letter-spacing: 0; }
+        .ov-sub { padding: 3px 14px 5px; background: rgba(10,14,20,.88); color: var(--text-muted); font-size: 13px; font-weight: 600; border-left: 4px solid var(--accent-cyan); letter-spacing: .5px; }
+        table.ov { width: 100%; border-collapse: collapse; }
+        table.ov th { background: rgba(10,14,20,.88); color: var(--text-muted); font-family: 'Orbitron', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 4px 8px; text-align: left; }
+        table.ov td { background: rgba(10,14,20,.78); border-top: 1px solid rgba(255,255,255,.06); padding: 5px 8px; font-size: 18px; font-weight: 700; white-space: nowrap; }
+        table.ov tr:last-child td:first-child { border-bottom-left-radius: 6px; }
+        table.ov tr:last-child td:last-child { border-bottom-right-radius: 6px; }
+        .num { text-align: right; font-variant-numeric: tabular-nums; } th.num { text-align: right; }
+        .pos { font-family: 'Orbitron', sans-serif; font-size: 15px; width: 36px; color: #fff; text-align: center; }
+        .pos.p1 { background: var(--accent-gold) !important; color: #0a0e14; }
+        .pos.p2 { background: #cbd5e1 !important; color: #0a0e14; }
+        .pos.p3 { background: #cd7f32 !important; color: #0a0e14; }
+        .name-cell { max-width: 260px; overflow: hidden; text-overflow: ellipsis; color: #fff; }
+        .car-cell { color: var(--text-muted); font-size: 15px; font-weight: 600; max-width: 170px; overflow: hidden; text-overflow: ellipsis; }
+        .lap { font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--accent-green); }
+        .lap.last { color: #fff; }
+        .lap.best-overall { color: var(--accent-purple); }
+        .lap.dim { color: var(--text-muted); }
+        .pit { margin-left: 8px; font-family: 'Orbitron', sans-serif; font-size: 10px; background: var(--accent-gold); color: #0a0e14; border-radius: 3px; padding: 1px 5px; vertical-align: middle; }
+        tr.me td { background: rgba(0,240,255,.22); box-shadow: inset 0 0 0 9999px rgba(0,240,255,.0); }
+        tr.me td.name-cell { color: var(--accent-cyan); }
+        .ov-empty { padding: 14px; background: rgba(10,14,20,.78); color: var(--text-muted); font-size: 16px; font-weight: 600; border-radius: 0 0 6px 6px; border-left: 4px solid var(--accent-cyan); }
+
+        /* ---------- Builder (shown when no ?server= is given) ---------- */
+        #builder { display: none; max-width: 900px; margin: 0 auto; padding: 30px 20px; background: var(--bg-dark); min-height: 100vh; }
+        #builder h1 { font-family: 'Orbitron', sans-serif; font-size: 1.7rem; letter-spacing: 2px; color: #fff; margin-bottom: 4px; }
+        #builder .sub { color: var(--accent-cyan); font-weight: 600; letter-spacing: 1px; margin-bottom: 22px; }
+        .panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
+        .panel h2 { font-family: 'Orbitron', sans-serif; font-size: 1rem; color: #fff; margin-bottom: 12px; letter-spacing: 1px; }
+        .row { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 12px; align-items: end; }
+        .row label { display: flex; flex-direction: column; gap: 5px; font-size: .85rem; color: var(--text-muted); font-weight: 700; letter-spacing: .5px; }
+        .row select, .row input[type=text], .row input[type=number] { background: var(--bg-dark); color: #fff; border: 1px solid var(--accent-cyan); padding: 9px 12px; border-radius: 8px; font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 600; outline: none; min-width: 200px; }
+        .row input[type=number] { min-width: 90px; width: 90px; }
+        .row .chk { flex-direction: row; align-items: center; gap: 8px; color: var(--text-main); font-size: 1rem; }
+        .urlrow { display: flex; gap: 10px; flex-wrap: wrap; }
+        .urlrow input { flex: 1; min-width: 240px; background: var(--bg-dark); color: var(--accent-green); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; font-size: .9rem; font-family: monospace; }
+        .btn { background: var(--accent-cyan); color: var(--bg-dark); border: none; padding: 10px 20px; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-size: .8rem; font-weight: 800; cursor: pointer; }
+        .steps { color: var(--text-muted); font-weight: 600; line-height: 1.6; padding-left: 20px; }
+        .steps b { color: #fff; }
+        .preview { background: repeating-conic-gradient(#1b2330 0% 25%, #131a24 0% 50%) 0 0 / 20px 20px; border: 1px solid var(--border-color); border-radius: 12px; padding: 10px; }
+        .preview iframe { width: 100%; height: 420px; border: 0; background: transparent; }
+        .back { display: inline-block; margin-bottom: 18px; color: var(--accent-cyan); text-decoration: none; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+<div id="overlay"></div>
+
+<div id="builder">
+    <a class="back" href="index.html">&larr; Back to the hub</a>
+    <h1><span class="brand-bc">BC</span><span class="brand-hq">HQ</span> STREAM OVERLAY</h1>
+    <div class="sub">LIVE TIMING FOR OBS</div>
+
+    <div class="panel">
+        <h2>1. CHOOSE YOUR OVERLAY</h2>
+        <div class="row">
+            <label>Server <select id="b-server"><option value="">Loading servers...</option></select></label>
+            <label>Rows <input type="number" id="b-rows" min="3" max="20" value="10"></label>
+            <label>Highlight driver (optional) <input type="text" id="b-driver" placeholder="Your name"></label>
+        </div>
+        <div class="row">
+            <label class="chk"><input type="checkbox" id="b-car" checked> Show car column</label>
+            <label class="chk"><input type="checkbox" id="b-hide"> Hide completely when nobody is on the server</label>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>2. COPY THE LINK</h2>
+        <div class="urlrow"><input type="text" id="b-url" readonly><button class="btn" id="b-copy">COPY</button></div>
+        <ol class="steps" style="margin-top:14px">
+            <li>In OBS add a <b>Browser</b> source and paste the link as the URL.</li>
+            <li>Set the width to about <b>600</b> and the height to about <b>500</b> (more rows need more height).</li>
+            <li>The background is transparent, so only the timing table shows over your game.</li>
+        </ol>
+    </div>
+
+    <div class="panel">
+        <h2>PREVIEW</h2>
+        <div class="preview"><iframe id="b-frame" title="Overlay preview"></iframe></div>
+        <div style="color:var(--text-muted);font-size:.85rem;margin-top:8px;font-weight:600">Times come from the server log, so they can run a lap or two behind the game.</div>
+    </div>
+</div>
+
+<script>
+    const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1";
+    const SESSION_NAMES = { 0: "PRACTICE", 4: "QUALIFYING", 10: "RACE" };
+    const GT3_CAR_MODELS = {
+        0: "Porsche 991 GT3 R", 1: "Mercedes-AMG GT3", 2: "Ferrari 488 GT3", 3: "Audi R8 LMS", 4: "Lamborghini Huracan GT3",
+        5: "McLaren 650S GT3", 6: "Nissan GT-R Nismo GT3 2018", 7: "BMW M6 GT3", 8: "Bentley Continental GT3 2018",
+        10: "Nissan GT-R Nismo GT3 2017", 11: "Bentley Continental GT3 2016", 12: "Aston Martin V12 Vantage GT3",
+        13: "Lamborghini Gallardo R-EX", 14: "Jaguar G3", 15: "Lexus RC F GT3", 16: "Lamborghini Huracan Evo (2019)",
+        17: "Honda NSX GT3", 19: "Audi R8 LMS Evo (2019)", 20: "AMR V8 Vantage (2019)", 21: "Honda NSX Evo (2019)",
+        22: "McLaren 720S GT3 (2019)", 23: "Porsche 911II GT3 R (2019)", 24: "Ferrari 488 GT3 Evo 2020", 25: "Mercedes-AMG GT3 2020",
+        30: "BMW M4 GT3", 31: "Audi R8 LMS GT3 evo II", 32: "Ferrari 296 GT3", 33: "Lamborghini Huracan Evo2",
+        34: "Porsche 992 GT3 R", 35: "McLaren 720S GT3 Evo 2023", 36: "Ford Mustang GT3"
+    };
+    const esc = (v) => String(v === undefined || v === null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    const carName = (m) => String(GT3_CAR_MODELS[m] || m || "GT3").replace(/^Car ID:\s*/i, "");
+    function fmtLap(ms) {
+        if (!ms || ms <= 0 || ms >= 2147483647) return "--:--.---";
+        const m = Math.floor(ms / 60000), s = Math.floor((ms % 60000) / 1000), t = ms % 1000;
+        return `${m}:${String(s).padStart(2, "0")}.${String(t).padStart(3, "0")}`;
+    }
+    function fmtClock(ms) {
+        if (ms === null || ms === undefined || ms < 0) return "";
+        const t = Math.floor(ms / 1000), h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60;
+        return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(s).padStart(2, "0");
+    }
+
+    const q = new URLSearchParams(location.search);
+    const serverId = (q.get("server") || "").replace(/[^\w-]/g, "").slice(0, 40);
+
+    /* ===================== Overlay ===================== */
+    function startOverlay() {
+        const el = document.getElementById("overlay");
+        el.style.display = "block";
+        const rows = Math.max(3, Math.min(20, parseInt(q.get("rows"), 10) || 10));
+        const showCar = q.get("car") !== "0";
+        const hideEmpty = q.get("hide") === "1";
+        const me = (q.get("driver") || "").trim().toLowerCase().slice(0, 60);
+        const scale = Math.max(0.5, Math.min(2.5, parseFloat(q.get("scale")) || 1));
+        if (scale !== 1) { el.style.transform = `scale(${scale})`; el.style.width = (100 / scale) + "%"; }
+
+        let data = null, fetchedAt = 0, serverName = "";
+
+        function clockNow() {
+            const s = data && data.session;
+            if (!s || typeof s.remainingMs !== "number") return "";
+            return s.waiting ? fmtClock(s.remainingMs) : fmtClock(Math.max(0, s.remainingMs - (Date.now() - fetchedAt)));
+        }
+
+        function render() {
+            const live = data && data.live && Array.isArray(data.cars) && data.cars.length;
+            if (!live && hideEmpty) { el.innerHTML = ""; return; }
+            const s = (data && data.session) || {};
+            const sessName = SESSION_NAMES[s.type] || "SESSION";
+            const head = `<div class="ov-head">
+                <div class="ov-brand"><span class="brand-bc">BC</span><span class="brand-hq">HQ</span></div>
+                <div class="ov-sess"><span class="name">${live || data && data.live ? esc(sessName) : "LIVE TIMING"}</span>
+                    ${live && !s.waiting ? `<span class="clock" id="ov-clock">${esc(clockNow())}</span>` : `<span class="wait">${live ? "Waiting for drivers" : ""}</span>`}</div></div>`;
+            if (!live) {
+                el.innerHTML = head + `<div class="ov-empty">${data && data.error ? "Reconnecting to timing..." : "Waiting for drivers to start lapping"}</div>`;
+                return;
+            }
+            const cars = [...data.cars].sort((a, b) => (a.position || 999) - (b.position || 999));
+            const best = Math.min(...cars.map(c => c.bestLapMs > 0 ? c.bestLapMs : Infinity));
+            let shown = cars.slice(0, rows);
+            // keep the highlighted driver on screen even when they are outside the top rows
+            if (me && !shown.some(c => String(c.driverName || "").toLowerCase().includes(me))) {
+                const mine = cars.find(c => String(c.driverName || "").toLowerCase().includes(me));
+                if (mine) shown = [...shown.slice(0, rows - 1), mine];
+            }
+            const body = shown.map(c => {
+                const isMe = me && String(c.driverName || "").toLowerCase().includes(me);
+                const p = c.position || 0;
+                return `<tr class="${isMe ? "me" : ""}">
+                    <td class="pos ${p >= 1 && p <= 3 ? "p" + p : ""}">${esc(p || "-")}</td>
+                    <td class="name-cell">${esc(c.driverName || "Unknown")}${c.inPits ? '<span class="pit">PIT</span>' : ""}</td>
+                    ${showCar ? `<td class="car-cell">${esc(carName(c.carModel))}</td>` : ""}
+                    <td class="num lap last ${c.lastLapMs > 0 ? "" : "dim"}">${fmtLap(c.lastLapMs)}</td>
+                    <td class="num lap ${c.bestLapMs > 0 && c.bestLapMs === best ? "best-overall" : c.bestLapMs > 0 ? "" : "dim"}">${fmtLap(c.bestLapMs)}</td>
+                    <td class="num">${esc(c.laps ?? "")}</td>
+                </tr>`;
+            }).join("");
+            el.innerHTML = head + `<table class="ov"><thead><tr><th>POS</th><th>DRIVER</th>${showCar ? "<th>CAR</th>" : ""}<th class="num">LAST</th><th class="num">BEST</th><th class="num">LAPS</th></tr></thead><tbody>${body}</tbody></table>`;
+        }
+
+        async function poll() {
+            if (document.hidden) return;
+            try {
+                const res = await fetch(`${AZURE_API_URL}?type=live&server=${encodeURIComponent(serverId)}`, { cache: "no-store", signal: AbortSignal.timeout(4000) });
+                data = await res.json(); fetchedAt = Date.now();
+            } catch (e) { data = { live: false, error: true }; }
+            render();
+        }
+        poll();
+        setInterval(poll, 3000);
+        setInterval(() => { const c = document.getElementById("ov-clock"); if (c) c.textContent = clockNow(); }, 1000);
+    }
+
+    /* ===================== Builder ===================== */
+    async function startBuilder() {
+        document.getElementById("builder").style.display = "block";
+        document.documentElement.style.background = "#0a0e14";
+        const sel = document.getElementById("b-server"), urlBox = document.getElementById("b-url"), frame = document.getElementById("b-frame");
+        const num = (s) => { const m = /#(\d+)/.exec(String(s.name || "")); return m ? Number(m[1]) : 1; };
+        try {
+            const res = await fetch(`${AZURE_API_URL}?type=servers`);
+            const list = (await res.json()).filter(s => s && s.id).sort((a, b) => num(a) - num(b));
+            sel.innerHTML = list.map(s => `<option value="${esc(s.id)}">${esc(String(s.name || s.id).split("|")[0].trim())}</option>`).join("") || `<option value="">No servers found</option>`;
+        } catch (e) { sel.innerHTML = `<option value="">Couldn't load servers</option>`; }
+
+        function update() {
+            if (!sel.value) { urlBox.value = ""; return; }
+            const p = new URLSearchParams({ server: sel.value });
+            const rows = parseInt(document.getElementById("b-rows").value, 10);
+            if (rows && rows !== 10) p.set("rows", Math.max(3, Math.min(20, rows)));
+            const d = document.getElementById("b-driver").value.trim();
+            if (d) p.set("driver", d);
+            if (!document.getElementById("b-car").checked) p.set("car", "0");
+            if (document.getElementById("b-hide").checked) p.set("hide", "1");
+            const url = location.origin + location.pathname + "?" + p.toString();
+            urlBox.value = url;
+            frame.src = location.pathname + "?" + p.toString();
+        }
+        ["b-server", "b-rows", "b-driver", "b-car", "b-hide"].forEach(id => document.getElementById(id).addEventListener("input", update));
+        document.getElementById("b-copy").addEventListener("click", async () => {
+            try { await navigator.clipboard.writeText(urlBox.value); } catch (e) { urlBox.select(); document.execCommand("copy"); }
+            const b = document.getElementById("b-copy"); b.textContent = "COPIED"; setTimeout(() => b.textContent = "COPY", 1500);
+        });
+        update();
+    }
+
+    if (serverId) startOverlay(); else startBuilder();
+</script>
+</body>
+</html>
