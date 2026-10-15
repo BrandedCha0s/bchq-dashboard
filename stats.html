@@ -91,6 +91,8 @@
         .legend { display: flex; align-items: center; gap: 8px; padding: 0 14px 14px; color: var(--text-muted); font-size: .8rem; font-weight: 600; flex-wrap: wrap; }
         .legend .sw { width: 16px; height: 12px; border-radius: 3px; }
         .fire { color: var(--accent-gold); }
+        .grade { display: inline-block; min-width: 26px; text-align: center; font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: .85rem; padding: 2px 7px; border-radius: 5px; color: #0a0e14; margin-right: 8px; }
+        .grade.A { background: #00ff88; } .grade.B { background: #9be564; } .grade.C { background: #f5d033; } .grade.D { background: #f5a524; } .grade.E { background: #ff5577; }
         .good { color: var(--accent-green); }
         .pts { font-family: 'Orbitron', sans-serif; font-size: .9rem; color: var(--accent-gold); }
         @media (max-width: 900px) { .grid2 { grid-template-columns: 1fr; } }
@@ -141,8 +143,8 @@
             <div class="table-container"><table><thead><tr><th>#</th><th>DRIVER</th><th class="num">POINTS</th><th class="num">RACES</th><th class="num hide-sm">AVG FINISH</th></tr></thead><tbody id="form-body"></tbody></table></div></div>
         <div class="panel"><div class="panel-head"><i class="fa-solid fa-fire"></i> ON FIRE <span class="sub">days in a row with a race</span></div>
             <div class="table-container"><table><thead><tr><th>#</th><th>DRIVER</th><th class="num">STREAK</th><th class="num">RACES</th></tr></thead><tbody id="fire-body"></tbody></table></div></div>
-        <div class="panel"><div class="panel-head"><i class="fa-solid fa-shield-heart"></i> CLEANEST DRIVERS <span class="sub" id="clean-sub"></span></div>
-            <div class="table-container"><table><thead><tr><th>#</th><th>DRIVER</th><th class="num">INVALID</th><th class="num">PEN / RACE</th><th class="num hide-sm">RACES</th></tr></thead><tbody id="clean-body"></tbody></table></div></div>
+        <div class="panel"><div class="panel-head"><i class="fa-solid fa-shield-heart"></i> SAFETY RATING <span class="sub" id="clean-sub"></span></div>
+            <div class="table-container"><table><thead><tr><th>#</th><th>DRIVER</th><th class="num">RATING</th><th class="num hide-sm">INVALID</th><th class="num hide-sm">PEN / RACE</th><th class="num hide-sm">RACES</th></tr></thead><tbody id="clean-body"></tbody></table></div></div>
     </div>
 
     <div class="section-title"><i class="fa-solid fa-car-side"></i> CARS</div>
@@ -258,8 +260,8 @@
 
             tbody("form-body", d.inForm.map((x, i) => `<tr>${rankCell(i)}<td>${nameLink(x.name)}</td><td class="num"><span class="pts">${esc(x.points)}</span></td><td class="num muted">${esc(x.races)}</td><td class="num muted hide-sm">${esc(x.avgPos)}</td></tr>`), 5, "Needs 2+ races in the last 30 days.");
             tbody("fire-body", d.onFire.map((x, i) => `<tr>${rankCell(i)}<td>${nameLink(x.name)}</td><td class="num"><span class="fire"><i class="fa-solid fa-fire"></i> ${esc(x.streak)} days</span></td><td class="num muted">${esc(x.races)}</td></tr>`), 4, "No one is on a streak right now. Race two days in a row to appear.");
-            document.getElementById("clean-sub").textContent = `min ${d.cleanMinRaces} races`;
-            tbody("clean-body", d.cleanest.map((x, i) => `<tr>${rankCell(i)}<td>${nameLink(x.name)}</td><td class="num"><span class="good">${esc(x.invalidPct)}%</span></td><td class="num muted">${esc(x.penaltiesPerRace)}</td><td class="num muted hide-sm">${esc(x.races)}</td></tr>`), 5, `Needs ${esc(d.cleanMinRaces)}+ races.`);
+            document.getElementById("clean-sub").textContent = `100 = clean · min ${d.cleanMinRaces} races`;
+            tbody("clean-body", d.cleanest.map((x, i) => `<tr>${rankCell(i)}<td>${nameLink(x.name)}</td><td class="num"><span class="grade ${esc(x.grade)}">${esc(x.grade)}</span><span class="muted">${esc(x.score)}</span></td><td class="num muted hide-sm">${esc(x.invalidPct)}%</td><td class="num muted hide-sm">${esc(x.penaltiesPerRace)}</td><td class="num muted hide-sm">${esc(x.races)}</td></tr>`), 6, `Needs ${esc(d.cleanMinRaces)}+ races.`);
             tbody("pop-body", d.popularCars.map((x, i) => `<tr>${rankCell(i)}<td><span class="car-badge">${esc(x.car)}</span></td><td class="num">${esc(x.starts)}</td><td class="num muted">${esc(x.last30)}</td></tr>`), 4, "No races recorded yet.");
             document.getElementById("succ-sub").textContent = `min ${d.carMinStarts} starts`;
             tbody("succ-body", d.successfulCars.map((x, i) => `<tr>${rankCell(i)}<td><span class="car-badge">${esc(x.car)}</span></td><td class="num"><span class="good">${esc(x.winRate)}%</span></td><td class="num">${esc(x.wins)}</td><td class="num muted hide-sm">${esc(x.starts)}</td></tr>`), 5, `Needs ${esc(d.carMinStarts)}+ starts.`);
