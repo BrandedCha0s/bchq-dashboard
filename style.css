@@ -641,3 +641,22 @@
                 word-break: break-all; /* Prevents long URLs from overflowing cards on mobile */
             }
         }
+
+
+        /* Community totals strip under the header */
+        .site-totals {
+            display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center;
+            margin: -10px 0 26px; padding: 12px 18px;
+            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px;
+            text-decoration: none; color: var(--text-muted); font-weight: 600; font-size: 1rem;
+            transition: border-color .2s ease;
+        }
+        .site-totals:hover { border-color: var(--accent-cyan); }
+        .site-totals i { color: var(--accent-cyan); margin-right: 4px; }
+        .site-totals b { color: #fff; font-family: 'Orbitron', sans-serif; font-size: .95rem; }
+        .site-totals-more { margin-left: auto; color: var(--accent-cyan); font-family: 'Orbitron', sans-serif; font-size: .72rem; letter-spacing: 1px; }
+        @media (max-width: 768px) {
+            .site-totals { gap: 6px 14px; padding: 10px 12px; font-size: .9rem; }
+            .site-totals-more { margin-left: 0; width: 100%; }
+            /* header now has 5 buttons: keep the 2-column grid, Discord still spans the bottom row */
+        }
