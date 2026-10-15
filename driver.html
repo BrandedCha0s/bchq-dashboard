@@ -279,6 +279,8 @@
         .rs-note { font-family: 'Rajdhani', sans-serif; font-size: .9rem; color: var(--text-muted); letter-spacing: 0; font-weight: 600; }
         .pos-badge { font-family: 'Orbitron', sans-serif; font-size: .9rem; color: #fff; }
         .pos-badge.p1 { color: #f5a524; } .pos-badge.p2 { color: #cbd5e1; } .pos-badge.p3 { color: #cd7f32; }
+        .grade { display: inline-block; min-width: 30px; text-align: center; font-family: 'Orbitron', sans-serif; font-weight: 800; padding: 1px 8px; border-radius: 6px; color: #0a0e14; margin-right: 8px; }
+        .grade.A { background: #00ff88; } .grade.B { background: #9be564; } .grade.C { background: #f5d033; } .grade.D { background: #f5a524; } .grade.E { background: #ff5577; }
         .rs-link { color: var(--accent-cyan); text-decoration: none; font-weight: 700; }
         .rs-link:hover { text-decoration: underline; }
 
@@ -511,6 +513,7 @@
                     tile(d.races, "RACES"), tile(d.wins, "WINS"), tile(d.podiums, "PODIUMS"),
                     tile(d.avgPos ?? "—", "AVG FINISH"), tile(d.bestPos ? "P" + d.bestPos : "—", "BEST FINISH"),
                     tile(d.points, "CHAMPIONSHIP POINTS"),
+                    d.safety ? `<div class="summary-item"><strong><span class="grade ${escapeHtml(d.safety.grade)}">${escapeHtml(d.safety.grade)}</span>${escapeHtml(d.safety.score)}</strong><span>SAFETY RATING${d.safety.provisional ? " (PROVISIONAL)" : ""}</span></div>` : "",
                     tile(d.invalidPct === null || d.invalidPct === undefined ? "—" : d.invalidPct + "%", "INVALID LAPS"),
                     tile(d.penaltiesPerRace, "PENALTIES PER RACE"),
                     tile(d.streak > 1 ? d.streak + " days" : "—", "RACING STREAK")
