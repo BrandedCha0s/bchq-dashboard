@@ -15,7 +15,7 @@
         connect-src 'self' https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net https://api.github.com https://cloudflareinsights.com;
     ">
     
-    <title>BCHQ HUB - Live ACC Telemetry & Leaderboards</title>
+    <title>BCHQ HUB - Live Servers, Leaderboards &amp; Race Stats</title>
     
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -123,15 +123,15 @@
             <i class="fa-solid fa-gauge-high"></i>
             <div>
                 <h1><span class="brand-bc">BC</span><span class="brand-hq">HQ</span> HUB</h1>
-                <div class="header-subtitle">LIVE ACC SERVER TELEMETRY & ALL-TRACK LEADERBOARDS</div>
+                <div class="header-subtitle">LIVE SERVERS · LEADERBOARDS · RACE STATS</div>
             </div>
         </div>
         
         <!-- Navigation & Social Links -->
-        <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap; justify-content: flex-end;">
-            <!-- Driver Search Button -->
+        <div class="header-nav" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end;">
+            <!-- Drivers -->
             <a href="driver.html" class="discord-btn-header" style="border-color: var(--accent-cyan); background: rgba(0, 240, 255, 0.1);">
-                <i class="fa-solid fa-user-magnifying-glass" style="color: var(--accent-cyan);"></i> DRIVER SEARCH
+                <i class="fa-solid fa-magnifying-glass" style="color: var(--accent-cyan);"></i> DRIVERS
             </a>
 
             <!-- Race results and community stats -->
@@ -140,6 +140,9 @@
             </a>
             <a href="stats.html" class="discord-btn-header" style="border-color: var(--accent-cyan); background: rgba(0, 240, 255, 0.1);">
                 <i class="fa-solid fa-chart-line" style="color: var(--accent-cyan);"></i> STATS
+            </a>
+            <a href="overlay.html" class="discord-btn-header" style="border-color: var(--accent-cyan); background: rgba(0, 240, 255, 0.1);">
+                <i class="fa-solid fa-tv" style="color: var(--accent-cyan);"></i> OVERLAYS
             </a>
             
             <!-- Streamers Button with Live Pulse & Notification Badge -->
@@ -1198,7 +1201,6 @@
             &copy; 2026 <span class="brand-bc">BC</span><span class="brand-hq">HQ</span> HUB. Independent community platform.
         </div>
         <div style="display: flex; gap: 25px; align-items: center;">
-            <a href="overlay.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'">Stream Overlay</a>
             <a href="legal.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'">Terms & Disclaimers</a>
             <a href="issues.html" class="report-issue-btn">
                 <i class="fa-solid fa-bug"></i> REPORT ISSUE
