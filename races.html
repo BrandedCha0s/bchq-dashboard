@@ -221,6 +221,7 @@
             const fl = r.fastest ? r.fastest.ms : null;
             const rows = r.results.map((x, i) => {
                 const gap = i === 0 ? fmtRaceTime(x.totalMs)
+                    : x.classified === false ? "DNF"
                     : x.laps < lead.laps ? `+${lead.laps - x.laps} lap${lead.laps - x.laps > 1 ? "s" : ""}`
                     : `+${((x.totalMs - lead.totalMs) / 1000).toFixed(3)}`;
                 return `<tr>
