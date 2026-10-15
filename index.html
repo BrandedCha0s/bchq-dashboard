@@ -128,10 +128,18 @@
         </div>
         
         <!-- Navigation & Social Links -->
-        <div style="display: flex; gap: 30px; align-items: center;">
+        <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap; justify-content: flex-end;">
             <!-- Driver Search Button -->
             <a href="driver.html" class="discord-btn-header" style="border-color: var(--accent-cyan); background: rgba(0, 240, 255, 0.1);">
                 <i class="fa-solid fa-user-magnifying-glass" style="color: var(--accent-cyan);"></i> DRIVER SEARCH
+            </a>
+
+            <!-- Race results and community stats -->
+            <a href="races.html" class="discord-btn-header" style="border-color: var(--accent-cyan); background: rgba(0, 240, 255, 0.1);">
+                <i class="fa-solid fa-flag-checkered" style="color: var(--accent-cyan);"></i> RACES
+            </a>
+            <a href="stats.html" class="discord-btn-header" style="border-color: var(--accent-cyan); background: rgba(0, 240, 255, 0.1);">
+                <i class="fa-solid fa-chart-line" style="color: var(--accent-cyan);"></i> STATS
             </a>
             
             <!-- Streamers Button with Live Pulse & Notification Badge -->
@@ -150,6 +158,9 @@
             </a>
         </div>
     </div>
+
+    <!-- Community totals (hidden until the first race has been saved) -->
+    <a id="site-totals" class="site-totals" href="stats.html" style="display:none;"></a>
 
     <!-- Live Server Instances Section -->
     <div class="section-title">
@@ -1161,6 +1172,24 @@
     } else {
         initDashboard();
     }
+
+    // Community totals strip (from saved race results). Stays hidden if there are none or the service is unreachable.
+    (async function loadSiteTotals() {
+        try {
+            const res = await fetch(`${AZURE_API_URL}?type=community`, { signal: AbortSignal.timeout(8000) });
+            const d = await res.json();
+            const t = d && d.totals;
+            if (!t || !t.races) return;
+            const el = document.getElementById("site-totals");
+            const n = (v) => Number(v || 0).toLocaleString();
+            el.innerHTML = `<span><i class="fa-solid fa-flag-checkered"></i> <b>${n(t.races)}</b> races</span>` +
+                `<span><i class="fa-solid fa-rotate"></i> <b>${n(t.laps)}</b> race laps</span>` +
+                `<span><i class="fa-solid fa-stopwatch"></i> <b>${n(t.hours)}</b> hours raced</span>` +
+                `<span><i class="fa-solid fa-users"></i> <b>${n(t.drivers)}</b> race drivers</span>` +
+                `<span class="site-totals-more">CHAMPIONSHIP & STATS <i class="fa-solid fa-arrow-right"></i></span>`;
+            el.style.display = "flex";
+        } catch (e) { /* optional */ }
+    })();
 </script>
 
     <!-- Footer Legal & Report Issue Button Section -->
