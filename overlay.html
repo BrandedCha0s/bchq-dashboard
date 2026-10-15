@@ -52,14 +52,17 @@
         .pos.p2 { background: #cbd5e1 !important; color: #0a0e14; }
         .pos.p3 { background: #cd7f32 !important; color: #0a0e14; }
         .name-cell { max-width: 260px; overflow: hidden; text-overflow: ellipsis; color: #fff; }
-        .car-cell { color: var(--text-muted); font-size: 15px; font-weight: 600; max-width: 170px; overflow: hidden; text-overflow: ellipsis; }
-        .lap { font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--accent-green); }
+        .car-cell { color: #fff; font-size: 15px; font-weight: 600; max-width: 170px; overflow: hidden; text-overflow: ellipsis; }
+        .lap { font-family: 'Orbitron', sans-serif; font-size: 14px; color: #fff; }
         .lap.last { color: #fff; }
-        .lap.best-overall { color: var(--accent-purple); }
-        .lap.dim { color: var(--text-muted); }
+        .lap.best-overall { color: #fff; background: rgba(127,82,200,.65); border-radius: 4px; box-shadow: inset 0 0 0 9999px rgba(127,82,200,.0); }
+        .lap.dim { color: #aab3c5; }
         .pit { margin-left: 8px; font-family: 'Orbitron', sans-serif; font-size: 10px; background: var(--accent-gold); color: #0a0e14; border-radius: 3px; padding: 1px 5px; vertical-align: middle; }
         tr.me td { background: rgba(0,240,255,.22); box-shadow: inset 0 0 0 9999px rgba(0,240,255,.0); }
-        tr.me td.name-cell { color: var(--accent-cyan); }
+        tr.me td.name-cell, tr.me td.car-cell, tr.me td.lap, tr.me td.num { color: var(--accent-cyan); }
+        tr.me td.lap.dim { color: #7fd9e0; }
+        tr.me td.lap.best-overall { color: #fff; }
+        table.ov td { text-shadow: 0 1px 2px rgba(0,0,0,.9); }
         .ov-empty { padding: 14px; background: rgba(10,14,20,.78); color: var(--text-muted); font-size: 16px; font-weight: 600; border-radius: 0 0 6px 6px; border-left: 4px solid var(--accent-cyan); }
 
         /* ---------- Builder (shown when no ?server= is given) ---------- */
