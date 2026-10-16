@@ -16,6 +16,18 @@
     ">
 
     <title>BCHQ HUB - Stream Overlay</title>
+    <meta name="description" content="Free live timing overlay for OBS: show your ACC session, positions and lap times on stream.">
+    <link rel="canonical" href="https://bchqhub.com/overlay.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="BCHQ HUB">
+    <meta property="og:title" content="BCHQ HUB - Stream Overlay">
+    <meta property="og:description" content="Free live timing overlay for OBS: show your ACC session, positions and lap times on stream.">
+    <meta property="og:url" content="https://bchqhub.com/overlay.html">
+    <meta property="og:image" content="https://bchqhub.com/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="BCHQ HUB - Stream Overlay">
+    <meta name="twitter:description" content="Free live timing overlay for OBS: show your ACC session, positions and lap times on stream.">
+    <meta name="twitter:image" content="https://bchqhub.com/og-image.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -170,7 +182,7 @@
         function clockNow() {
             const s = data && data.session;
             if (!s || typeof s.remainingMs !== "number") return "";
-            return s.waiting ? fmtClock(s.remainingMs) : fmtClock(Math.max(0, s.remainingMs - (Date.now() - fetchedAt)));
+            return (s.waiting || s.running === false) ? fmtClock(s.remainingMs) : fmtClock(Math.max(0, s.remainingMs - (Date.now() - fetchedAt)));
         }
 
         function render() {

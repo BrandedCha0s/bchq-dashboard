@@ -16,6 +16,18 @@
     ">
 
     <title>BCHQ HUB - Championship &amp; Community Stats</title>
+    <meta name="description" content="BCHQ championship, driver ratings, in-form drivers, safety ratings and lap records for our ACC community.">
+    <link rel="canonical" href="https://bchqhub.com/stats.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="BCHQ HUB">
+    <meta property="og:title" content="BCHQ HUB - Championship &amp; Community Stats">
+    <meta property="og:description" content="BCHQ championship, driver ratings, in-form drivers, safety ratings and lap records for our ACC community.">
+    <meta property="og:url" content="https://bchqhub.com/stats.html">
+    <meta property="og:image" content="https://bchqhub.com/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="BCHQ HUB - Championship &amp; Community Stats">
+    <meta name="twitter:description" content="BCHQ championship, driver ratings, in-form drivers, safety ratings and lap records for our ACC community.">
+    <meta name="twitter:image" content="https://bchqhub.com/og-image.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0e14">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -102,6 +114,10 @@
         .grade { display: inline-block; min-width: 26px; text-align: center; font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: .85rem; padding: 2px 7px; border-radius: 5px; color: #0a0e14; margin-right: 8px; }
         .grade.A { background: #00ff88; } .grade.B { background: #9be564; } .grade.C { background: #f5d033; } .grade.D { background: #f5a524; } .grade.E { background: #ff5577; }
         .good { color: var(--accent-green); }
+        .tier { display: inline-block; font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: .62rem; letter-spacing: .5px; padding: 2px 7px; border-radius: 5px; margin-left: 8px; color: #0a0e14; vertical-align: middle; }
+        .tier.Rookie { background: #94a3b8; } .tier.Club { background: #60a5fa; } .tier.Contender { background: #34d399; } .tier.Pro { background: #f5a524; } .tier.Elite { background: #c084fc; }
+        .delta { font-family: 'Orbitron', sans-serif; font-size: .8rem; white-space: nowrap; }
+        .delta.up { color: var(--accent-green, #00ff88); } .delta.down { color: var(--accent-red, #ff3366); } .delta.flat { color: var(--text-muted, #64748b); }
         .pts { font-family: 'Orbitron', sans-serif; font-size: .9rem; color: var(--accent-gold); }
         @media (max-width: 900px) { .grid2 { grid-template-columns: 1fr; } }
         @media (max-width: 600px) { .heat { grid-template-columns: 30px repeat(24, minmax(0, 1fr)); gap: 2px; padding: 10px 8px; } .heat .hlbl.skip { visibility: hidden; } .heat .cell { min-height: 8px; } }
@@ -146,6 +162,12 @@
     <div class="panel"><div class="table-container"><table>
         <thead><tr><th>#</th><th>DRIVER</th><th class="num">POINTS</th><th class="num">WINS</th><th class="num">RACES</th></tr></thead>
         <tbody id="champ-body"></tbody></table></div></div>
+
+    <div class="section-title"><i class="fa-solid fa-ranking-star"></i> DRIVER RATING <span class="note" id="rating-note"></span></div>
+    <div class="panel"><div class="table-container"><table>
+        <thead><tr><th>#</th><th>DRIVER</th><th class="num">RATING</th><th class="num">LAST RACE</th><th class="num hide-sm">PEAK</th><th class="num hide-sm">RACES</th></tr></thead>
+        <tbody id="rating-body"></tbody></table></div></div>
+    <div class="note" style="margin-top:8px;color:var(--text-muted);font-weight:600;font-size:.85rem">Everyone starts on 1500. Beating higher-rated drivers earns more; losing to lower-rated ones costs more. Tiers: <span class="tier Rookie">ROOKIE</span> under 1400 <span class="tier Club">CLUB</span> 1400+ <span class="tier Contender">CONTENDER</span> 1550+ <span class="tier Pro">PRO</span> 1650+ <span class="tier Elite">ELITE</span> 1750+. A "?" means the rating is still provisional (few races).</div>
 
     <div class="section-title"><i class="fa-solid fa-bolt"></i> FORM & CLEAN RACING</div>
     <div class="grid2">
@@ -268,6 +290,9 @@
             }
             showChamp("month");
 
+            document.getElementById("rating-note").textContent = `min ${d.ratingMinRaces || 3} races to be listed`;
+            const dl = (v) => v === null || v === undefined ? `<span class="delta flat">—</span>` : `<span class="delta ${v > 0 ? "up" : v < 0 ? "down" : "flat"}">${v > 0 ? "+" : ""}${esc(v)}</span>`;
+            tbody("rating-body", (d.ratings || []).map((x, i) => `<tr>${rankCell(i)}<td>${nameLink(x.name)}</td><td class="num"><span class="pts">${esc(x.rating)}${x.provisional ? "?" : ""}</span><span class="tier ${esc(x.tier)}">${esc(String(x.tier).toUpperCase())}</span></td><td class="num">${dl(x.last)}</td><td class="num muted hide-sm">${esc(x.peak)}</td><td class="num muted hide-sm">${esc(x.races)}</td></tr>`), 6, `Ratings appear once drivers have ${esc(d.ratingMinRaces || 3)}+ races.`);
             tbody("form-body", d.inForm.map((x, i) => `<tr>${rankCell(i)}<td>${nameLink(x.name)}</td><td class="num"><span class="pts">${esc(x.points)}</span></td><td class="num muted">${esc(x.races)}</td><td class="num muted hide-sm">${esc(x.avgPos)}</td></tr>`), 5, "Needs 2+ races in the last 30 days.");
             tbody("fire-body", d.onFire.map((x, i) => `<tr>${rankCell(i)}<td>${nameLink(x.name)}</td><td class="num"><span class="fire"><i class="fa-solid fa-fire"></i> ${esc(x.streak)} days</span></td><td class="num muted">${esc(x.races)}</td></tr>`), 4, "No one is on a streak right now. Race two days in a row to appear.");
             document.getElementById("clean-sub").textContent = `100 = clean · min ${d.cleanMinRaces} races`;

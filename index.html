@@ -16,6 +16,17 @@
     ">
     
     <title>BCHQ HUB - Live Servers, Leaderboards &amp; Race Stats</title>
+    <link rel="canonical" href="https://bchqhub.com/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="BCHQ HUB">
+    <meta property="og:title" content="BCHQ HUB - Live Servers, Leaderboards &amp; Race Stats">
+    <meta property="og:description" content="BCHQ is an independent Assetto Corsa Competizione sim racing community founded and owned by Brandedchaos86 and Harry (H477Y96). Live servers, leaderboards and race stats.">
+    <meta property="og:url" content="https://bchqhub.com/">
+    <meta property="og:image" content="https://bchqhub.com/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="BCHQ HUB - Live Servers, Leaderboards &amp; Race Stats">
+    <meta name="twitter:description" content="BCHQ is an independent Assetto Corsa Competizione sim racing community founded and owned by Brandedchaos86 and Harry (H477Y96). Live servers, leaderboards and race stats.">
+    <meta name="twitter:image" content="https://bchqhub.com/og-image.png">
     <meta name="description" content="BCHQ is an independent Assetto Corsa Competizione sim racing community founded and owned by Brandedchaos86 and Harry (H477Y96). Live servers, leaderboards and race stats.">
     <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"BCHQ","alternateName":"BCHQ HUB","url":"https://bchqhub.com","description":"Independent Assetto Corsa Competizione sim racing community.","founder":[{"@type":"Person","name":"Brandedchaos86","alternateName":"Brandedchaos86"},{"@type":"Person","name":"Harry","alternateName":"H477Y96"}],"sameAs":["https://discord.gg/SmvcXeXdyS","https://twitch.tv/brandedchaos86","https://twitch.tv/H477Y96"]}</script>
 
@@ -658,7 +669,7 @@
                 return `<div class="sess-chip${active ? ' active' : ''}"><span class="sess-name">${SESS_LABELS[x.type] || '?'}</span><span class="sess-val">${active ? '' : fmtMins(x.minutes)}</span></div>`;
             }).join('');
             const sessionBadge = isOnline ? `
-                <div class="session-strip" ${(sess && typeof sess.remainingMs === "number") ? `data-ms="${Math.round(sess.remainingMs)}" data-at="${Date.now()}" data-waiting="${sess.waiting ? '1' : '0'}"` : ''}>
+                <div class="session-strip" ${(sess && typeof sess.remainingMs === "number") ? `data-ms="${Math.round(sess.remainingMs)}" data-at="${Date.now()}" data-waiting="${(sess.waiting || sess.running === false) ? '1' : '0'}"` : ''}>
                     ${chips}
                     ${(sess && sess.waiting) ? '<div class="sess-note">Waiting for drivers</div>' : ''}
                 </div>` : '';
@@ -1240,6 +1251,7 @@
             &copy; 2026 <span class="brand-bc">BC</span><span class="brand-hq">HQ</span> HUB. Independent community platform.
         </div>
         <div style="display: flex; gap: 25px; align-items: center;">
+            <a href="tracks.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'"><i class="fa-solid fa-map-location-dot"></i> Track records</a>
             <a href="#" id="get-app-link" onclick="if(window.bchqInstall){bchqInstall();}return false;" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'"><i class="fa-solid fa-mobile-screen"></i> Get the app</a>
             <a href="legal.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'">Terms & Disclaimers</a>
             <a href="issues.html" class="report-issue-btn">
