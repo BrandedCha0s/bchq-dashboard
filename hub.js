@@ -239,16 +239,24 @@
         let h = 0;
         try { h = parseInt(localStorage.getItem(HUB_VIEW === "ranked" ? "bchq_servers_h_r" : "bchq_servers_h") || "0", 10); } catch (e) {}
         c.style.minHeight = (h > 200 ? h : (HUB_VIEW === "ranked" ? 360 : 700)) + "px";
-        if ("ResizeObserver" in window) {
-            let t = null;
-            new ResizeObserver(() => {
-                clearTimeout(t);
-                t = setTimeout(() => {
-                    const cards = c.querySelectorAll(".server-card");
-                    if (cards.length) { const last = cards[cards.length - 1]; const hh = Math.round(last.offsetTop + last.offsetHeight - cards[0].offsetTop); if (hh > 200) { try { localStorage.setItem(HUB_VIEW === "ranked" ? "bchq_servers_h_r" : "bchq_servers_h", String(hh)); } catch (e) {} } }
-                }, 1500);
-            }).observe(c);
-        }
+        c.style.alignContent = "start";   // never stretch the rows to fill the reserved height
+        const key = HUB_VIEW === "ranked" ? "bchq_servers_h_r" : "bchq_servers_h";
+        let t = null;
+        const measure = () => {
+            clearTimeout(t);
+            t = setTimeout(() => {
+                const cards = c.querySelectorAll(".server-card");
+                if (!cards.length) return;
+                const last = cards[cards.length - 1];
+                const hh = Math.round(last.offsetTop + last.offsetHeight - cards[0].offsetTop);
+                if (hh > 200) {
+                    try { localStorage.setItem(key, String(hh)); } catch (e) {}
+                    c.style.minHeight = hh + "px";   // follow the real height, so it also shrinks when there are fewer cards
+                }
+            }, 1200);
+        };
+        if ("ResizeObserver" in window) new ResizeObserver(measure).observe(c);
+        new MutationObserver(measure).observe(c, { childList: true });
     })();
 
     async function loadLiveServers(isBackground = false) {
