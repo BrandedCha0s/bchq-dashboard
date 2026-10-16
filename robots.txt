@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /issues.html
+
+Sitemap: https://bchqhub.com/sitemap.xml

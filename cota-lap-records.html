@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
+        img-src 'self' https://cdn.jsdelivr.net data:;
+        connect-src 'self' https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net https://api.github.com;
+    ">
+
+    <title>Circuit of the Americas (COTA) Lap Records (ACC) - BCHQ HUB</title>
+    <meta name="description" content="Fastest laps at Circuit of the Americas (COTA) in Assetto Corsa Competizione, set on the BCHQ servers. All time, monthly and weekly records.">
+    <link rel="canonical" href="https://bchqhub.com/cota-lap-records.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="BCHQ HUB">
+    <meta property="og:title" content="Circuit of the Americas (COTA) Lap Records (ACC) - BCHQ HUB">
+    <meta property="og:description" content="Fastest laps at Circuit of the Americas (COTA) in Assetto Corsa Competizione, set on the BCHQ servers. All time, monthly and weekly records.">
+    <meta property="og:url" content="https://bchqhub.com/cota-lap-records.html">
+    <meta property="og:image" content="https://bchqhub.com/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Circuit of the Americas (COTA) Lap Records (ACC) - BCHQ HUB">
+    <meta name="twitter:description" content="Fastest laps at Circuit of the Americas (COTA) in Assetto Corsa Competizione, set on the BCHQ servers. All time, monthly and weekly records.">
+    <meta name="twitter:image" content="https://bchqhub.com/og-image.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a0e14">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="BCHQ">
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0a0e14; --card-bg: #111823; --accent-cyan: #00f0ff; --accent-green: #00ff88;
+            --accent-red: #ff3366; --accent-gold: #f5a524; --accent-purple: #b388ff;
+            --text-main: #e2e8f0; --text-muted: #64748b; --border-color: #1e293b;
+            --brand-bc: #3bb54a; --brand-hq: #7f52c8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Rajdhani', sans-serif; padding: 30px 20px; max-width: 1400px; margin: 0 auto; }
+        a { color: inherit; }
+        .brand-bc { color: var(--brand-bc); } .brand-hq { color: var(--brand-hq); }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); gap: 16px; flex-wrap: wrap; }
+        .header-title { display: flex; align-items: center; gap: 15px; }
+        .header-title i { font-size: 2.2rem; color: var(--accent-cyan); }
+        .header-title h1 { font-family: 'Orbitron', sans-serif; font-size: 2rem; letter-spacing: 2px; color: #fff; }
+        .header-subtitle { font-size: .9rem; color: var(--accent-cyan); letter-spacing: 1px; font-weight: 600; }
+        .nav { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+        .nav-btn { background: rgba(0,240,255,.08); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 18px; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-size: .8rem; font-weight: 700; display: flex; align-items: center; gap: 8px; text-decoration: none; transition: all .2s ease; }
+        .nav-btn i { color: var(--accent-cyan); }
+        .nav-btn:hover, .nav-btn.active { border-color: var(--accent-cyan); background: rgba(0,240,255,.15); box-shadow: 0 0 12px rgba(0,240,255,.25); }
+
+        .section-title { font-family: 'Orbitron', sans-serif; font-size: 1.25rem; color: #fff; margin: 30px 0 16px; display: flex; align-items: center; gap: 12px; letter-spacing: 1px; flex-wrap: wrap; }
+        .section-title i { color: var(--accent-cyan); }
+        .section-title .note { font-family: 'Rajdhani', sans-serif; font-size: .9rem; color: var(--text-muted); letter-spacing: 0; font-weight: 600; }
+
+        .summary-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 10px; }
+        .summary-item { flex: 1; min-width: 150px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 18px; }
+        .summary-item strong { display: block; font-family: 'Orbitron', sans-serif; font-size: 1.25rem; color: var(--accent-cyan); margin-bottom: 4px; }
+        .summary-item span { font-size: .85rem; color: var(--text-muted); letter-spacing: .5px; }
+
+        .panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; }
+        .panel-head { font-family: 'Orbitron', sans-serif; font-size: .95rem; color: #fff; padding: 14px 18px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,.2); }
+        .panel-head i { color: var(--accent-cyan); }
+        .panel-head .sub { margin-left: auto; font-family: 'Rajdhani', sans-serif; font-size: .8rem; color: var(--text-muted); font-weight: 600; }
+        .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: rgba(0,0,0,.25); color: var(--text-muted); font-family: 'Orbitron', sans-serif; font-size: .72rem; padding: 12px 14px; border-bottom: 1px solid var(--border-color); white-space: nowrap; letter-spacing: .5px; }
+        td { padding: 12px 14px; border-bottom: 1px solid var(--border-color); font-size: 1rem; font-weight: 600; }
+        tr:last-child td { border-bottom: none; }
+        .num { text-align: right; font-variant-numeric: tabular-nums; } th.num { text-align: right; }
+        .rank { font-family: 'Orbitron', sans-serif; color: var(--text-muted); width: 38px; }
+        .rank.r1 { color: var(--accent-gold); } .rank.r2 { color: #cbd5e1; } .rank.r3 { color: #cd7f32; }
+        .lap-time { font-family: 'Orbitron', sans-serif; color: var(--accent-green); font-size: .9rem; white-space: nowrap; }
+        .lap-time.fl { color: var(--accent-purple); }
+        .muted { color: var(--text-muted); font-weight: 600; }
+        .strong { color: #fff; }
+        .name-link { color: #fff; text-decoration: none; border-bottom: 1px dotted rgba(255,255,255,.3); }
+        .name-link:hover { color: var(--accent-cyan); border-bottom-color: var(--accent-cyan); }
+        .car-badge { background: rgba(255,255,255,.05); padding: 3px 8px; border-radius: 4px; font-size: .85rem; color: var(--text-muted); white-space: nowrap; }
+        .empty { padding: 26px 18px; color: var(--text-muted); text-align: center; font-weight: 600; }
+
+        .controls { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+        .controls select, .controls input { background: var(--bg-dark); color: #fff; border: 1px solid var(--accent-cyan); padding: 10px 14px; border-radius: 8px; font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 600; outline: none; min-width: 200px; }
+        .btn { background: var(--accent-cyan); color: var(--bg-dark); border: none; padding: 10px 20px; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-size: .8rem; font-weight: 800; cursor: pointer; }
+        .btn.ghost { background: transparent; color: var(--accent-cyan); border: 1px solid var(--accent-cyan); }
+        .btn:hover { opacity: .9; }
+        .tabs { display: inline-flex; gap: 0; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; margin-left: auto; }
+        .tab { background: transparent; color: var(--text-muted); border: none; padding: 7px 14px; font-family: 'Orbitron', sans-serif; font-size: .7rem; font-weight: 700; cursor: pointer; }
+        .tab.on { background: rgba(0,240,255,.15); color: var(--accent-cyan); }
+
+        .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+        .heat { display: grid; grid-template-columns: 42px repeat(24, minmax(0, 1fr)); gap: 3px; padding: 14px; }
+        .heat .lbl { font-size: .75rem; color: var(--text-muted); display: flex; align-items: center; font-weight: 700; }
+        .heat .hlbl { font-size: .62rem; color: var(--text-muted); text-align: center; font-weight: 700; }
+        .heat .cell { aspect-ratio: 1 / 1; border-radius: 3px; background: rgba(255,255,255,.04); min-height: 12px; }
+        .legend { display: flex; align-items: center; gap: 8px; padding: 0 14px 14px; color: var(--text-muted); font-size: .8rem; font-weight: 600; flex-wrap: wrap; }
+        .legend .sw { width: 16px; height: 12px; border-radius: 3px; }
+        .fire { color: var(--accent-gold); }
+        .grade { display: inline-block; min-width: 26px; text-align: center; font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: .85rem; padding: 2px 7px; border-radius: 5px; color: #0a0e14; margin-right: 8px; }
+        .grade.A { background: #00ff88; } .grade.B { background: #9be564; } .grade.C { background: #f5d033; } .grade.D { background: #f5a524; } .grade.E { background: #ff5577; }
+        .good { color: var(--accent-green); }
+        .tier { display: inline-block; font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: .62rem; letter-spacing: .5px; padding: 2px 7px; border-radius: 5px; margin-left: 8px; color: #0a0e14; vertical-align: middle; }
+        .tier.Rookie { background: #94a3b8; } .tier.Club { background: #60a5fa; } .tier.Contender { background: #34d399; } .tier.Pro { background: #f5a524; } .tier.Elite { background: #c084fc; }
+        .delta { font-family: 'Orbitron', sans-serif; font-size: .8rem; white-space: nowrap; }
+        .delta.up { color: var(--accent-green, #00ff88); } .delta.down { color: var(--accent-red, #ff3366); } .delta.flat { color: var(--text-muted, #64748b); }
+        .pts { font-family: 'Orbitron', sans-serif; font-size: .9rem; color: var(--accent-gold); }
+        @media (max-width: 900px) { .grid2 { grid-template-columns: 1fr; } }
+        @media (max-width: 600px) { .heat { grid-template-columns: 30px repeat(24, minmax(0, 1fr)); gap: 2px; padding: 10px 8px; } .heat .hlbl.skip { visibility: hidden; } .heat .cell { min-height: 8px; } }
+
+        @media (max-width: 768px) {
+            body { padding: 15px 10px; }
+            .header-title h1 { font-size: 1.4rem; } .header-title i { font-size: 1.7rem; }
+            .nav { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+            .nav-btn { justify-content: center; padding: 10px 8px; }
+            th, td { padding: 10px 8px; font-size: .9rem; }
+            .controls select, .controls input { width: 100%; min-width: 0; }
+            .hide-sm { display: none; }
+            .summary-item { min-width: calc(50% - 8px); padding: 12px 14px; }
+        }
+        .intro { color: var(--text-muted); font-weight: 600; line-height: 1.5; margin-bottom: 18px; max-width: 900px; }
+        .crumbs { color: var(--text-muted); font-weight: 600; font-size: .9rem; margin-bottom: 14px; } .crumbs a { color: var(--accent-cyan); text-decoration: none; }
+        .track-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+        .track-card { display: block; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 16px; text-decoration: none; color: #fff; font-weight: 700; transition: border-color .2s; }
+        .track-card:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .track-card span { display: block; color: var(--text-muted); font-size: .85rem; font-weight: 600; margin-top: 2px; }
+        .track-map { max-width: 360px; width: 100%; margin: 0 0 18px; filter: drop-shadow(0 0 8px rgba(0,240,255,.3)); }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="index.html" class="header-title" style="text-decoration:none">
+            <i class="fa-solid fa-flag-checkered"></i>
+            <div>
+                <h1 style="font-family:'Orbitron',sans-serif;font-size:2rem;letter-spacing:2px;color:#fff"><span class="brand-bc">BC</span><span class="brand-hq">HQ</span> LAP RECORDS</h1>
+                <div class="header-subtitle">CIRCUIT OF THE AMERICAS (COTA)</div>
+            </div>
+        </a>
+        <div class="nav">
+            <a href="index.html" class="nav-btn"><i class="fa-solid fa-gauge-high"></i> HUB</a>
+            <a href="driver.html" class="nav-btn"><i class="fa-solid fa-magnifying-glass"></i> DRIVERS</a>
+            <a href="races.html" class="nav-btn"><i class="fa-solid fa-flag-checkered"></i> RACES</a>
+            <a href="stats.html" class="nav-btn"><i class="fa-solid fa-chart-line"></i> STATS</a>
+            <a href="overlay.html" class="nav-btn"><i class="fa-solid fa-tv"></i> OVERLAYS</a>
+            <a href="streamers.html" class="nav-btn"><i class="fa-solid fa-users"></i> STREAMERS</a>
+        </div>
+    </div>
+
+    <div class="crumbs"><a href="index.html">Hub</a> / <a href="tracks.html">Track records</a> / Circuit of the Americas (COTA)</div>
+    <div class="section-title"><i class="fa-solid fa-stopwatch"></i> CIRCUIT OF THE AMERICAS (COTA) FASTEST LAPS
+        <div class="tabs"><button class="tab on" id="t-all" onclick="load('all')">ALL TIME</button><button class="tab" id="t-month" onclick="load('month')">THIS MONTH</button><button class="tab" id="t-week" onclick="load('week')">THIS WEEK</button></div>
+    </div>
+    <p class="intro">The fastest laps set at Circuit of the Americas (COTA) on the BCHQ Assetto Corsa Competizione servers. One time per driver, taken from real sessions on our servers and updated automatically. Think you can beat them? Join us from the <a class="name-link" href="index.html">live servers</a> page.</p>
+    <img class="track-map" id="map" alt="Circuit of the Americas (COTA) track map" src="https://cdn.jsdelivr.net/gh/BrandedCha0s/bchq-dashboard@main/tracks/cota.png" onerror="this.style.display='none'">
+    <div class="panel"><div class="table-container"><table>
+        <thead><tr><th>#</th><th>DRIVER</th><th>CAR</th><th class="num">BEST LAP</th><th class="num hide-sm">SESSION</th></tr></thead>
+        <tbody id="board"><tr><td colspan="5" class="empty">Loading lap records...</td></tr></tbody></table></div></div>
+
+    <div class="section-title"><i class="fa-solid fa-flag-checkered"></i> RECENT RACES HERE</div>
+    <div class="panel"><div class="table-container"><table>
+        <thead><tr><th>DATE</th><th>WINNER</th><th class="num">DRIVERS</th><th class="num hide-sm">LAPS</th><th></th></tr></thead>
+        <tbody id="races"><tr><td colspan="5" class="empty">Loading...</td></tr></tbody></table></div></div>
+    <p class="intro" style="margin-top:22px"><a class="name-link" href="tracks.html">See all track records</a> &middot; <a class="name-link" href="races.html">All race results</a> &middot; <a class="name-link" href="stats.html">Championship &amp; ratings</a></p>
+
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "BCHQ HUB", "item": "https://bchqhub.com/"}, {"@type": "ListItem", "position": 2, "name": "Track records", "item": "https://bchqhub.com/tracks.html"}, {"@type": "ListItem", "position": 3, "name": "Circuit of the Americas (COTA) lap records", "item": "https://bchqhub.com/cota-lap-records.html"}]}</script>
+    <script>
+        const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1";
+        const SLUG = "cota";
+        function esc(v) { return String(v === undefined || v === null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;"); }
+        function fmtLap(ms) {
+            if (!ms || ms <= 0 || ms >= 2147483647) return "—";
+            return `${Math.floor(ms / 60000)}:${String(Math.floor((ms % 60000) / 1000)).padStart(2, "0")}.${String(ms % 1000).padStart(3, "0")}`;
+        }
+        function rankCell(i) { return `<td class="rank ${i < 3 ? "r" + (i + 1) : ""}">${i + 1}</td>`; }
+        function nameLink(n) { return `<a class="name-link" href="driver.html?name=${encodeURIComponent(n)}">${esc(n)}</a>`; }
+        async function load(period) {
+            for (const p of ["all", "month", "week"]) document.getElementById("t-" + p).classList.toggle("on", p === period);
+            const body = document.getElementById("board");
+            body.innerHTML = `<tr><td colspan="5" class="empty">Loading lap records...</td></tr>`;
+            try {
+                const res = await fetch(`${AZURE_API_URL}?track=${SLUG}` + (period === "all" ? "" : `&period=${period}`));
+                const items = await res.json();
+                if (!Array.isArray(items)) throw new Error("bad data");
+                const best = new Map();
+                for (const r of items) {
+                    const ms = r.bestLapMs || r.bestLap;
+                    if (!r.driverName || !(ms > 0) || ms >= 2147483647) continue;
+                    const key = String(r.driverName).toLowerCase();
+                    if (!best.has(key) || ms < best.get(key).ms) best.set(key, { name: r.driverName, car: typeof r.carModel === "string" && isNaN(Number(r.carModel)) ? r.carModel : "GT3", ms, session: r.sessionType || "Race" });
+                }
+                const rows = [...best.values()].sort((a, b) => a.ms - b.ms).slice(0, 10);
+                body.innerHTML = rows.length ? rows.map((r, i) => `<tr>${rankCell(i)}<td>${nameLink(r.name)}</td><td><span class="car-badge">${esc(r.car)}</span></td><td class="num"><span class="lap-time ${i === 0 ? "fl" : ""}">${fmtLap(r.ms)}</span></td><td class="num hide-sm muted">${esc(r.session)}</td></tr>`).join("")
+                    : `<tr><td colspan="5" class="empty">No laps recorded here ${period === "all" ? "yet" : "in this period yet"}. Be the first!</td></tr>`;
+            } catch (e) {
+                body.innerHTML = `<tr><td colspan="5" class="empty" style="color:var(--accent-red)">Couldn't load lap records. Try again in a moment.</td></tr>`;
+            }
+        }
+        async function loadRaces() {
+            const body = document.getElementById("races");
+            try {
+                const res = await fetch(`${AZURE_API_URL}?type=races&track=${SLUG}&limit=5`);
+                const d = await res.json();
+                const list = d && d.races || [];
+                body.innerHTML = list.length ? list.map(r => `<tr><td>${esc(new Date(r.date).toLocaleDateString())}</td><td>${nameLink(r.winner)}</td><td class="num muted">${esc(r.entries)}</td><td class="num muted hide-sm">${esc(r.laps)}</td><td><a class="name-link" href="races.html?race=${encodeURIComponent(r.id)}">RESULTS</a></td></tr>`).join("")
+                    : `<tr><td colspan="5" class="empty">No races recorded here yet.</td></tr>`;
+            } catch (e) { body.innerHTML = `<tr><td colspan="5" class="empty">Couldn't load races.</td></tr>`; }
+        }
+        load("all"); loadRaces();
+    </script>
+    <script src="ptr.js"></script>
+    <script>if("serviceWorker"in navigator)window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){})});</script>
+</body>
+</html>
