@@ -340,6 +340,7 @@
         .nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
         .nav-btn { background: rgba(0,240,255,.08); border: 1px solid var(--border-color); color: var(--text-main); padding: 9px 16px; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-size: .78rem; font-weight: 700; display: flex; align-items: center; gap: 8px; text-decoration: none; transition: all .2s ease; }
         .nav-btn i { color: var(--accent-cyan); }
+        .nav-btn.ranked { border-color: #ffc933; background: rgba(255,201,51,.1); } .nav-btn.ranked i { color: #ffc933; } .nav-btn.ranked:hover, .nav-btn.ranked.active { border-color: #ffc933; background: rgba(255,201,51,.22); box-shadow: 0 0 12px rgba(255,201,51,.3); }
         .nav-btn:hover, .nav-btn.active { border-color: var(--accent-cyan); background: rgba(0,240,255,.15); box-shadow: 0 0 12px rgba(0,240,255,.25); }
         @media (max-width: 768px) {
             .header .nav { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
@@ -363,7 +364,7 @@
             <a href="driver.html" class="nav-btn"><i class="fa-solid fa-magnifying-glass"></i> DRIVERS</a>
             <a href="races.html" class="nav-btn"><i class="fa-solid fa-flag-checkered"></i> RACES</a>
             <a href="stats.html" class="nav-btn"><i class="fa-solid fa-chart-line"></i> STATS</a>
-            <a href="ranked.html" class="nav-btn"><i class="fa-solid fa-ranking-star"></i> RANKED</a>
+            <a href="ranked.html" class="nav-btn ranked"><i class="fa-solid fa-ranking-star"></i> RANKED</a>
             <a href="overlay.html" class="nav-btn"><i class="fa-solid fa-tv"></i> OVERLAYS</a>
             <a href="streamers.html" class="nav-btn active"><i class="fa-solid fa-users"></i> STREAMERS</a>
         </div>

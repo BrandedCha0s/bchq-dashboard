@@ -12,22 +12,23 @@
         style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
         font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
         img-src 'self' https://cdn.jsdelivr.net data:;
-        connect-src 'self' https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net https://api.github.com;
+        connect-src 'self' https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net https://api.github.com https://cloudflareinsights.com;
     ">
-
-    <title>BCHQ HUB - Ranked Racing & Driver Ratings</title>
-    <meta name="description" content="BCHQ Ranked: the rated ACC server with an Elo-style driver rating, tiers and a live leaderboard.">
+    
+    <title>BCHQ HUB - Ranked Racing &amp; Driver Ratings</title>
     <link rel="canonical" href="https://bchqhub.com/ranked.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="BCHQ HUB">
-    <meta property="og:title" content="BCHQ HUB - Ranked Racing & Driver Ratings">
+    <meta property="og:title" content="BCHQ HUB - Ranked Racing &amp; Driver Ratings">
     <meta property="og:description" content="BCHQ Ranked: the rated ACC server with an Elo-style driver rating, tiers and a live leaderboard.">
     <meta property="og:url" content="https://bchqhub.com/ranked.html">
     <meta property="og:image" content="https://bchqhub.com/og-image.png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="BCHQ HUB - Ranked Racing & Driver Ratings">
+    <meta name="twitter:title" content="BCHQ HUB - Ranked Racing &amp; Driver Ratings">
     <meta name="twitter:description" content="BCHQ Ranked: the rated ACC server with an Elo-style driver rating, tiers and a live leaderboard.">
     <meta name="twitter:image" content="https://bchqhub.com/og-image.png">
+    <meta name="description" content="BCHQ Ranked: the rated ACC server with an Elo-style driver rating, tiers and a live leaderboard.">
+
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0e14">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -36,133 +37,180 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="BCHQ">
 
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 
+    <!-- Custom Dashboard Stylesheet -->
+    <link rel="stylesheet" href="style.css?v=20261015b">
+
     <style>
-        :root {
-            --bg-dark: #0a0e14; --card-bg: #111823; --accent-cyan: #00f0ff; --accent-green: #00ff88;
-            --accent-red: #ff3366; --accent-gold: #f5a524; --accent-purple: #b388ff;
-            --text-main: #e2e8f0; --text-muted: #64748b; --border-color: #1e293b;
-            --brand-bc: #3bb54a; --brand-hq: #7f52c8;
+        /* ---- Live timing modal, driver chips, profiles ---- */
+        .server-card { pointer-events: auto; } /* style.css used to set none, which blocked every click inside cards */
+        .server-card[data-online="1"] { cursor: pointer; }
+        .session-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0 0; }
+        .sess-chip { display: flex; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--border-color, #1e293b); background: rgba(255,255,255,.03); color: var(--text-muted, #8a94a8); font-family: 'Orbitron', sans-serif; font-size: .75rem; letter-spacing: .5px; }
+        .sess-chip .sess-name { font-weight: 800; }
+        .sess-chip .sess-val { font-family: 'Rajdhani', sans-serif; font-size: .9rem; font-weight: 700; }
+        .sess-chip.active { color: var(--bg-dark, #0a0e14); background: var(--accent-cyan, #00f0ff); border-color: var(--accent-cyan, #00f0ff); box-shadow: 0 0 12px rgba(0,240,255,.35); }
+        .sess-chip.active .sess-val { font-family: 'Orbitron', sans-serif; font-size: .85rem; font-weight: 800; min-width: 3.2em; text-align: right; }
+        .sess-note { flex-basis: 100%; font-size: .8rem; color: var(--text-muted, #8a94a8); letter-spacing: .5px; }
+        @media (max-width: 600px) {
+            /* Phones: leaderboards keep POS, DRIVER, BEST LAP and GAP; car, session and date are hidden so nothing scrolls sideways */
+            #race-table-wrapper th:nth-child(3), #race-table-wrapper td:nth-child(3),
+            #race-table-wrapper th:nth-child(4), #race-table-wrapper td:nth-child(4),
+            #race-table-wrapper th:nth-child(7), #race-table-wrapper td:nth-child(7),
+            #qualifying-table-wrapper th:nth-child(3), #qualifying-table-wrapper td:nth-child(3),
+            #qualifying-table-wrapper th:nth-child(4), #qualifying-table-wrapper td:nth-child(4),
+            #qualifying-table-wrapper th:nth-child(7), #qualifying-table-wrapper td:nth-child(7) { display: none; }
+            #race-table-wrapper table, #qualifying-table-wrapper table { white-space: normal; }
+            #race-table-wrapper th, #race-table-wrapper td, #qualifying-table-wrapper th, #qualifying-table-wrapper td { padding: 12px 8px; }
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Rajdhani', sans-serif; padding: 30px 20px; max-width: 1400px; margin: 0 auto; }
-        a { color: inherit; }
-        .brand-bc { color: var(--brand-bc); } .brand-hq { color: var(--brand-hq); }
+        .presence { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-color, #1e293b); }
+        .presence-title { font-family: 'Orbitron', sans-serif; font-size: .7rem; letter-spacing: 1px; color: var(--text-muted, #8a94a8); margin-bottom: 4px; }
+        .presence-sub { font-size: .9rem; color: var(--text-main, #e2e8f0); margin-bottom: 10px; }
+        .presence-bars { display: flex; align-items: flex-end; gap: 3px; height: 64px; }
+        .presence-bar { flex: 1; min-height: 3px; border-radius: 3px 3px 0 0; background: rgba(0, 240, 255, .35); }
+        .presence-bar.now { background: var(--accent-cyan, #00f0ff); }
+        .presence-axis { display: flex; justify-content: space-between; font-size: .7rem; color: var(--text-muted, #8a94a8); margin-top: 4px; }
+        .presence-card { margin-top: 10px; padding-top: 10px; }
+        .presence-card:empty { display: none; }
+        .presence-card .presence-sub { font-size: .85rem; margin-bottom: 8px; }
+        .presence-card .presence-bars { height: 38px; gap: 2px; }
+        .driver-name-link { color: inherit; text-decoration: none; }
+        .driver-name-link:hover { color: var(--accent-cyan, #00f0ff); text-decoration: underline; }
+        .live-hint { margin-top: 10px; font-family: 'Rajdhani', sans-serif; font-size: .85rem; letter-spacing: .5px; color: var(--text-muted, #8a94a8); display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .driver-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .driver-chip { font-family: 'Rajdhani', sans-serif; font-size: .85rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border-color, #223); background: rgba(0, 240, 255, .06); color: var(--text-main, #e6eaf2); }
+        .driver-chip.more { color: var(--text-muted, #8a94a8); }
 
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); gap: 16px; flex-wrap: wrap; }
-        .header-title { display: flex; align-items: center; gap: 15px; }
-        .header-title i { font-size: 2.2rem; color: var(--accent-cyan); }
-        .header-title h1 { font-family: 'Orbitron', sans-serif; font-size: 2rem; letter-spacing: 2px; color: #fff; }
-        .header-subtitle { font-size: .9rem; color: var(--accent-cyan); letter-spacing: 1px; font-weight: 600; }
-        .nav { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
-        .nav-btn { background: rgba(0,240,255,.08); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 18px; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-size: .8rem; font-weight: 700; display: flex; align-items: center; gap: 8px; text-decoration: none; transition: all .2s ease; }
-        .nav-btn i { color: var(--accent-cyan); }
-        .nav-btn:hover, .nav-btn.active { border-color: var(--accent-cyan); background: rgba(0,240,255,.15); box-shadow: 0 0 12px rgba(0,240,255,.25); }
+        body.live-modal-open { overflow: hidden; }
+        .live-modal { position: fixed; inset: 0; z-index: 1000; display: none; }
+        .live-modal.open { display: block; }
+        .live-modal-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, .75); backdrop-filter: blur(3px); }
+        .live-modal-panel { position: relative; width: calc(100% - 24px); max-width: 1000px; max-height: calc(100% - 32px); margin: 16px auto; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-dark, #0b0f1a); border: 1px solid var(--accent-cyan, #00f0ff); border-radius: 12px; box-shadow: 0 0 40px rgba(0, 240, 255, .15); }
+        .live-modal-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--border-color, #223); }
+        .live-modal-title { font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 1.1rem; color: #fff; }
+        .live-modal-sub { margin-top: 4px; font-family: 'Rajdhani', sans-serif; font-size: .9rem; color: var(--text-muted, #8a94a8); letter-spacing: 1px; }
+        .live-modal-close { background: none; border: 1px solid var(--border-color, #223); color: var(--text-muted, #8a94a8); width: 34px; height: 34px; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+        .live-modal-close:hover { color: #fff; border-color: var(--accent-cyan, #00f0ff); }
+        .live-modal-body { padding: 14px 18px 18px; overflow-y: auto; }
 
-        .section-title { font-family: 'Orbitron', sans-serif; font-size: 1.25rem; color: #fff; margin: 30px 0 16px; display: flex; align-items: center; gap: 12px; letter-spacing: 1px; flex-wrap: wrap; }
-        .section-title i { color: var(--accent-cyan); }
-        .section-title .note { font-family: 'Rajdhani', sans-serif; font-size: .9rem; color: var(--text-muted); letter-spacing: 0; font-weight: 600; }
+        .live-status { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-bottom: 12px; font-family: 'Rajdhani', sans-serif; font-size: .95rem; color: var(--text-muted, #8a94a8); }
+        .live-badge { display: inline-flex; align-items: center; gap: 6px; font-family: 'Orbitron', sans-serif; font-size: .7rem; font-weight: 800; color: var(--accent-green, #00ff9d); }
+        .live-badge::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: livePulse 1.2s infinite; }
+        @keyframes livePulse { 50% { opacity: .25; } }
 
-        .summary-row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 10px; }
-        .summary-item { flex: 1; min-width: 150px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 18px; }
-        .summary-item strong { display: block; font-family: 'Orbitron', sans-serif; font-size: 1.25rem; color: var(--accent-cyan); margin-bottom: 4px; }
-        .summary-item span { font-size: .85rem; color: var(--text-muted); letter-spacing: .5px; }
-
-        .panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; }
-        .panel-head { font-family: 'Orbitron', sans-serif; font-size: .95rem; color: #fff; padding: 14px 18px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,.2); }
-        .panel-head i { color: var(--accent-cyan); }
-        .panel-head .sub { margin-left: auto; font-family: 'Rajdhani', sans-serif; font-size: .8rem; color: var(--text-muted); font-weight: 600; }
-        .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: rgba(0,0,0,.25); color: var(--text-muted); font-family: 'Orbitron', sans-serif; font-size: .72rem; padding: 12px 14px; border-bottom: 1px solid var(--border-color); white-space: nowrap; letter-spacing: .5px; }
-        td { padding: 12px 14px; border-bottom: 1px solid var(--border-color); font-size: 1rem; font-weight: 600; }
-        tr:last-child td { border-bottom: none; }
-        .num { text-align: right; font-variant-numeric: tabular-nums; } th.num { text-align: right; }
-        .rank { font-family: 'Orbitron', sans-serif; color: var(--text-muted); width: 38px; }
-        .rank.r1 { color: var(--accent-gold); } .rank.r2 { color: #cbd5e1; } .rank.r3 { color: #cd7f32; }
-        .lap-time { font-family: 'Orbitron', sans-serif; color: var(--accent-green); font-size: .9rem; white-space: nowrap; }
-        .lap-time.fl { color: var(--accent-purple); }
-        .muted { color: var(--text-muted); font-weight: 600; }
-        .strong { color: #fff; }
-        .name-link { color: #fff; text-decoration: none; border-bottom: 1px dotted rgba(255,255,255,.3); }
-        .name-link:hover { color: var(--accent-cyan); border-bottom-color: var(--accent-cyan); }
-        .car-badge { background: rgba(255,255,255,.05); padding: 3px 8px; border-radius: 4px; font-size: .85rem; color: var(--text-muted); white-space: nowrap; }
-        .empty { padding: 26px 18px; color: var(--text-muted); text-align: center; font-weight: 600; }
-
-        .controls { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
-        .controls select, .controls input { background: var(--bg-dark); color: #fff; border: 1px solid var(--accent-cyan); padding: 10px 14px; border-radius: 8px; font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 600; outline: none; min-width: 200px; }
-        .btn { background: var(--accent-cyan); color: var(--bg-dark); border: none; padding: 10px 20px; border-radius: 8px; font-family: 'Orbitron', sans-serif; font-size: .8rem; font-weight: 800; cursor: pointer; }
-        .btn.ghost { background: transparent; color: var(--accent-cyan); border: 1px solid var(--accent-cyan); }
-        .btn:hover { opacity: .9; }
-        .tabs { display: inline-flex; gap: 0; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; margin-left: auto; }
-        .tab { background: transparent; color: var(--text-muted); border: none; padding: 7px 14px; font-family: 'Orbitron', sans-serif; font-size: .7rem; font-weight: 700; cursor: pointer; }
-        .tab.on { background: rgba(0,240,255,.15); color: var(--accent-cyan); }
-
-        .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-        .heat { display: grid; grid-template-columns: 42px repeat(24, minmax(0, 1fr)); gap: 3px; padding: 14px; }
-        .heat .lbl { font-size: .75rem; color: var(--text-muted); display: flex; align-items: center; font-weight: 700; }
-        .heat .hlbl { font-size: .62rem; color: var(--text-muted); text-align: center; font-weight: 700; }
-        .heat .cell { aspect-ratio: 1 / 1; border-radius: 3px; background: rgba(255,255,255,.04); min-height: 12px; }
-        .legend { display: flex; align-items: center; gap: 8px; padding: 0 14px 14px; color: var(--text-muted); font-size: .8rem; font-weight: 600; flex-wrap: wrap; }
-        .legend .sw { width: 16px; height: 12px; border-radius: 3px; }
-        .fire { color: var(--accent-gold); }
-        .grade { display: inline-block; min-width: 26px; text-align: center; font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: .85rem; padding: 2px 7px; border-radius: 5px; color: #0a0e14; margin-right: 8px; }
-        .grade.A { background: #00ff88; } .grade.B { background: #9be564; } .grade.C { background: #f5d033; } .grade.D { background: #f5a524; } .grade.E { background: #ff5577; }
-        .good { color: var(--accent-green); }
+        .live-table-wrap { overflow-x: auto; }
+        .live-table { width: 100%; border-collapse: collapse; font-family: 'Rajdhani', sans-serif; font-size: 1rem; white-space: nowrap; }
+        .live-table th { text-align: left; padding: 6px 10px; font-family: 'Orbitron', sans-serif; font-size: .65rem; letter-spacing: 1px; color: var(--text-muted, #8a94a8); border-bottom: 1px solid var(--border-color, #223); }
+        .live-table td { padding: 7px 10px; border-bottom: 1px solid rgba(255, 255, 255, .04); }
+        .live-table td.num, .live-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+        @media (max-width: 600px) {
+            /* Phones: drop the car column and tighten up so LAPS / LAST / BEST stay on screen */
+            .live-table .col-car { display: none; }
+            .live-table { font-size: .85rem; }
+            .live-table th, .live-table td { padding: 6px 5px; }
+            .live-table th:last-child, .live-table td:last-child { display: none; }   /* GAP / DELTA */
+            .live-table td:nth-child(2) { white-space: normal; word-break: break-word; }
+            .live-modal-body { padding: 12px 12px 16px; }
+        }
+        .live-table .best-overall { color: #c77dff; font-weight: 700; }
+        .delta-pos { color: var(--accent-red, #ff4d6d); }
+        .delta-neg { color: var(--accent-green, #00ff9d); }
+        .dim { color: var(--text-muted, #8a94a8); }
+        .pit-tag { margin-left: 6px; font-size: .65rem; padding: 1px 5px; border-radius: 4px; border: 1px solid var(--text-muted, #8a94a8); color: var(--text-muted, #8a94a8); }
+        .driver-link { background: none; border: none; padding: 0; font: inherit; font-weight: 600; color: var(--accent-cyan, #00f0ff); cursor: pointer; text-align: left; }
+        .driver-link:hover { text-decoration: underline; }
+        .live-empty { padding: 30px 10px; text-align: center; font-family: 'Rajdhani', sans-serif; color: var(--text-muted, #8a94a8); }
+        .live-back { background: none; border: 1px solid var(--border-color, #223); color: var(--accent-cyan, #00f0ff); border-radius: 8px; padding: 5px 12px; font-family: 'Rajdhani', sans-serif; font-weight: 600; cursor: pointer; margin-bottom: 12px; }
+        .live-back:hover { border-color: var(--accent-cyan, #00f0ff); }
+        .profile-name { font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 1.2rem; color: #fff; }
+        .profile-stats { display: flex; gap: 22px; margin: 10px 0 14px; font-family: 'Rajdhani', sans-serif; color: var(--text-muted, #8a94a8); }
+        .profile-stats strong { display: block; font-family: 'Orbitron', sans-serif; font-size: 1.1rem; color: var(--accent-cyan, #00f0ff); }
         .tier { display: inline-block; font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: .62rem; letter-spacing: .5px; padding: 2px 7px; border-radius: 5px; margin-left: 8px; color: #0a0e14; vertical-align: middle; }
         .tier.Rookie { background: #94a3b8; } .tier.Club { background: #60a5fa; } .tier.Contender { background: #34d399; } .tier.Pro { background: #f5a524; } .tier.Elite { background: #c084fc; }
         .delta { font-family: 'Orbitron', sans-serif; font-size: .8rem; white-space: nowrap; }
-        .delta.up { color: var(--accent-green, #00ff88); } .delta.down { color: var(--accent-red, #ff3366); } .delta.flat { color: var(--text-muted, #64748b); }
-        .pts { font-family: 'Orbitron', sans-serif; font-size: .9rem; color: var(--accent-gold); }
-        @media (max-width: 900px) { .grid2 { grid-template-columns: 1fr; } }
-        @media (max-width: 600px) { .heat { grid-template-columns: 30px repeat(24, minmax(0, 1fr)); gap: 2px; padding: 10px 8px; } .heat .hlbl.skip { visibility: hidden; } .heat .cell { min-height: 8px; } }
-
-        @media (max-width: 768px) {
-            body { padding: 15px 10px; }
-            .header-title h1 { font-size: 1.4rem; } .header-title i { font-size: 1.7rem; }
-            .nav { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
-            .nav-btn { justify-content: center; padding: 10px 8px; } .nav-btn:last-child:nth-child(odd) { grid-column: 1 / -1; }
-            th, td { padding: 10px 8px; font-size: .9rem; }
-            .controls select, .controls input { width: 100%; min-width: 0; }
-            .hide-sm { display: none; }
-            .summary-item { min-width: calc(50% - 8px); padding: 12px 14px; }
-        }
-        .intro { color: var(--text-muted); font-weight: 600; line-height: 1.5; margin-bottom: 18px; max-width: 900px; }
-        .rank-hero { background: var(--card-bg); border: 1px solid var(--accent-gold, #f5a524); border-radius: 12px; padding: 18px 20px; margin-bottom: 22px; }
+        .delta.up { color: #00ff88; } .delta.down { color: #ff3366; } .delta.flat { color: #64748b; }
+        .pts { font-family: 'Orbitron', sans-serif; font-size: .9rem; color: #ffc933; }
+        .name-link { color: #fff; text-decoration: none; border-bottom: 1px dotted rgba(255,255,255,.3); }
+        .name-link:hover { color: var(--accent-cyan); border-bottom-color: var(--accent-cyan); }
+        .num { text-align: right; } .muted { color: var(--text-muted); } .empty { padding: 26px 18px; color: var(--text-muted); text-align: center; font-weight: 600; }
+        .panel { background: var(--card-bg, #111826); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; }
+        .note { margin-left: 10px; color: var(--text-muted); font-family: 'Rajdhani', sans-serif; font-size: .85rem; font-weight: 600; }
+        .rk { font-family: 'Orbitron', sans-serif; font-weight: 700; color: var(--text-muted); } .rk.r1 { color: #ffc933; } .rk.r2 { color: #cfd8e6; } .rk.r3 { color: #cd8a4a; }
+        .intro { color: var(--text-muted); font-weight: 600; line-height: 1.5; max-width: 900px; }
+        .rank-hero { background: var(--card-bg, #111826); border: 1px solid #ffc933; border-radius: 12px; padding: 18px 20px; margin-bottom: 22px; }
         .rank-hero h2 { font-family: 'Orbitron', sans-serif; font-size: 1.05rem; color: #fff; margin-bottom: 8px; }
         .rank-hero ul { margin: 8px 0 0 18px; color: var(--text-muted); font-weight: 600; line-height: 1.6; }
         .tiers { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 10px; color: var(--text-muted); font-weight: 600; font-size: .9rem; }
         .tiers .tier { margin-left: 0; margin-right: 6px; }
+        @media (max-width: 768px) { .hide-sm { display: none; } }
     </style>
+    
 </head>
 <body>
+
+    <!-- Header -->
     <div class="header">
         <div class="header-title">
-            <i class="fa-solid fa-ranking-star"></i>
+            <i class="fa-solid fa-ranking-star" style="color:#ffc933"></i>
             <div>
                 <h1><span class="brand-bc">BC</span><span class="brand-hq">HQ</span> RANKED</h1>
-                <div class="header-subtitle">ELO RATING &amp; LEADERBOARD</div>
+                <div class="header-subtitle">RATINGS · LEADERBOARD · RANKED SERVER</div>
             </div>
         </div>
-        <div class="nav">
-            <a href="index.html" class="nav-btn"><i class="fa-solid fa-gauge-high"></i> HUB</a>
-            <a href="driver.html" class="nav-btn"><i class="fa-solid fa-magnifying-glass"></i> DRIVERS</a>
-            <a href="races.html" class="nav-btn"><i class="fa-solid fa-flag-checkered"></i> RACES</a>
-            <a href="stats.html" class="nav-btn"><i class="fa-solid fa-chart-line"></i> STATS</a>
-            <a href="ranked.html" class="nav-btn active"><i class="fa-solid fa-ranking-star"></i> RANKED</a>
-            <a href="overlay.html" class="nav-btn"><i class="fa-solid fa-tv"></i> OVERLAYS</a>
-            <a href="streamers.html" class="nav-btn"><i class="fa-solid fa-users"></i> STREAMERS</a>
+        
+        <!-- Navigation & Social Links -->
+        <div class="header-nav" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end;">
+            <a href="index.html" class="discord-btn-header" style="border-color: var(--accent-cyan); background: rgba(0, 240, 255, 0.1);">
+                <i class="fa-solid fa-gauge-high" style="color: var(--accent-cyan);"></i> HUB
+            </a>
+            <!-- Drivers -->
+            <a href="driver.html" class="discord-btn-header" style="border-color: var(--accent-cyan); background: rgba(0, 240, 255, 0.1);">
+                <i class="fa-solid fa-magnifying-glass" style="color: var(--accent-cyan);"></i> DRIVERS
+            </a>
+
+            <!-- Race results and community stats -->
+            <a href="races.html" class="discord-btn-header" style="border-color: var(--accent-cyan); background: rgba(0, 240, 255, 0.1);">
+                <i class="fa-solid fa-flag-checkered" style="color: var(--accent-cyan);"></i> RACES
+            </a>
+            <a href="stats.html" class="discord-btn-header" style="border-color: var(--accent-cyan); background: rgba(0, 240, 255, 0.1);">
+                <i class="fa-solid fa-chart-line" style="color: var(--accent-cyan);"></i> STATS
+            </a>
+            <a href="ranked.html" class="discord-btn-header" style="border-color: #ffc933; background: rgba(255, 201, 51, 0.25); box-shadow: 0 0 12px rgba(255,201,51,.3);">
+                <i class="fa-solid fa-ranking-star" style="color: #ffc933;"></i> RANKED
+            </a>
+            <a href="overlay.html" class="discord-btn-header" style="border-color: var(--accent-cyan); background: rgba(0, 240, 255, 0.1);">
+                <i class="fa-solid fa-tv" style="color: var(--accent-cyan);"></i> OVERLAYS
+            </a>
+            
+            <!-- Streamers Button with Live Pulse & Notification Badge -->
+            <div style="display: flex; flex-direction: column; align-items: center; position: relative;">
+                <a href="streamers.html" id="header-streamers-btn" class="discord-btn-header twitch-btn-header">
+                    <i class="fa-solid fa-users"></i> STREAMERS
+                </a>
+                <span id="streamer-live-badge" style="display: none; position: absolute; bottom: -20px; font-size: 0.68rem; font-family: 'Orbitron', sans-serif; color: var(--accent-red); font-weight: 800; letter-spacing: 1px;">
+                    🔴 LIVE NOW
+                </span>
+            </div>
+
+            <!-- Discord Community Button -->
+            <a href="https://discord.gg/SmvcXeXdyS" target="_blank" rel="noopener noreferrer" class="discord-btn-header">
+                <i class="fa-brands fa-discord"></i> DISCORD
+            </a>
         </div>
     </div>
 
+
     <div class="rank-hero">
-        <h2><i class="fa-solid fa-ranking-star" style="color:var(--accent-gold,#f5a524)"></i> BCHQ RANKED</h2>
-        <div class="intro" style="margin-bottom:0">Ratings come from races on the <strong style="color:#fff">BCHQ Ranked server only</strong>. Everything else on the hub (the championship, form, lap records) still counts every server, but your rating moves only when you race ranked.</div>
+        <h2><i class="fa-solid fa-ranking-star" style="color:#ffc933"></i> BCHQ RANKED</h2>
+        <div class="intro">Ratings come from races on the <strong style="color:#fff">BCHQ Ranked server only</strong>. Everything else on the hub (the championship, form, lap records) still counts every server, but your rating moves only when you race ranked.</div>
         <ul>
             <li>Everyone starts on <strong style="color:#fff">1500</strong>. Beating higher-rated drivers earns more, losing to lower-rated ones costs more.</li>
             <li>Finish at least half of the winner's laps to be classified. Retiring early doesn't change your rating.</li>
@@ -171,6 +219,11 @@
         <div class="tiers">
             <span><span class="tier Rookie">ROOKIE</span>under 1400</span><span><span class="tier Club">CLUB</span>1400+</span><span><span class="tier Contender">CONTENDER</span>1550+</span><span><span class="tier Pro">PRO</span>1650+</span><span><span class="tier Elite">ELITE</span>1750+</span>
         </div>
+    </div>
+
+    <div class="section-title"><i class="fa-solid fa-server"></i> RANKED SERVER</div>
+    <div id="servers-container" class="servers-grid">
+        <div style="color: var(--text-muted); padding: 20px;"><i class="fa-solid fa-circle-notch fa-spin"></i> Fetching the ranked server...</div>
     </div>
 
     <div class="section-title"><i class="fa-solid fa-ranking-star"></i> RATING LEADERBOARD <span class="note" id="rating-note"></span></div>
@@ -184,52 +237,24 @@
         <tbody id="races-body"><tr><td colspan="6" class="empty">Loading races...</td></tr></tbody></table></div></div>
     <p class="intro" style="margin-top:18px">Open a race to see every driver's rating change. Search a driver on the <a class="name-link" href="driver.html">drivers page</a> for their rating history.</p>
 
-    <script>
-        const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1";
-        const TRACK_NAMES = {
-            monza: "Monza", zolder: "Zolder", brands_hatch: "Brands Hatch", silverstone: "Silverstone", paul_ricard: "Paul Ricard",
-            misano: "Misano", spa: "Circuit de Spa-Francorchamps", nurburgring: "Nürburgring GP", nurburgring_24h: "Nürburgring 24h (Nordschleife)",
-            barcelona: "Barcelona", hungaroring: "Hungaroring", zandvoort: "Zandvoort", kyalami: "Kyalami", mount_panorama: "Mount Panorama (Bathurst)",
-            suzuka: "Suzuka", laguna_seca: "Laguna Seca", imola: "Imola", donington: "Donington Park", oulton_park: "Oulton Park",
-            snetterton: "Snetterton", cota: "Circuit of the Americas (COTA)", indianapolis: "Indianapolis", watkins_glen: "Watkins Glen",
-            valencia: "Valencia", red_bull_ring: "Red Bull Ring"
-        };
-        function trackName(raw) {
-            const clean = String(raw || "").toLowerCase().replace(/_\d{4}$/, "").trim();
-            const key = Object.keys(TRACK_NAMES).sort((a, b) => b.length - a.length).find(k => clean.includes(k));
-            return key ? TRACK_NAMES[key] : (clean.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()) || "Unknown track");
-        }
-        function esc(v) {
-            return String(v === undefined || v === null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-        }
-        function fmtLap(ms) {
-            if (!ms || ms <= 0 || ms >= 2147483647) return "—";
-            const m = Math.floor(ms / 60000), s = Math.floor((ms % 60000) / 1000), t = ms % 1000;
-            return `${m}:${String(s).padStart(2, "0")}.${String(t).padStart(3, "0")}`;
-        }
-        function fmtRaceTime(ms) {
-            const h = Math.floor(ms / 3600000), m = Math.floor((ms % 3600000) / 60000), s = Math.floor((ms % 60000) / 1000), t = ms % 1000;
-            return (h ? `${h}:${String(m).padStart(2, "0")}` : `${m}`) + `:${String(s).padStart(2, "0")}.${String(t).padStart(3, "0")}`;
-        }
-        function nameLink(name) {
-            return `<a class="name-link" href="driver.html?name=${encodeURIComponent(name)}">${esc(name)}</a>`;
-        }
-        function rankCell(i) { return `<td class="rank ${i < 3 ? "r" + (i + 1) : ""}">${i + 1}</td>`; }
-        async function api(query) {
-            const res = await fetch(`${AZURE_API_URL}?${query}`);
-            if (!res.ok) throw new Error("HTTP " + res.status);
-            return await res.json();
-        }
+    <div id="toast" class="toast"><i class="fa-solid fa-check-circle"></i> Server Name Copied!</div>
 
-        
+    <script>window.BCHQ_VIEW = "ranked";</script>
+    <script src="hub.js?v=20261016"></script>
+    <script>
+    (function () {
+        const esc = escapeHtml;
         const dl = (v) => v === null || v === undefined ? `<span class="delta flat">—</span>` : `<span class="delta ${v > 0 ? "up" : v < 0 ? "down" : "flat"}">${v > 0 ? "+" : ""}${esc(v)}</span>`;
+        const nameLink = (n) => `<a class="name-link" href="driver.html?name=${encodeURIComponent(n)}">${esc(n)}</a>`;
+        const rk = (i) => `<td class="rk ${i < 3 ? "r" + (i + 1) : ""}">${i + 1}</td>`;
+        async function api(q) { const r = await fetch(`${AZURE_API_URL}?${q}`); if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); }
         (async function init() {
             try {
                 const d = await api("type=community");
                 const min = d.ratingMinRaces || 3;
                 document.getElementById("min-races").textContent = min;
                 document.getElementById("rating-note").textContent = `min ${min} ranked races to be listed`;
-                const rows = (d.ratings || []).map((x, i) => `<tr>${rankCell(i)}<td>${nameLink(x.name)}</td><td class="num"><span class="pts">${esc(x.rating)}${x.provisional ? "?" : ""}</span><span class="tier ${esc(x.tier)}">${esc(String(x.tier).toUpperCase())}</span></td><td class="num">${dl(x.last)}</td><td class="num muted hide-sm">${esc(x.peak)}</td><td class="num muted hide-sm">${esc(x.races)}</td></tr>`);
+                const rows = (d.ratings || []).map((x, i) => `<tr>${rk(i)}<td>${nameLink(x.name)}</td><td class="num"><span class="pts">${esc(x.rating)}${x.provisional ? "?" : ""}</span><span class="tier ${esc(x.tier)}">${esc(String(x.tier).toUpperCase())}</span></td><td class="num">${dl(x.last)}</td><td class="num muted hide-sm">${esc(x.peak)}</td><td class="num muted hide-sm">${esc(x.races)}</td></tr>`);
                 document.getElementById("rating-body").innerHTML = rows.length ? rows.join("") : `<tr><td colspan="6" class="empty">No ratings yet. They appear once drivers have ${esc(min)}+ ranked races.</td></tr>`;
             } catch (e) {
                 document.getElementById("rating-body").innerHTML = `<tr><td colspan="6" class="empty" style="color:var(--accent-red)">Couldn't load ratings. Try again in a moment.</td></tr>`;
@@ -237,15 +262,32 @@
             try {
                 const r = await api("type=races&ranked=1&limit=10");
                 const list = r.races || [];
-                document.getElementById("races-body").innerHTML = list.length ? list.map(x => `<tr><td>${esc(new Date(x.date).toLocaleDateString())}</td><td>${esc(trackName(x.track))}</td><td>${nameLink(x.winner)}</td><td class="num muted">${esc(x.entries)}</td><td class="num muted hide-sm">${esc(x.laps)}</td><td><a class="name-link" href="races.html?race=${encodeURIComponent(x.id)}">RESULTS</a></td></tr>`).join("")
+                document.getElementById("races-body").innerHTML = list.length ? list.map(x => `<tr><td>${esc(new Date(x.date).toLocaleDateString())}</td><td>${esc(getTrackDisplayName(x.track))}</td><td>${nameLink(x.winner)}</td><td class="num muted">${esc(x.entries)}</td><td class="num muted hide-sm">${esc(x.laps)}</td><td><a class="name-link" href="races.html?race=${encodeURIComponent(x.id)}">RESULTS</a></td></tr>`).join("")
                     : `<tr><td colspan="6" class="empty">No ranked races yet. The first one starts the leaderboard.</td></tr>`;
             } catch (e) {
                 document.getElementById("races-body").innerHTML = `<tr><td colspan="6" class="empty" style="color:var(--accent-red)">Couldn't load races.</td></tr>`;
             }
         })();
+    })();
     </script>
+
+    <!-- Footer Legal & Report Issue Button Section -->
+    <div style="margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.9rem; flex-wrap: wrap; gap: 15px;">
+        <div>
+            &copy; 2026 <span class="brand-bc">BC</span><span class="brand-hq">HQ</span> HUB. Independent community platform.
+        </div>
+        <div style="display: flex; gap: 25px; align-items: center;">
+            <a href="tracks.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'"><i class="fa-solid fa-map-location-dot"></i> Track records</a>
+            <a href="#" id="get-app-link" onclick="if(window.bchqInstall){bchqInstall();}return false;" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'"><i class="fa-solid fa-mobile-screen"></i> Get the app</a>
+            <a href="legal.html" style="color: var(--text-muted); text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'">Terms & Disclaimers</a>
+            <a href="issues.html" class="report-issue-btn">
+                <i class="fa-solid fa-bug"></i> REPORT ISSUE
+            </a>
+        </div>
+    </div>
     <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "02a093a4e8134646a50f03a68676c5c8"}'></script><!-- End Cloudflare Web Analytics -->
-<script src="ptr.js"></script>
+   <script src="ptr.js"></script>
+<script src="install.js"></script>
 <script>if("serviceWorker"in navigator)window.addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){})});</script>
 </body>
 </html>
