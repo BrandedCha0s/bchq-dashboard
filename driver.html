@@ -16,6 +16,18 @@
     ">
     
     <title>BCHQ HUB - Driver Profiles</title>
+    <meta name="description" content="Search any driver&#x27;s personal best lap times, race stats and rating on the BCHQ Assetto Corsa Competizione servers.">
+    <link rel="canonical" href="https://bchqhub.com/driver.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="BCHQ HUB">
+    <meta property="og:title" content="BCHQ HUB - Driver Profiles">
+    <meta property="og:description" content="Search any driver&#x27;s personal best lap times, race stats and rating on the BCHQ Assetto Corsa Competizione servers.">
+    <meta property="og:url" content="https://bchqhub.com/driver.html">
+    <meta property="og:image" content="https://bchqhub.com/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="BCHQ HUB - Driver Profiles">
+    <meta name="twitter:description" content="Search any driver&#x27;s personal best lap times, race stats and rating on the BCHQ Assetto Corsa Competizione servers.">
+    <meta name="twitter:image" content="https://bchqhub.com/og-image.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0e14">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -287,6 +299,10 @@
         .rs-note { font-family: 'Rajdhani', sans-serif; font-size: .9rem; color: var(--text-muted); letter-spacing: 0; font-weight: 600; }
         .pos-badge { font-family: 'Orbitron', sans-serif; font-size: .9rem; color: #fff; }
         .pos-badge.p1 { color: #f5a524; } .pos-badge.p2 { color: #cbd5e1; } .pos-badge.p3 { color: #cd7f32; }
+        .tier { display: inline-block; font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: .62rem; letter-spacing: .5px; padding: 2px 7px; border-radius: 5px; margin-left: 8px; color: #0a0e14; vertical-align: middle; }
+        .tier.Rookie { background: #94a3b8; } .tier.Club { background: #60a5fa; } .tier.Contender { background: #34d399; } .tier.Pro { background: #f5a524; } .tier.Elite { background: #c084fc; }
+        .delta { font-family: 'Orbitron', sans-serif; font-size: .8rem; white-space: nowrap; }
+        .delta.up { color: var(--accent-green, #00ff88); } .delta.down { color: var(--accent-red, #ff3366); } .delta.flat { color: var(--text-muted, #64748b); }
         .grade { display: inline-block; min-width: 30px; text-align: center; font-family: 'Orbitron', sans-serif; font-weight: 800; padding: 1px 8px; border-radius: 6px; color: #0a0e14; margin-right: 8px; }
         .grade.A { background: #00ff88; } .grade.B { background: #9be564; } .grade.C { background: #f5d033; } .grade.D { background: #f5a524; } .grade.E { background: #ff5577; }
         .rs-link { color: var(--accent-cyan); text-decoration: none; font-weight: 700; }
@@ -357,9 +373,10 @@
     <div id="race-panel" class="race-panel">
         <div class="section-title"><i class="fa-solid fa-flag-checkered"></i> RACE STATS <span class="rs-note" id="rs-note"></span></div>
         <div id="race-summary" class="summary-row"></div>
+        <div id="rating-spark" style="display:none;max-width:420px;margin:0 0 16px"></div>
         <div class="table-container" id="race-recent-wrap">
             <table class="race-table">
-                <thead><tr><th>DATE</th><th>TRACK</th><th>FINISH</th><th class="rs-hide">CAR</th><th class="rs-hide">BEST LAP</th><th></th></tr></thead>
+                <thead><tr><th>DATE</th><th>TRACK</th><th>FINISH</th><th class="rs-hide">CAR</th><th class="rs-hide">BEST LAP</th><th>RATING</th><th></th></tr></thead>
                 <tbody id="race-recent"></tbody>
             </table>
         </div>
@@ -531,16 +548,27 @@
                 const res = await fetch(`${AZURE_API_URL}?type=driverstats&name=${encodeURIComponent(name)}`);
                 const d = await res.json();
                 if (!d || !d.found || !d.races) return;
-                const tile = (v, l) => `<div class="summary-item"><strong>${escapeHtml(v)}</strong><span>${l}</span></div>`;
+                const tile = (v, l) => `<div class="summary-item"><strong>${escapeHtml(String(v))}</strong><span>${l}</span></div>`;   // String(): a 0 must still show
                 document.getElementById("race-summary").innerHTML = [
                     tile(d.races, "RACES"), tile(d.wins, "WINS"), tile(d.podiums, "PODIUMS"),
                     tile(d.avgPos ?? "—", "AVG FINISH"), tile(d.bestPos ? "P" + d.bestPos : "—", "BEST FINISH"),
                     tile(d.points, "CHAMPIONSHIP POINTS"),
+                    d.rating ? `<div class="summary-item"><strong>${escapeHtml(d.rating.value)}${d.rating.provisional ? "?" : ""}<span class="tier ${escapeHtml(d.rating.tier)}">${escapeHtml(String(d.rating.tier).toUpperCase())}</span></strong><span>BCHQ RATING${d.rating.rank ? " · #" + escapeHtml(d.rating.rank) : ""}${d.rating.provisional ? " (PROVISIONAL)" : ""}</span></div>` : "",
                     d.safety ? `<div class="summary-item"><strong><span class="grade ${escapeHtml(d.safety.grade)}">${escapeHtml(d.safety.grade)}</span>${escapeHtml(d.safety.score)}</strong><span>SAFETY RATING${d.safety.provisional ? " (PROVISIONAL)" : ""}</span></div>` : "",
                     tile(d.invalidPct === null || d.invalidPct === undefined ? "—" : d.invalidPct + "%", "INVALID LAPS"),
                     tile(d.penaltiesPerRace, "PENALTIES PER RACE"),
                     tile(d.streak > 1 ? d.streak + " days" : "—", "RACING STREAK")
                 ].join("");
+                const spark = document.getElementById("rating-spark");
+                const hist = d.rating && Array.isArray(d.rating.history) ? d.rating.history.filter(v => typeof v === "number") : [];
+                if (spark) {
+                    if (hist.length >= 2) {
+                        const mn = Math.min(...hist), mx = Math.max(...hist), W = 320, H = 54, rng = Math.max(1, mx - mn);
+                        const pts = hist.map((v, i) => `${(i / (hist.length - 1) * (W - 8) + 4).toFixed(1)},${(H - 6 - (v - mn) / rng * (H - 12)).toFixed(1)}`).join(" ");
+                        spark.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none" role="img" aria-label="Rating over recent races"><polyline fill="none" stroke="#00f0ff" stroke-width="2" points="${pts}"/></svg><div style="color:var(--text-muted);font-size:.8rem;font-weight:600">Rating over the last ${hist.length} races (${mn} to ${mx})</div>`;
+                        spark.style.display = "block";
+                    } else { spark.style.display = "none"; }
+                }
                 document.getElementById("rs-note").textContent = d.cars && d.cars[0] ? "Most raced car: " + d.cars[0].car : "";
                 const rows = (d.recentRaces || []).map(r => {
                     const p = r.pos ? `<span class="pos-badge ${r.pos <= 3 ? "p" + r.pos : ""}">P${r.pos}</span> <span style="color:var(--text-muted)">of ${escapeHtml(r.entries)}</span>` : "—";
@@ -550,6 +578,7 @@
                         <td>${p}</td>
                         <td class="rs-hide"><span class="car-badge">${escapeHtml(r.car || "GT3")}</span></td>
                         <td class="rs-hide lap-time">${formatLapTime(r.bestMs)}</td>
+                        <td>${typeof r.delta === "number" ? `<span class="delta ${r.delta > 0 ? "up" : r.delta < 0 ? "down" : "flat"}">${r.delta > 0 ? "+" : ""}${escapeHtml(r.delta)}</span>` : "—"}</td>
                         <td><a class="rs-link" href="races.html?race=${encodeURIComponent(r.id)}">RESULTS</a></td>
                     </tr>`;
                 });
