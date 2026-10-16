@@ -51,6 +51,9 @@
 
     <style>
         /* ---- Live timing modal, driver chips, profiles ---- */
+        /* Cards in a row are stretched to the tallest one; keep the content packed at the top instead of spreading it out with gaps. */
+        .server-card { justify-content: flex-start; }
+        .server-card .live-hint { margin-top: auto; padding-top: 12px; }
         .server-card { pointer-events: auto; } /* style.css used to set none, which blocked every click inside cards */
         .server-card[data-online="1"] { cursor: pointer; }
         .session-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0 0; }
