@@ -587,14 +587,26 @@
                 const bw = document.getElementById("badges-wrap");
                 const ach = Array.isArray(d.achievements) ? d.achievements : [];
                 if (bw && ach.length) {
+                    // One badge per family at its current level. Show everything earned plus the 3 closest to unlocking; the rest sit behind "show all".
+                    const pctOf = a => a.goal ? a.value / a.goal : 0;
                     const got = ach.filter(a => a.earned);
-                    document.getElementById("badges-title").textContent = `ACHIEVEMENTS · ${got.length} OF ${ach.length}`;
-                    const sorted = [...got, ...ach.filter(a => !a.earned)];
-                    document.getElementById("badges").innerHTML = sorted.map(a => {
-                        const pct = Math.max(0, Math.min(100, Math.round(a.value / a.goal * 100)));
-                        const sub = a.earned ? escapeHtml(a.desc) : `${escapeHtml(a.desc)}<span class="b-bar"><b style="width:${pct}%"></b></span>`;
-                        return `<div class="badge ${a.earned ? "earned" : ""}" title="${escapeHtml(a.desc)}${a.earned ? "" : " (" + escapeHtml(a.value) + "/" + escapeHtml(a.goal) + ")"}"><i class="fa-solid fa-${escapeHtml(a.icon)}"></i><span><span class="b-name">${escapeHtml(a.name.toUpperCase())}</span><span class="b-sub">${sub}</span></span></div>`;
-                    }).join("");
+                    const locked = ach.filter(a => !a.earned).sort((x, y) => pctOf(y) - pctOf(x));
+                    const levels = ach.reduce((n, a) => n + a.tier, 0), total = ach.reduce((n, a) => n + a.tiers, 0);
+                    document.getElementById("badges-title").textContent = `ACHIEVEMENTS · ${levels} OF ${total} LEVELS`;
+                    const card = a => {
+                        const pct = Math.max(0, Math.min(100, Math.round(pctOf(a) * 100)));
+                        const lvl = a.tiers > 1 && a.earned ? ` <span style="opacity:.7">· LVL ${a.tier}/${a.tiers}</span>` : "";
+                        let sub = escapeHtml(a.desc);
+                        if (a.earned && !a.maxed) sub += `<span class="b-sub" style="font-size:.7rem">Next: ${escapeHtml(a.nextName)}</span><span class="b-bar"><b style="width:${pct}%"></b></span>`;
+                        else if (!a.earned) sub += `<span class="b-bar"><b style="width:${pct}%"></b></span>`;
+                        const tip = a.earned && !a.maxed ? `Next: ${a.nextDesc} (${a.value}/${a.goal})` : a.earned ? a.desc : `${a.desc} (${a.value}/${a.goal})`;
+                        return `<div class="badge ${a.earned ? "earned" : ""}" title="${escapeHtml(tip)}"><i class="fa-solid fa-${escapeHtml(a.icon)}"></i><span><span class="b-name">${escapeHtml(a.name.toUpperCase())}${lvl}</span><span class="b-sub">${sub}</span></span></div>`;
+                    };
+                    const shown = [...got, ...locked.slice(0, 3)], hidden = locked.slice(3);
+                    const bEl = document.getElementById("badges");
+                    bEl.innerHTML = shown.map(card).join("") + (hidden.length ? `<button type="button" id="badges-more" style="grid-column:1/-1;background:none;border:1px dashed var(--border-color);color:var(--text-muted);border-radius:10px;padding:8px;cursor:pointer;font-size:.78rem">Show ${hidden.length} more</button>` : "");
+                    const more = document.getElementById("badges-more");
+                    if (more) more.onclick = () => { bEl.innerHTML = [...got, ...locked].map(card).join(""); };
                     bw.style.display = "block";
                 } else if (bw) { bw.style.display = "none"; }
                 document.getElementById("rs-note").textContent = d.cars && d.cars[0] ? "Most raced car: " + d.cars[0].car : "";
