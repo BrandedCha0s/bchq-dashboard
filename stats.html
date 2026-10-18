@@ -181,6 +181,16 @@
             <div class="table-container"><table><thead><tr><th>#</th><th>DRIVER</th><th class="num">RATING</th><th class="num hide-sm">INVALID</th><th class="num hide-sm">PEN / RACE</th><th class="num hide-sm">RACES</th></tr></thead><tbody id="clean-body"></tbody></table></div></div>
     </div>
 
+    <div id="improved-section" style="display:none">
+        <div class="section-title"><i class="fa-solid fa-arrow-trend-up"></i> MOST IMPROVED <span class="note" id="imp-note"></span>
+            <div class="tabs"><button class="tab on" id="imp-tab-lap" onclick="showImproved('lap')">LAP TIME</button><button class="tab" id="imp-tab-rating" onclick="showImproved('rating')">RATING</button></div>
+        </div>
+        <div class="panel"><div class="table-container"><table>
+            <thead id="imp-head"></thead>
+            <tbody id="imp-body"></tbody></table></div></div>
+        <div class="note" id="imp-foot" style="margin:8px 0 22px;color:var(--text-muted);font-weight:600;font-size:.85rem"></div>
+    </div>
+
     <div class="section-title"><i class="fa-solid fa-car-side"></i> CARS</div>
     <div class="grid2">
         <div class="panel"><div class="panel-head"><i class="fa-solid fa-users"></i> MOST POPULAR <span class="sub">race starts</span></div>
@@ -248,6 +258,27 @@
                 which === "all" ? "No races recorded yet." : "No races this month yet.");
         }
 
+        function showImproved(which) {
+            const imp = DATA && DATA.improved;
+            if (!imp) return;
+            document.getElementById("imp-tab-lap").classList.toggle("on", which === "lap");
+            document.getElementById("imp-tab-rating").classList.toggle("on", which === "rating");
+            const head = document.getElementById("imp-head"), body = document.getElementById("imp-body"), foot = document.getElementById("imp-foot");
+            if (which === "lap") {
+                document.getElementById("imp-note").textContent = `best lap, last ${imp.days || 7} days vs before`;
+                head.innerHTML = `<tr><th>#</th><th>DRIVER</th><th>TRACK</th><th class="num hide-sm">BEFORE</th><th class="num">NOW</th><th class="num">FASTER BY</th></tr>`;
+                tbody("imp-body", (imp.lap || []).map((x, i) => `<tr>${rankCell(i)}<td>${nameLink(x.name)}</td><td>${esc(trackName(x.track))}</td><td class="num muted hide-sm">${fmtLap(x.beforeMs)}</td><td class="num"><span class="lap-time">${fmtLap(x.nowMs)}</span></td><td class="num"><span class="delta up">-${(x.deltaMs / 1000).toFixed(3)}s</span></td></tr>`), 6,
+                    "Nobody has improved a lap time yet. It fills in once drivers have raced the same track in the same car in two different weeks.");
+                foot.textContent = "Compares a driver's best race lap at a track this week with their best before that, in the same car, so changing cars doesn't count.";
+            } else {
+                document.getElementById("imp-note").textContent = "ranked rating, last 30 days";
+                head.innerHTML = `<tr><th>#</th><th>DRIVER</th><th class="num hide-sm">FROM</th><th class="num">NOW</th><th class="num">GAIN</th></tr>`;
+                tbody("imp-body", (imp.rating || []).map((x, i) => `<tr>${rankCell(i)}<td>${nameLink(x.name)}</td><td class="num muted hide-sm">${esc(x.from)}</td><td class="num"><span class="pts">${esc(x.to)}</span></td><td class="num"><span class="delta up">+${esc(x.gain)}</span></td></tr>`), 5,
+                    "No rating gains yet. They appear once drivers have ranked races.");
+                foot.textContent = "Only ranked races count towards rating.";
+            }
+        }
+
         function renderHeat(h) {
             const el = document.getElementById("heat");
             if (!h || !h.grid || !h.days) {
@@ -291,6 +322,7 @@
                 document.getElementById("tab-month").textContent = new Date(Date.UTC(+y, +m - 1, 1)).toLocaleString([], { month: "long", timeZone: "UTC" }).toUpperCase();
             }
             showChamp("month");
+            if (d.improved) { document.getElementById("improved-section").style.display = ""; showImproved("lap"); }
 
             tbody("form-body", d.inForm.map((x, i) => `<tr>${rankCell(i)}<td>${nameLink(x.name)}</td><td class="num"><span class="pts">${esc(x.points)}</span></td><td class="num muted">${esc(x.races)}</td><td class="num muted hide-sm">${esc(x.avgPos)}</td></tr>`), 5, "Needs 2+ races in the last 30 days.");
             tbody("fire-body", d.onFire.map((x, i) => `<tr>${rankCell(i)}<td>${nameLink(x.name)}</td><td class="num"><span class="fire"><i class="fa-solid fa-fire"></i> ${esc(x.streak)} days</span></td><td class="num muted">${esc(x.races)}</td></tr>`), 4, "No one is on a streak right now. Race two days in a row to appear.");

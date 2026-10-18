@@ -299,6 +299,15 @@
         .rs-note { font-family: 'Rajdhani', sans-serif; font-size: .9rem; color: var(--text-muted); letter-spacing: 0; font-weight: 600; }
         .pos-badge { font-family: 'Orbitron', sans-serif; font-size: .9rem; color: #fff; }
         .pos-badge.p1 { color: #f5a524; } .pos-badge.p2 { color: #cbd5e1; } .pos-badge.p3 { color: #cd7f32; }
+        .badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+        .badge { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border-color); background: rgba(255,255,255,.03); opacity: .5; }
+        .badge i { font-size: 1.15rem; width: 26px; text-align: center; color: var(--text-muted); }
+        .badge .b-name { display: block; font-family: 'Orbitron', sans-serif; font-size: .7rem; letter-spacing: .5px; color: #fff; }
+        .badge .b-sub { display: block; font-size: .78rem; font-weight: 600; color: var(--text-muted); }
+        .badge .b-bar { display: block; height: 3px; border-radius: 2px; background: rgba(255,255,255,.08); margin-top: 5px; overflow: hidden; }
+        .badge .b-bar b { display: block; height: 100%; background: var(--accent-cyan); }
+        .badge.earned { opacity: 1; border-color: #ffc933; background: rgba(255,201,51,.08); }
+        .badge.earned i { color: #ffc933; }
         .tier { display: inline-block; font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: .62rem; letter-spacing: .5px; padding: 2px 7px; border-radius: 5px; margin-left: 8px; color: #0a0e14; vertical-align: middle; }
         .tier.Rookie { background: #94a3b8; } .tier.Club { background: #60a5fa; } .tier.Contender { background: #34d399; } .tier.Pro { background: #f5a524; } .tier.Elite { background: #c084fc; }
         .delta { font-family: 'Orbitron', sans-serif; font-size: .8rem; white-space: nowrap; }
@@ -376,6 +385,10 @@
         <div class="section-title"><i class="fa-solid fa-flag-checkered"></i> RACE STATS <span class="rs-note" id="rs-note"></span></div>
         <div id="race-summary" class="summary-row"></div>
         <div id="rating-spark" style="display:none;max-width:420px;margin:0 0 16px"></div>
+        <div id="badges-wrap" style="display:none;margin:0 0 18px">
+            <div class="rs-note" id="badges-title" style="margin:0 0 10px;font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:1px;color:var(--text-muted)"></div>
+            <div id="badges" class="badges"></div>
+        </div>
         <div class="table-container" id="race-recent-wrap">
             <table class="race-table">
                 <thead><tr><th>DATE</th><th>TRACK</th><th>FINISH</th><th class="rs-hide">CAR</th><th class="rs-hide">BEST LAP</th><th>RATING</th><th></th></tr></thead>
@@ -571,6 +584,19 @@
                         spark.style.display = "block";
                     } else { spark.style.display = "none"; }
                 }
+                const bw = document.getElementById("badges-wrap");
+                const ach = Array.isArray(d.achievements) ? d.achievements : [];
+                if (bw && ach.length) {
+                    const got = ach.filter(a => a.earned);
+                    document.getElementById("badges-title").textContent = `ACHIEVEMENTS · ${got.length} OF ${ach.length}`;
+                    const sorted = [...got, ...ach.filter(a => !a.earned)];
+                    document.getElementById("badges").innerHTML = sorted.map(a => {
+                        const pct = Math.max(0, Math.min(100, Math.round(a.value / a.goal * 100)));
+                        const sub = a.earned ? escapeHtml(a.desc) : `${escapeHtml(a.desc)}<span class="b-bar"><b style="width:${pct}%"></b></span>`;
+                        return `<div class="badge ${a.earned ? "earned" : ""}" title="${escapeHtml(a.desc)}${a.earned ? "" : " (" + escapeHtml(a.value) + "/" + escapeHtml(a.goal) + ")"}"><i class="fa-solid fa-${escapeHtml(a.icon)}"></i><span><span class="b-name">${escapeHtml(a.name.toUpperCase())}</span><span class="b-sub">${sub}</span></span></div>`;
+                    }).join("");
+                    bw.style.display = "block";
+                } else if (bw) { bw.style.display = "none"; }
                 document.getElementById("rs-note").textContent = d.cars && d.cars[0] ? "Most raced car: " + d.cars[0].car : "";
                 const rows = (d.recentRaces || []).map(r => {
                     const p = r.pos ? `<span class="pos-badge ${r.pos <= 3 ? "p" + r.pos : ""}">P${r.pos}</span> <span style="color:var(--text-muted)">of ${escapeHtml(r.entries)}</span>` : "—";
