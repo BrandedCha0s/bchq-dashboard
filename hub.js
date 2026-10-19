@@ -292,7 +292,21 @@
         return match ? parseInt(match[1], 10) : 1;
     }
 
+    // Total drivers online across ALL servers (ranked included, whichever page filter is active). Only on pages with the counter.
+    function updateOnlineTotal(instances) {
+        const el = document.getElementById("online-now");
+        if (!el) return;
+        const live = instances.filter(i => i && i.isOnline);
+        const total = live.reduce((n, i) => n + (Number(i.connectedCount) || 0), 0);
+        const busy = live.filter(i => (Number(i.connectedCount) || 0) > 0).length;
+        el.classList.toggle("quiet", total === 0);
+        el.innerHTML = `<span class="online-dot"></span><b>${total}</b> ${total === 1 ? "driver" : "drivers"} online` +
+            (total > 0 ? ` <span class="online-sub">across ${busy} ${busy === 1 ? "server" : "servers"}</span>` : ` <span class="online-sub">join the Discord to get a race going</span>`);
+        el.style.visibility = "visible";
+    }
+
     function renderServerCards(instances, container) {
+        updateOnlineTotal(instances);
         const anyRanked = instances.some(i => isRankedName(i.name));
         if (HUB_VIEW === "ranked") {
             instances = instances.filter(i => isRankedName(i.name));

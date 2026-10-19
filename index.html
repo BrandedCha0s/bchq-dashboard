@@ -190,6 +190,19 @@
         </div>
     </div>
 
+    <!-- Drivers online right now (all servers). Space is reserved so it never pushes the page down. -->
+    <style>
+        .online-now { visibility: hidden; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; margin: 0 0 12px; padding: 8px 16px; border: 1px solid rgba(57, 255, 136, 0.35); border-radius: 10px; background: rgba(57, 255, 136, 0.06); font-family: 'Orbitron', sans-serif; font-size: 0.85rem; letter-spacing: 1px; color: #fff; text-align: center; flex-wrap: wrap; }
+        .online-now b { color: var(--accent-green, #39ff88); font-size: 1.05rem; }
+        .online-now .online-sub { font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; letter-spacing: 0; color: var(--text-muted); font-weight: 600; }
+        .online-now .online-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent-green, #39ff88); box-shadow: 0 0 8px var(--accent-green, #39ff88); animation: onlinePulse 1.8s ease-in-out infinite; }
+        .online-now.quiet { border-color: var(--border-color); background: rgba(255, 255, 255, 0.03); }
+        .online-now.quiet b { color: var(--text-muted); }
+        .online-now.quiet .online-dot { background: var(--text-muted); box-shadow: none; animation: none; }
+        @keyframes onlinePulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+    </style>
+    <div id="online-now" class="online-now" aria-live="polite"></div>
+
     <!-- Community totals (hidden until the first race has been saved) -->
     <a id="site-totals" class="site-totals" href="stats.html" style="visibility:hidden;"></a>
 
@@ -310,7 +323,7 @@
     </div>
 
     <script>window.BCHQ_VIEW = "hub";</script>
-    <script src="hub.js?v=20261016"></script>
+    <script src="hub.js?v=20261019"></script>
 
 
     <!-- Footer Legal & Report Issue Button Section -->

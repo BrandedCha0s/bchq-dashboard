@@ -570,6 +570,8 @@
                     tile(d.points, "CHAMPIONSHIP POINTS"),
                     d.rating ? `<div class="summary-item"><strong>${escapeHtml(d.rating.value)}${d.rating.provisional ? "?" : ""}<span class="tier ${escapeHtml(d.rating.tier)}">${escapeHtml(String(d.rating.tier).toUpperCase())}</span></strong><span>RANKED RATING${d.rating.rank ? " · #" + escapeHtml(d.rating.rank) : ""}${d.rating.provisional ? " (PROVISIONAL)" : ""}</span></div>` : "",
                     d.safety ? `<div class="summary-item"><strong><span class="grade ${escapeHtml(d.safety.grade)}">${escapeHtml(d.safety.grade)}</span>${escapeHtml(d.safety.score)}</strong><span>SAFETY RATING${d.safety.provisional ? " (PROVISIONAL)" : ""}</span></div>` : "",
+                    d.habits && d.habits.clean ? `<div class="summary-item" title="Races you finished with no penalties and almost no invalid laps"><strong>${escapeHtml(d.habits.clean.races)}<span style="font-size:.7em;opacity:.7"> / ${escapeHtml(d.habits.clean.of)}</span></strong><span>CLEAN RACES${d.habits.clean.pct !== null ? " · " + escapeHtml(Math.round(d.habits.clean.pct)) + "%" : ""}</span></div>` : "",
+                    d.habits && d.habits.finish ? `<div class="summary-item" title="Races you finished (classified) out of every race you started"><strong>${escapeHtml(Math.round(d.habits.finish.pct))}%</strong><span>FINISH RATE · ${escapeHtml(d.habits.finish.finished)} OF ${escapeHtml(d.habits.finish.starts)}</span></div>` : "",
                     tile(d.invalidPct === null || d.invalidPct === undefined ? "—" : d.invalidPct + "%", "INVALID LAPS"),
                     tile(d.penaltiesPerRace, "PENALTIES PER RACE"),
                     tile(d.streak > 1 ? d.streak + " days" : "—", "RACING STREAK")
