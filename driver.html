@@ -383,6 +383,7 @@
     <!-- Race stats (filled in from saved race results) -->
     <div id="race-panel" class="race-panel">
         <div class="section-title"><i class="fa-solid fa-flag-checkered"></i> RACE STATS <span class="rs-note" id="rs-note"></span></div>
+        <div class="rs-note" id="former-names" style="display:none;margin:-8px 0 14px"></div>
         <div id="race-summary" class="summary-row"></div>
         <div id="rating-spark" style="display:none;max-width:420px;margin:0 0 16px"></div>
         <div id="badges-wrap" style="display:none;margin:0 0 18px">
@@ -612,6 +613,12 @@
                     bw.style.display = "block";
                 } else if (bw) { bw.style.display = "none"; }
                 document.getElementById("rs-note").textContent = d.cars && d.cars[0] ? "Most raced car: " + d.cars[0].car : "";
+                const fn = document.getElementById("former-names");
+                if (fn) {
+                    const former = Array.isArray(d.formerNames) ? d.formerNames.filter(Boolean) : [];
+                    if (former.length) { fn.textContent = "Racing as " + d.name + " · previously " + former.slice().reverse().join(", "); fn.style.display = "block"; }
+                    else { fn.style.display = "none"; }
+                }
                 const rows = (d.recentRaces || []).map(r => {
                     const p = r.pos ? `<span class="pos-badge ${r.pos <= 3 ? "p" + r.pos : ""}">P${r.pos}</span> <span style="color:var(--text-muted)">of ${escapeHtml(r.entries)}</span>` : "—";
                     return `<tr>
@@ -644,6 +651,7 @@
 
                 if (!Array.isArray(records) || records.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px; color: var(--text-muted);">No records found for driver "${escapeHtml(queryInput)}".</td></tr>`;
+                    loadRaceStats(queryInput);   // a driver can have race stats without a lap record under this exact name
                     return;
                 }
 
