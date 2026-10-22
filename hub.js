@@ -148,7 +148,7 @@
     }
 
     // Razo usernames of the streamers (blank/remove one if they aren't on Razo). Keep in step with RAZO_USERS on streamers.html.
-    const RAZO_USERS = ["brandedchaos86", "h477y96", "alteredpixelz"];
+    const RAZO_USERS = ["brandedchaos86", "harry", "alteredpixelz"];
 
     async function checkStreamersLiveStatus() {
         const streamers = ["brandedchaos86", "H477Y96", "Alteredpixelz"];
