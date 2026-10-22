@@ -249,6 +249,9 @@
         }
 
         .live-badge i { font-size: 0.45rem; }
+        .live-badge.razo { background-color: #e6007e; box-shadow: 0 0 10px rgba(230, 0, 126, 0.5); text-decoration: none; }
+        .live-badge.razo:hover { filter: brightness(1.15); }
+        .streamer-handle .live-badge + .live-badge { margin-left: 6px; }
 
         @keyframes pulse-live {
             0% { opacity: 1; }
@@ -293,6 +296,9 @@
 
         .social-btn.twitch:hover { background: rgba(145, 70, 255, 0.2); border-color: var(--twitch-purple); color: #fff; }
         .social-btn.twitch i { color: var(--twitch-purple); }
+
+        .social-btn.razo:hover { background: rgba(230, 0, 126, 0.2); border-color: #e6007e; color: #fff; }
+        .social-btn.razo i { color: #e6007e; }
 
         .social-btn.youtube:hover { background: rgba(255, 0, 0, 0.2); border-color: var(--youtube-red); color: #fff; }
         .social-btn.youtube i { color: var(--youtube-red); }
@@ -403,6 +409,9 @@
                 <a href="https://twitch.tv/brandedchaos86" target="_blank" rel="noopener noreferrer" class="social-btn twitch">
                     <i class="fa-brands fa-twitch"></i> Twitch
                 </a>
+                <a id="razo-link-brandedchaos86" href="#" target="_blank" rel="noopener noreferrer" class="social-btn razo" style="display:none">
+                    <i class="fa-solid fa-video"></i> Razo
+                </a>
                 <a href="https://youtube.com/@brandedcha0s86_gaming?si=D-QkqrUV1uuSBBFe" target="_blank" rel="noopener noreferrer" class="social-btn youtube">
                     <i class="fa-brands fa-youtube"></i> YouTube
                 </a>
@@ -434,6 +443,9 @@
                 <a href="https://twitch.tv/h477y96" target="_blank" rel="noopener noreferrer" class="social-btn twitch">
                     <i class="fa-brands fa-twitch"></i> Twitch
                 </a>
+                <a id="razo-link-h477y96" href="#" target="_blank" rel="noopener noreferrer" class="social-btn razo" style="display:none">
+                    <i class="fa-solid fa-video"></i> Razo
+                </a>
                 <a href="https://youtube.com/@h477y96-racing?si=MdYf3CUggGevprQF" target="_blank" rel="noopener noreferrer" class="social-btn youtube">
                     <i class="fa-brands fa-youtube"></i> YouTube
                 </a>
@@ -459,6 +471,9 @@
                 <a href="https://twitch.tv/alteredpixelz" target="_blank" rel="noopener noreferrer" class="social-btn twitch">
                     <i class="fa-brands fa-twitch"></i> Twitch
                 </a>
+                <a id="razo-link-alteredpixelz" href="#" target="_blank" rel="noopener noreferrer" class="social-btn razo" style="display:none">
+                    <i class="fa-solid fa-video"></i> Razo
+                </a>
                 <a href="https://youtube.com/@alteredpixelz?si=Y5pjn4Ly0QJxU9u0" target="_blank" rel="noopener noreferrer" class="social-btn youtube">
                     <i class="fa-brands fa-youtube"></i> YouTube
                 </a>
@@ -475,41 +490,65 @@
     <script>
         const AZURE_API_URL = "https://acc-results-api-uk-eshycfeacuewd2b8.francecentral-01.azurewebsites.net/api/HttpTrigger1";
 
+        // Each streamer's username on Razo (razo.tv). Leave a name blank ("") if they aren't on Razo. Keep in step with RAZO_USERS in hub.js.
+        const RAZO_USERS = { brandedchaos86: "brandedchaos86", h477y96: "h477y96", alteredpixelz: "alteredpixelz" };
+
+        const esc = (v) => String(v == null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+        // One request for everyone on Razo. If Razo can't be reached nobody shows as live there (and Twitch is unaffected).
+        async function fetchRazoLive() {
+            const names = [...new Set(Object.values(RAZO_USERS).filter(Boolean).map(n => n.toLowerCase()))];
+            if (!names.length) return {};
+            try {
+                const res = await fetch(`${AZURE_API_URL}?type=razo&users=${encodeURIComponent(names.join(","))}`);
+                const d = await res.json();
+                return (d && d.ok && d.streamers) ? d.streamers : {};
+            } catch (e) { return {}; }
+        }
+
+        // Show each streamer's Razo link button
+        Object.entries(RAZO_USERS).forEach(([twitchName, razoName]) => {
+            const a = document.getElementById("razo-link-" + twitchName);
+            if (a && /^\w{1,40}$/.test(razoName || "")) { a.href = "https://razo.tv/" + razoName; a.style.display = ""; }
+        });
+
         async function checkStreamerStatuses() {
             const streamers = [
                 { username: 'brandedchaos86', id: 'status-brandedchaos86', avatarId: 'avatar-brandedchaos86', handle: '@brandedchaos86' },
                 { username: 'h477y96', id: 'status-h477y96', avatarId: 'avatar-h477y96', handle: '@H477Y96' },
                 { username: 'alteredpixelz', id: 'status-alteredpixelz', avatarId: 'avatar-alteredpixelz', handle: '@alteredpixelz' }
             ];
+            const razoPromise = fetchRazoLive();
 
             streamers.forEach(async (streamer) => {
                 const statusDiv = document.getElementById(streamer.id);
                 const avatarImg = document.getElementById(streamer.avatarId);
                 if (!statusDiv) return;
 
+                let twitchLive = false, avatar = "";
                 try {
                     const response = await fetch(`${AZURE_API_URL}?type=twitch&user=${streamer.username}`);
                     const data = await response.json();
+                    twitchLive = Boolean(data && data.isLive);
+                    avatar = (data && data.avatarUrl) || "";
+                } catch (err) { /* Twitch unreachable: treat as offline there */ }
 
-                    // Update avatar image if returned
-                    if (data.avatarUrl && avatarImg) {
-                        avatarImg.src = data.avatarUrl;
-                        avatarImg.style.display = 'block';
-                    }
+                const razoName = (RAZO_USERS[streamer.username] || "").toLowerCase();
+                const razo = razoName ? ((await razoPromise)[razoName] || null) : null;
+                const razoLive = Boolean(razo && razo.isLive);
 
-                    if (data.isLive) {
-                        statusDiv.innerHTML = `
-                            ${streamer.handle} 
-                            <span class="live-badge">
-                                <i class="fa-solid fa-circle"></i> LIVE NOW
-                            </span>
-                        `;
-                    } else {
-                        statusDiv.innerHTML = `${streamer.handle} <span class="offline-badge">Offline</span>`;
-                    }
-                } catch (err) {
-                    statusDiv.innerHTML = `${streamer.handle} <span class="offline-badge">Offline</span>`;
+                // Prefer the Twitch avatar; use the Razo one if that's all we have
+                if (!avatar && razoLive && /^https:\/\//.test(razo.avatarUrl || "")) avatar = razo.avatarUrl;
+                if (avatar && avatarImg) { avatarImg.src = avatar; avatarImg.style.display = 'block'; }
+
+                const badges = [];
+                if (twitchLive) badges.push(`<span class="live-badge"><i class="fa-solid fa-circle"></i> LIVE ON TWITCH</span>`);
+                if (razoLive) {
+                    const url = /^https:\/\/razo\.tv\//.test(razo.url || "") ? razo.url : "https://razo.tv/" + razoName;
+                    const tip = [razo.title, razo.game, razo.viewerCount != null ? razo.viewerCount + " watching" : ""].filter(Boolean).join(" · ");
+                    badges.push(`<a class="live-badge razo" href="${esc(url)}" target="_blank" rel="noopener noreferrer" title="${esc(tip)}"><i class="fa-solid fa-circle"></i> LIVE ON RAZO</a>`);
                 }
+                statusDiv.innerHTML = `${streamer.handle} ` + (badges.length ? badges.join(" ") : `<span class="offline-badge">Offline</span>`);
             });
         }
 

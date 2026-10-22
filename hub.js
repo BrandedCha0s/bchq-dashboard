@@ -147,6 +147,9 @@
         return `${min}:${sec.toString().padStart(2, '0')}.${millis.toString().padStart(3, '0')}`;
     }
 
+    // Razo usernames of the streamers (blank/remove one if they aren't on Razo). Keep in step with RAZO_USERS on streamers.html.
+    const RAZO_USERS = ["brandedchaos86", "h477y96", "alteredpixelz"];
+
     async function checkStreamersLiveStatus() {
         const streamers = ["brandedchaos86", "H477Y96", "Alteredpixelz"];
         const btn = document.getElementById("header-streamers-btn");
@@ -162,6 +165,15 @@
                     anyLive = true;
                     break;
                 }
+            } catch (e) {}
+        }
+
+        // Razo has no Twitch-style API, so the Function App reads Razo's public live list for all of them in one request.
+        if (!anyLive) {
+            try {
+                const res = await fetch(`${AZURE_API_URL}?type=razo&users=${RAZO_USERS.join(",")}`);
+                const data = await res.json();
+                if (data && data.ok && data.streamers && Object.values(data.streamers).some(x => x && x.isLive)) anyLive = true;
             } catch (e) {}
         }
 
